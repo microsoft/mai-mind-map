@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "start": "npm run preview",
     "build": "rsbuild build",
     "check": "biome check --write",
     "dev": "rsbuild dev --open",
