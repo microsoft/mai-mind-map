@@ -25,7 +25,7 @@ export function run() {
   const port = normalizePort(process.env.PORT || '3000');
 
   app.get('/', (req: Request, res: Response) => {
-    res.send('Welcome to Express & TypeScript Server');
+    res.send('Welcome to Express & TypeScript Server 123');
   });
 
   app.listen(port, () => {

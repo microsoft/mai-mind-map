@@ -33,13 +33,16 @@ jobs:
           cd ..
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./msai-mind-map-se/* -r
+        run: |
+          cd msai-mind-map-se
+          zip release.zip ./* -r
+          cd ..
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: release.zip
+          path: ./msai-mind-map-se/release.zip
 
   deploy:
     runs-on: ubuntu-latest
