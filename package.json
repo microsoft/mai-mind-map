@@ -3,13 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "node ./bin/www",
     "build": "rsbuild build",
     "check": "biome check --write",
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
     "preview": "rsbuild preview",
-    "build:server": "tsc -p server-tsconfig.json"
+    "move": "cpx \"dist/**/*.*\" msai-mind-map-se/dist"
   },
   "dependencies": {
     "d3-drag": "^2.0.0",
@@ -40,6 +39,7 @@
     "@types/node": "^22.5.4",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "cpx": "^1.5.0",
     "typescript": "^5.5.2"
   },
   "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
