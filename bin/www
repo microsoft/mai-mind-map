@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+const server = require('../server/server');
+console.log('server', server);
+server.run();
