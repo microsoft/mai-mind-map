@@ -11,8 +11,6 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "d3-drag": "^2.0.0",
     "d3-interpolate": "^2.0.1",
     "d3-scale": "^3.3.0",
@@ -20,9 +18,14 @@
     "d3-selection": "^2.0.0",
     "d3-shape": "^2.1.0",
     "d3-transition": "^2.0.0",
-    "d3-zoom": "^2.0.0"
+    "d3-zoom": "^2.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@rsbuild/core": "1.0.1-rc.4",
+    "@rsbuild/plugin-react": "1.0.1-rc.4",
     "@types/d3-drag": "^2.0.0",
     "@types/d3-ease": "^2.0.0",
     "@types/d3-scale": "^3.2.2",
@@ -31,9 +34,7 @@
     "@types/d3-shape": "^2.0.0",
     "@types/d3-transition": "^2.0.0",
     "@types/d3-zoom": "^2.0.0",
-    "@biomejs/biome": "^1.8.3",
-    "@rsbuild/core": "1.0.1-rc.4",
-    "@rsbuild/plugin-react": "1.0.1-rc.4",
+    "@types/node": "^22.5.4",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "typescript": "^5.5.2"
