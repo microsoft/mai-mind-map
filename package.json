@@ -3,12 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "rsbuild build",
+    "build": "rsbuild build && npm run cp",
     "check": "biome check --write",
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
     "preview": "rsbuild preview",
-    "move": "cpx \"dist/**/*.*\" msai-mind-map-se/dist"
+    "cp": "cpx \"dist/**/*.*\" msai-mind-map-se/dist"
   },
   "dependencies": {
     "d3-drag": "^2.0.0",
