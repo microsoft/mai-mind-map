@@ -1,0 +1,13 @@
+#!/bin/sh
+npm run check
+
+# 获取上面脚本的退出码
+exitCode="$?"
+
+if [ "$exitCode" -ne 0 ]; then
+  echo "🚫  Lint failed"
+  exit 1
+fi
+
+echo "✅  Lint passed"
+exit 0

@@ -114,7 +114,6 @@ function Measure(props: {
 }) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const svg = ref.current!;
     const sizes: SizeMap = {};
     for (const el of Array.from(svg.children)) {
