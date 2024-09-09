@@ -11,6 +11,9 @@ importers:
       d3-drag:
         specifier: ^2.0.0
         version: 2.0.0
+      d3-hierarchy:
+        specifier: ^3.1.2
+        version: 3.1.2
       d3-interpolate:
         specifier: ^2.0.1
         version: 2.0.1
@@ -60,6 +63,9 @@ importers:
       '@types/d3-ease':
         specifier: ^2.0.0
         version: 2.0.4
+      '@types/d3-hierarchy':
+        specifier: ^3.1.7
+        version: 3.1.7
       '@types/d3-scale':
         specifier: ^3.2.2
         version: 3.3.5
@@ -268,6 +274,9 @@ packages:
 
   '@types/d3-ease@2.0.4':
     resolution: {integrity: sha512-DGh1MzShlCPTTau4+C8JLJjKt9sT9LgGZokYFx8fSxy+Z6fHns/Lc+lwTc4owuq8FwCDg7Mw2/mp0G8S5DBm7Q==}
+
+  '@types/d3-hierarchy@3.1.7':
+    resolution: {integrity: sha512-tJFtNoYBtRtkNysX1Xq4sxtjK8YgoWUNpIiUee0/jHGRwqvzYxkq0hGVbbOGSz+JgFxxRu4K8nb3YpG3CMARtg==}
 
   '@types/d3-interpolate@2.0.5':
     resolution: {integrity: sha512-UINE41RDaUMbulp+bxQMDnhOi51rh5lA2dG+dWZU0UY/IwQiG/u2x8TfnWYU9+xwGdXsJoAvrBYUEQl0r91atg==}
@@ -496,6 +505,10 @@ packages:
 
   d3-format@2.0.0:
     resolution: {integrity: sha512-Ab3S6XuE/Q+flY96HXT0jOXcM4EAClYFnRGY5zsjRGNy6qCYrQsMffs7cV5Q9xejb35zxW5hf/guKw34kvIKsA==}
+
+  d3-hierarchy@3.1.2:
+    resolution: {integrity: sha512-FX/9frcub54beBdugHjDCdikxThEqjnR93Qt7PvQTOHxyiNCAlvMrHhclk3cD5VeAaq9fxmfRp+CnWw9rEMBuA==}
+    engines: {node: '>=12'}
 
   d3-interpolate@2.0.1:
     resolution: {integrity: sha512-c5UhwwTs/yybcmTpAVqwSFl6vrQ8JZJoT5F7xNFK9pymv5C0Ymcc9/LIJHtYIggg/yS9YHw8i8O8tgb9pupjeQ==}
@@ -1398,6 +1411,8 @@ snapshots:
 
   '@types/d3-ease@2.0.4': {}
 
+  '@types/d3-hierarchy@3.1.7': {}
+
   '@types/d3-interpolate@2.0.5':
     dependencies:
       '@types/d3-color': 2.0.6
@@ -1681,6 +1696,8 @@ snapshots:
   d3-ease@2.0.0: {}
 
   d3-format@2.0.0: {}
+
+  d3-hierarchy@3.1.2: {}
 
   d3-interpolate@2.0.1:
     dependencies:
