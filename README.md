@@ -7,6 +7,8 @@ Install the dependencies:
 ```bash
 pnpm install
 ```
+Please install Extension:`Biome` for better code lint
+
 
 ## Get Started
 
