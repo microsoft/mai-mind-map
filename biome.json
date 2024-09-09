@@ -9,7 +9,8 @@
     "useIgnoreFile": true
   },
   "formatter": {
-    "indentStyle": "space"
+    "indentStyle": "space",
+    "include": ["src/**/*.json", "src/**/*.js", "src/**/*.ts", "src/**/*.tsc"]
   },
   "javascript": {
     "formatter": {
@@ -18,8 +19,12 @@
   },
   "linter": {
     "enabled": true,
+    "include": ["src/**/*.json", "src/**/*.js", "src/**/*.ts", "src/**/*.tsc"],
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "style": {
+        "useImportType": "off"
+      }
     }
   }
 }

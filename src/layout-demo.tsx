@@ -1,6 +1,17 @@
-import { useEffect, useMemo, useRef, useState, Fragment, createElement } from 'react';
-import compactBoxLayout, { HierarchyOptions, Node, Direction } from '@base/layout';
+import compactBoxLayout, {
+  HierarchyOptions,
+  Node,
+  Direction,
+} from '@base/layout';
 import { css } from '@base/styled';
+import {
+  Fragment,
+  createElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 interface DataTree {
   id: string;
@@ -103,16 +114,22 @@ function Measure(props: {
 }) {
   const ref = useRef<SVGSVGElement>(null);
   useEffect(() => {
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const svg = ref.current!;
-    const sizes: SizeMap  = {};
+    const sizes: SizeMap = {};
     for (const el of Array.from(svg.children)) {
       const text = el as SVGTextElement;
       const { width: w, height: h } = text.getBoundingClientRect();
       sizes[text.id] = { w, h };
     }
     props.finish(sizes);
-  }, []);
-  return <svg ref={ref}>{props.children}</svg>;
+  }, [props.finish]);
+
+  return (
+    <svg ref={ref} role="contentinfo" aria-label="Mind map">
+      {props.children}
+    </svg>
+  );
 }
 
 const SDirections = css`
@@ -125,7 +142,7 @@ const SDirections = css`
   line-height: 20px;
   gap: 4px;
 
-  &>.dir-item {
+  & > .dir-item {
     background-color: aliceblue;
     padding: 1px 10px;
     cursor: pointer;
@@ -140,10 +157,7 @@ const SDirections = css`
   }
 `;
 
-function MindMap(props: {
-  source: DataTree;
-  sizes: SizeMap;
-}) {
+function MindMap(props: { source: DataTree; sizes: SizeMap }) {
   const { source, sizes } = props;
   const [dir, serDir] = useState<Direction>('H');
   const tree = useMemo(() => {
@@ -159,39 +173,69 @@ function MindMap(props: {
     options.direction = dir;
     const root = compactBoxLayout(source, options);
     const { x: cx, y: cy } = root.center();
-    root.translate((window.innerWidth / 2) - cx, (window.innerHeight / 2) - cy);
+    root.translate(window.innerWidth / 2 - cx, window.innerHeight / 2 - cy);
     return root;
   }, [source, sizes, dir]);
 
   const nodes: React.ReactNode[] = [];
   function add(node: Node<DataTree>) {
-    const { id, props: { text } } = node.data;
+    const {
+      id,
+      props: { text },
+    } = node.data;
     const { x, y, width: w, height: h } = node;
-    const item = <Fragment key={id}>
-      <rect x={x} y={y} width={w} height={h} fill='none' stroke='#e3e3e3' strokeWidth={1} />
-      {createElement('rect', { ...node.contentBox(4, 2), fill: '#038af8', rx: 2 })}
-      <text x={w / 2 + x} y={h / 2 + y} textAnchor='middle' dominantBaseline="middle" fill='white' fontSize={12}>
-        {text}
-      </text>
-    </Fragment>;
+    const item = (
+      <Fragment key={id}>
+        <rect
+          x={x}
+          y={y}
+          width={w}
+          height={h}
+          fill="none"
+          stroke="#e3e3e3"
+          strokeWidth={1}
+        />
+        {createElement('rect', {
+          ...node.contentBox(4, 2),
+          fill: '#038af8',
+          rx: 2,
+        })}
+        <text
+          x={w / 2 + x}
+          y={h / 2 + y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="white"
+          fontSize={12}
+        >
+          {text}
+        </text>
+      </Fragment>
+    );
     nodes.push(item);
   }
   tree.BFTraverse(add);
 
-  return <>
-    <svg style={{ height: '100%', width: '100%' }}>
-      {nodes}
-    </svg>
-    <div className={SDirections}>
-      {(['LR', 'RL', 'TB', 'BT', 'H', 'V'] as const).map((d) => {
-        return createElement('div', {
-          key: d,
-          className: 'dir-item' + ((d === dir) ? ' active' : ''),
-          onClick: () => serDir(d),
-        }, d);
-      })}
-    </div>
-  </>;
+  return (
+    <>
+      <svg role="presentation" style={{ height: '100%', width: '100%' }}>
+        {nodes}
+      </svg>
+      <div className={SDirections}>
+        {(['LR', 'RL', 'TB', 'BT', 'H', 'V'] as const).map((d) => {
+          return createElement(
+            'div',
+            {
+              key: d,
+              className: `dir-item ${d === dir ? ' active' : ''}`,
+              onClick: () => serDir(d),
+            },
+            d,
+          );
+        })}
+      </div>
+    </>
+  );
 }
 
 export function LayoutDemo() {
@@ -199,15 +243,18 @@ export function LayoutDemo() {
   const [measured, setMeasured] = useState<SizeMap | null>(null);
 
   if (measured) {
-    return <MindMap source={source} sizes={measured} />
+    return <MindMap source={source} sizes={measured} />;
   }
 
   const texts: React.ReactNode[] = [];
   function add({ id, props, children }: DataTree) {
-    texts.push(<text key={id} fontSize={12} id={id}>{props.text}</text>);
+    texts.push(
+      <text key={id} fontSize={12} id={id}>
+        {props.text}
+      </text>,
+    );
     children?.forEach(add);
   }
   add(source);
   return <Measure finish={setMeasured}>{texts}</Measure>;
 }
-

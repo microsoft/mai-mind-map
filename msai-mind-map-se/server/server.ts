@@ -1,9 +1,9 @@
+import path from 'node:path';
 import express, {
   type Request,
   type Response,
   type Application,
 } from 'express';
-import path from 'node:path';
 
 function normalizePort(val: string): number {
   const port = Number.parseInt(val, 10);

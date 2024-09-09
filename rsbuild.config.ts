@@ -1,6 +1,6 @@
+import path from 'node:path';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
-import path from 'node:path';
 
 function normalizePort(val) {
   const port = Number.parseInt(val, 10);

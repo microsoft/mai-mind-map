@@ -7,7 +7,9 @@ interface Maper<T> {
 }
 type Listen<T> = (data: T) => void;
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export class Eventer<M extends Maper<any>> {
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   private lisenters = {} as { [K in keyof M]: Set<Function> };
 
   public on<K extends keyof M>(key: K, lisenter: Listen<M[K]>) {
@@ -32,6 +34,7 @@ export class Eventer<M extends Maper<any>> {
     const set = this.lisenters[key];
     if (set === undefined) return;
     // Todo: maybe implement stoping bubble
+    // biome-ignore lint/complexity/noForEach: <explanation>
     set.forEach((call) => call(data));
   }
 }

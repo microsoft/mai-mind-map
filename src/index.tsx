@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './global.css'
+import './global.css';
 
 import { WithStore } from '@base/atom';
 import { LayoutDemo } from './layout-demo';
@@ -10,7 +10,9 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
-      <WithStore><LayoutDemo/></WithStore>
+      <WithStore>
+        <LayoutDemo />
+      </WithStore>
     </React.StrictMode>,
   );
 }

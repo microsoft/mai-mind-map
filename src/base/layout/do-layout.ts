@@ -1,18 +1,21 @@
-import { Node, HierarchyOptions, Direction } from './hierarchy';
+import { Direction, HierarchyOptions, Node } from './hierarchy';
 import separateTree from './separate-root';
 
 const VALID_DIRECTIONS = ['LR', 'RL', 'TB', 'BT', 'H', 'V'] as const;
 const HORIZONTAL_DIRECTIONS = ['LR', 'RL', 'H'] as const;
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const isHorizontal = (d: Direction) => HORIZONTAL_DIRECTIONS.includes(d as any);
 const DEFAULT_DIRECTION = VALID_DIRECTIONS[0];
 
 function reassignXYIfRadial<T>(root: Node<T>, options: HierarchyOptions<T>) {
   if (options.radial) {
-    const [ rScale, radScale ] = options.isHorizontal ? [ "x", "y" ] as const : [ "y", "x" ] as const;
+    const [rScale, radScale] = options.isHorizontal
+      ? (['x', 'y'] as const)
+      : (['y', 'x'] as const);
 
-    const min = { x: Infinity, y: Infinity };
-    const max = { x: -Infinity, y: -Infinity };
+    const min = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY };
+    const max = { x: Number.NEGATIVE_INFINITY, y: Number.NEGATIVE_INFINITY };
 
     let count = 0;
     root.DFTraverse((node) => {
@@ -39,7 +42,6 @@ function reassignXYIfRadial<T>(root: Node<T>, options: HierarchyOptions<T>) {
   }
 }
 
-
 export default function doLayout<T>(
   root: Node<T>,
   options: HierarchyOptions<T>,
@@ -65,14 +67,17 @@ export default function doLayout<T>(
     // BT
     layoutAlgrithm(root, options);
     root.bottom2top();
-  } else if (direction === VALID_DIRECTIONS[4] || direction === VALID_DIRECTIONS[5]) {
+  } else if (
+    direction === VALID_DIRECTIONS[4] ||
+    direction === VALID_DIRECTIONS[5]
+  ) {
     // H or V
     // separate into left and right trees
     const { left, right } = separateTree(root, options);
     // do layout for left and right trees
     layoutAlgrithm(left, options);
     layoutAlgrithm(right, options);
-    options.isHorizontal ? (left.right2left()) : (left.bottom2top());
+    options.isHorizontal ? left.right2left() : left.bottom2top();
     // combine left and right trees
     right.translate(left.x - right.x, left.y - right.y);
     // translate root
@@ -92,10 +97,12 @@ export default function doLayout<T>(
 
   const fixedRoot = options.fixedRoot;
   if (fixedRoot || fixedRoot === undefined) {
-    root.translate(-(root.x + root.width / 2 + root.hgap), -(root.y + root.height / 2 + root.vgap));
+    root.translate(
+      -(root.x + root.width / 2 + root.hgap),
+      -(root.y + root.height / 2 + root.vgap),
+    );
   }
 
   reassignXYIfRadial(root, options);
   return root;
 }
-

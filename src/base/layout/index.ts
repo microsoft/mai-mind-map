@@ -1,7 +1,6 @@
+import doTreeLayout from './do-layout';
 import hierarchy, { HierarchyOptions, Node, Direction } from './hierarchy';
 import nonLayeredTidyTree from './non-layered-tidy';
-import doTreeLayout from './do-layout';
-
 
 function compactBoxLayout<T>(root: T, options: HierarchyOptions<T>) {
   return doTreeLayout(

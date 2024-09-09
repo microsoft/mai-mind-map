@@ -39,14 +39,17 @@ export class Node<T> {
   public hgap = 0;
   public children: Node<T>[] = [];
   public collapsed: boolean;
-  public inSize: { width: number, height: number };
+  public inSize: { width: number; height: number };
   public side?: 'left' | 'right';
   public parent?: Node<T>;
 
   private preH: number;
   private preV: number;
 
-  constructor(public data: T, options: HierarchyOptions<T>) {
+  constructor(
+    public data: T,
+    options: HierarchyOptions<T>,
+  ) {
     /*
      * Gaps: filling space between nodes
      * (x, y) ----------------------
@@ -89,11 +92,15 @@ export class Node<T> {
     this.height += 2 * vgap;
   }
 
-  private eachNode(callback: (node: Node<T>) => void, type: 'df' | 'bf' = 'df') {
+  private eachNode(
+    callback: (node: Node<T>) => void,
+    type: 'df' | 'bf' = 'df',
+  ) {
     let nodes: Node<T>[] = [this];
     let current: Node<T> | undefined;
     // Todo: don't use shift
-    while (current = nodes.shift()) {
+    // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+    while ((current = nodes.shift())) {
       callback(current);
       if (current.children.length === 0) continue;
       if (type === 'df') {
@@ -137,7 +144,12 @@ export class Node<T> {
   }
 
   public getBoundingBox() {
-    const box = { left: Number.MAX_VALUE, top: Number.MAX_VALUE, width: 0, height: 0 };
+    const box = {
+      left: Number.MAX_VALUE,
+      top: Number.MAX_VALUE,
+      width: 0,
+      height: 0,
+    };
     this.eachNode((node) => {
       box.left = Math.min(box.left, node.x);
       box.top = Math.min(box.top, node.y);
@@ -173,13 +185,18 @@ export class Node<T> {
   }
 }
 
-function hierarchy<T>(data: T, options: HierarchyOptions<T>, isolated?: boolean) {
+function hierarchy<T>(
+  data: T,
+  options: HierarchyOptions<T>,
+  isolated?: boolean,
+) {
   const root = new Node(data, options);
-  const nodes = [ root ];
-  let node;
+  const nodes = [root];
+  let node: Node<T> | undefined;
   if (!isolated && !root.collapsed) {
     // Todo: optimize shift
-    while (node = nodes.shift()) {
+    // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+    while ((node = nodes.shift())) {
       if (node.collapsed) continue;
       const children = options.getChildren(node.data);
       const length = children ? children.length : 0;

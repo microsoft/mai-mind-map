@@ -1,4 +1,12 @@
-import { createContext, PureComponent, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  PureComponent,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 const UNIQ = Symbol('Fingerprint');
 const uuid = () => Math.round((Math.random() + 1) * Date.now()).toString(36);
@@ -21,6 +29,7 @@ export interface AtomX<T, A> extends Atom<T> {
   creator: Creator<T, A>;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type Creature<M> = M extends AtomX<any, infer A> ? A : unknown;
 
 export interface QueryOtherAtom {
@@ -37,11 +46,17 @@ interface AtomState<T, A> {
 
 interface Query {
   <T, A>(a: Atom<T> | AtomX<T, A>, init?: T): AtomState<T, A>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   cache: { [k: string]: any };
 }
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const Context = createContext<Query>({} as any);
 
-function buildAtomState<T, A>(atom: AtomX<T, A> | Atom<T>, query: QueryOtherAtom, init?: T) {
+function buildAtomState<T, A>(
+  atom: AtomX<T, A> | Atom<T>,
+  query: QueryOtherAtom,
+  init?: T,
+) {
   const listener = new Set<Caller<T>>();
 
   let change = (ch: Reduce<T> | T) => {
@@ -49,7 +64,9 @@ function buildAtomState<T, A>(atom: AtomX<T, A> | Atom<T>, query: QueryOtherAtom
     const next = typeof ch === 'function' ? (ch as Reduce<T>)(prev) : ch;
     if (prev === next) return;
     state.data = next;
-    listener.forEach((call) => call(next));
+    for (const call of listener) {
+      call(next);
+    }
   };
   if (atom.proxy) change = atom.proxy(change);
 
@@ -60,13 +77,16 @@ function buildAtomState<T, A>(atom: AtomX<T, A> | Atom<T>, query: QueryOtherAtom
       listener.add(call);
       return () => listener.delete(call);
     },
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     actions: (atom as any).creator?.(() => state.data, change, query),
   };
   return state;
 }
 
 function buildQuery() {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const map: { [k: string]: AtomState<any, any> } = {};
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const cache: { [k: string]: any } = {};
   function query<T, A>(atom: AtomX<T, A> | Atom<T>, init?: T): AtomState<T, A> {
     const { key } = atom;
@@ -77,19 +97,21 @@ function buildQuery() {
       map[key] = state;
     }
     return state;
-  };
+  }
   query.cache = cache;
   return query;
 }
 
 export function atom<T>(initial: T): Atom<T>;
 export function atom<T, A>(initial: T, creator: Creator<T, A>): AtomX<T, A>;
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function atom(initial: any, creator?: any): any {
   return { key: uuid(), [UNIQ]: initial, creator };
 }
 
 export function useChange<T, A>(atom: AtomX<T, A>): [Change<T>, A];
 export function useChange<T>(atom: Atom<T>): Change<T>;
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function useChange(atom: any): any {
   const { change, actions } = useContext(Context)(atom);
   if (atom.creator) return [change, actions];
@@ -99,14 +121,14 @@ export function useChange(atom: any): any {
 export function useAtom<T, A = unknown>(atom: Atom<T> | AtomX<T, A>, init?: T) {
   const { data, listen, change, actions } = useContext(Context)(atom, init);
   const [v, set] = useState(data);
-  useEffect(() => listen(set), []);
+  useEffect(() => listen(set), [listen]);
   return [v, change, actions] as const;
 }
 
 export function useCache<T>(key: string, defaultValue: T): T {
   const { cache } = useContext(Context);
   const value = cache[key];
-  if (value=== undefined) {
+  if (value === undefined) {
     cache[key] = defaultValue;
     return defaultValue;
   }
@@ -118,17 +140,20 @@ export const WithStore = (props: { children: ReactNode }) => {
   return <Context.Provider value={query}>{props.children}</Context.Provider>;
 };
 
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
 export class LinkStore<P = {}, S = {}> extends PureComponent<P, S> {
   static contextType = Context;
   private __atoms__ = new Map<string, VoidFunction>();
 
   componentWillUnmount() {
+    // biome-ignore lint/complexity/noForEach: <explanation>
     this.__atoms__.forEach((unbind) => unbind());
     this.__atoms__.clear();
   }
 
   protected useChange<T, A>(atom: AtomX<T, A>): [Change<T>, A];
   protected useChange<T>(atom: Atom<T>): Change<T>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   protected useChange(atom: AtomX<any, any>): any {
     // @ts-ignore
     const { change, actions } = this.context(atom);
@@ -139,7 +164,10 @@ export class LinkStore<P = {}, S = {}> extends PureComponent<P, S> {
   protected useAtom<T, A>(atom: Atom<T> | AtomX<T, A>, init?: T) {
     const { __atoms__, context } = this;
     // @ts-ignore
-    const { data, listen, change, actions } = context(atom, init) as AtomState<T, A>;
+    const { data, listen, change, actions } = context(atom, init) as AtomState<
+      T,
+      A
+    >;
     if (!__atoms__.has(atom.key)) {
       __atoms__.set(
         atom.key,
@@ -151,7 +179,10 @@ export class LinkStore<P = {}, S = {}> extends PureComponent<P, S> {
 
   protected useNoneReactiveAtom<T, A>(atom: Atom<T> | AtomX<T, A>, init?: T) {
     // @ts-ignore
-    const { data, change, actions } = this.context(atom, init) as AtomState<T, A>;
+    const { data, change, actions } = this.context(atom, init) as AtomState<
+      T,
+      A
+    >;
     return [data, change, actions] as const;
   }
 }

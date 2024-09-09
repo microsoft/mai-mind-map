@@ -1,4 +1,4 @@
-import { Node, HierarchyOptions } from  './hierarchy';
+import { HierarchyOptions, Node } from './hierarchy';
 
 // wrap tree node
 class WrappedTree {
@@ -34,6 +34,7 @@ class WrappedTree {
 
   static fromNode<T>(root: Node<T>, isHorizontal?: boolean): WrappedTree {
     const children: WrappedTree[] = [];
+    // biome-ignore lint/complexity/noForEach: <explanation>
     root.children.forEach((child) => {
       children.push(WrappedTree.fromNode(child, isHorizontal));
     });
@@ -55,14 +56,16 @@ function moveRight<T>(node: Node<T>, move: number, isHorizontal?: boolean) {
   } else {
     node.x += move;
   }
-  node.children.forEach(child => {
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  node.children.forEach((child) => {
     moveRight(child, move, isHorizontal);
   });
 }
 
 function getMin<T>(node: Node<T>, isHorizontal?: boolean) {
   let res = isHorizontal ? node.y : node.x;
-  node.children.forEach(child => {
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  node.children.forEach((child) => {
     res = Math.min(getMin(child, isHorizontal), res);
   });
   return res;
@@ -73,7 +76,11 @@ function normalize<T>(node: Node<T>, isHorizontal?: boolean) {
   moveRight(node, -min, isHorizontal);
 }
 
-function convertBack<T>(converted: WrappedTree, root: Node<T>, isHorizontal?: boolean) {
+function convertBack<T>(
+  converted: WrappedTree,
+  root: Node<T>,
+  isHorizontal?: boolean,
+) {
   if (isHorizontal) {
     root.y = converted.x;
   } else {
@@ -87,12 +94,15 @@ function convertBack<T>(converted: WrappedTree, root: Node<T>, isHorizontal?: bo
 function layer<T>(node: Node<T>, isHorizontal?: boolean, d = 0) {
   if (isHorizontal) {
     node.x = d;
+    // biome-ignore lint/style/noParameterAssign: <explanation>
     d += node.width;
   } else {
     node.y = d;
+    // biome-ignore lint/style/noParameterAssign: <explanation>
     d += node.height;
   }
-  node.children.forEach(child => {
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  node.children.forEach((child) => {
     layer(child, isHorizontal, d);
   });
 }
@@ -106,10 +116,12 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
     }
     firstWalk(t.c[0]);
     // prev steps make sure that el is not null
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     let ih = updateIYL(bottom(t.c[0].el!), 0, null);
     for (let i = 1; i < t.cs; ++i) {
       firstWalk(t.c[i]);
       // prev steps make sure that er is not null
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       const min = bottom(t.c[i].er!);
       separate(t, i, ih);
       ih = updateIYL(min, i, ih);
@@ -139,8 +151,9 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
     while (sr !== null && cl !== null) {
       // Todo: ih may be null here ?
       // @ts-ignore
+      // biome-ignore lint/style/noParameterAssign: <explanation>
       if (bottom(sr) > ih.low) ih = ih.nxt;
-      const dist = (mssr + sr.prelim + sr.w) - (mscl + cl.prelim);
+      const dist = mssr + sr.prelim + sr.w - (mscl + cl.prelim);
       if (dist > 0) {
         mscl += dist;
         moveSubtree(t, i, ih.index, dist);
@@ -182,11 +195,16 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
     return t.y + t.h;
   }
 
-  function setLeftThread(t: WrappedTree, i: number, cl: WrappedTree, modsumcl: number) {
+  function setLeftThread(
+    t: WrappedTree,
+    i: number,
+    cl: WrappedTree,
+    modsumcl: number,
+  ) {
     const li = t.c[0].el;
     if (li) {
       li.tl = cl;
-      const diff = (modsumcl - cl.mod) - t.c[0].msel;
+      const diff = modsumcl - cl.mod - t.c[0].msel;
       li.mod += diff;
       li.prelim -= diff;
     }
@@ -194,11 +212,16 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
     t.c[0].msel = t.c[i].msel;
   }
 
-  function setRightThread(t: WrappedTree, i: number, sr: WrappedTree, modsumsr: number) {
+  function setRightThread(
+    t: WrappedTree,
+    i: number,
+    sr: WrappedTree,
+    modsumsr: number,
+  ) {
     const ri = t.c[i].er;
     if (ri) {
       ri.tr = sr;
-      const diff = (modsumsr - sr.mod) - t.c[i].mser;
+      const diff = modsumsr - sr.mod - t.c[i].mser;
       ri.mod += diff;
       ri.prelim -= diff;
     }
@@ -207,13 +230,18 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
   }
 
   function positionRoot(t: WrappedTree) {
-    t.prelim = (
-      t.c[0].prelim + t.c[0].mod + t.c[t.cs - 1].mod +
-      t.c[t.cs - 1].prelim + t.c[t.cs - 1].w
-    ) / 2 - t.w / 2;
+    t.prelim =
+      (t.c[0].prelim +
+        t.c[0].mod +
+        t.c[t.cs - 1].mod +
+        t.c[t.cs - 1].prelim +
+        t.c[t.cs - 1].w) /
+        2 -
+      t.w / 2;
   }
 
   function secondWalk(t: WrappedTree, modsum: number) {
+    // biome-ignore lint/style/noParameterAssign: <explanation>
     modsum += t.mod;
     t.x = t.prelim + modsum;
     addChildSpacing(t);
@@ -222,7 +250,12 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
     }
   }
 
-  function distributeExtra(t: WrappedTree, i: number, si: number, dist: number) {
+  function distributeExtra(
+    t: WrappedTree,
+    i: number,
+    si: number,
+    dist: number,
+  ) {
     if (si !== i - 1) {
       const nr = i - si;
       t.c[si + 1].shift += dist / nr;
@@ -243,6 +276,7 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
 
   function updateIYL(low: number, index: number, ih: IH | null): IH {
     while (ih !== null && low >= ih.low) {
+      // biome-ignore lint/style/noParameterAssign: <explanation>
       ih = ih.nxt;
     }
     return { low, index, nxt: ih };
@@ -257,6 +291,6 @@ function layout<T>(root: Node<T>, options: HierarchyOptions<T>) {
   normalize(root, isHorizontal);
 
   return root;
-};
+}
 
 export default layout;

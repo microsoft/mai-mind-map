@@ -1,7 +1,6 @@
 import hierarchy, { Node, HierarchyOptions } from './hierarchy';
 
-
-function separate<T>(root: Node<T>, options: HierarchyOptions<T>){
+function separate<T>(root: Node<T>, options: HierarchyOptions<T>) {
   // separate into left and right trees
   const left = hierarchy(root.data, options, true); // root only
   const right = hierarchy(root.data, options, true); // root only
@@ -9,10 +8,12 @@ function separate<T>(root: Node<T>, options: HierarchyOptions<T>){
   const treeSize = root.children.length;
   const rightTreeSize = Math.round(treeSize / 2);
   // separate left and right tree by meta data
-  const getSide = options.getSide || function(child, index) {
-    if (index < rightTreeSize) return 'right';
-    return 'left';
-  };
+  const getSide =
+    options.getSide ||
+    ((child, index) => {
+      if (index < rightTreeSize) return 'right';
+      return 'left';
+    });
 
   for (let i = 0; i < treeSize; i++) {
     const child = root.children[i];
@@ -33,6 +34,6 @@ function separate<T>(root: Node<T>, options: HierarchyOptions<T>){
   });
 
   return { left, right };
-};
+}
 
 export default separate;
