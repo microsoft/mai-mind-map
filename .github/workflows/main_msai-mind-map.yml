@@ -23,12 +23,13 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
-          npm run build --if-present
+          npm install -g pnpm
+          pnpm install
+          pnpm run build --if-present
           npm run test --if-present
           cd msai-mind-map-se
-          npm install
-          npm run build:server
+          pnpm install
+          pnpm run build:server
           cd ..
 
       - name: Zip artifact for deployment
