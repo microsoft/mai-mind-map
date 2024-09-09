@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "d3-drag": "^2.0.0",
+    "d3-ease": "^3.0.1",
     "d3-hierarchy": "^3.1.2",
     "d3-interpolate": "^2.0.1",
     "d3-scale": "^3.3.0",

@@ -1,9 +1,9 @@
+import { css } from '@base/styled';
 import compactBoxLayout, {
   HierarchyOptions,
   Node,
   Direction,
-} from '@base/layout';
-import { css } from '@base/styled';
+} from '@root/components/mind-map/render/layout/flex-tree';
 import {
   Fragment,
   createElement,
@@ -171,8 +171,11 @@ function MindMap(props: { source: DataTree; sizes: SizeMap }) {
     update(source);
     options.direction = dir;
     const root = compactBoxLayout(source, options);
-    const { x: cx, y: cy } = root.center();
-    root.translate(window.innerWidth / 2 - cx, window.innerHeight / 2 - cy);
+    const { x: cx, y: cy } = (root as Node<DataTree>).center();
+    (root as Node<DataTree>).translate(
+      window.innerWidth / 2 - cx,
+      window.innerHeight / 2 - cy,
+    );
     return root;
   }, [source, sizes, dir]);
 
@@ -213,7 +216,7 @@ function MindMap(props: { source: DataTree; sizes: SizeMap }) {
     );
     nodes.push(item);
   }
-  tree.BFTraverse(add);
+  (tree as Node<DataTree>).BFTraverse(add);
 
   return (
     <>

@@ -1,3 +1,5 @@
+import { NodeInterface } from '../interface';
+
 /**
  * LR: left to right
  * RL: right to left
@@ -28,7 +30,7 @@ export interface HierarchyOptions<T> {
   getChildren: (d: T) => T[] | undefined;
 }
 
-export class Node<T> {
+export class Node<T> implements NodeInterface<T> {
   public id: string;
   public x = 0;
   public y = 0;
@@ -119,6 +121,23 @@ export class Node<T> {
   // Breadth first traverse
   public BFTraverse(callback: (node: Node<T>) => void) {
     this.eachNode(callback, 'bf');
+  }
+  public nodes() {
+    const nodes: Node<T>[] = [];
+    this.BFTraverse((node) => {
+      nodes.push(node);
+    });
+    return nodes;
+  }
+
+  public links() {
+    const links: { source: Node<T>; target: Node<T> }[] = [];
+    this.BFTraverse((node) => {
+      if (node.parent) {
+        links.push({ source: node.parent, target: node });
+      }
+    });
+    return links;
   }
 
   // position helper functions

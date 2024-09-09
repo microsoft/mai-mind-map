@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './global.css';
 
 import { WithStore } from '@base/atom';
-import { LayoutDemo } from './layout-demo';
+import { LayoutDemo } from './components/mind-map';
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
