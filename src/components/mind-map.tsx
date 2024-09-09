@@ -37,7 +37,7 @@ const SDirections = css`
 
 export function LayoutDemo() {
   const tree = useMemo(() => exampleSourceData, []);
-  const [dir, serDir] = useState<Direction>('H');
+  const [dir, serDir] = useState<Direction>('TB');
   return (
     <Fragment>
       <div className={SDirections}>
