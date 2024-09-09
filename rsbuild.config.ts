@@ -18,7 +18,14 @@ function normalizePort(val) {
   return false;
 }
 
+const IS_PROD = process.env.BUILD_CONFIG === 'prod';
 export default defineConfig({
+  source: {
+    define: {
+      __IS_PROD__: IS_PROD,
+      __IS_DEV__: !IS_PROD,
+    },
+  },
   plugins: [pluginReact()],
   html: {
     favicon: path.resolve(__dirname, './src/assets/favicon.ico'),

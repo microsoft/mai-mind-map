@@ -11,7 +11,12 @@
     "resolveJsonModule": true,
     "moduleResolution": "bundler",
     "useDefineForClassFields": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "baseUrl": "./",
+    "paths": {
+      "@root/*": ["src/*"],
+      "@base/*": ["src/base/*"],
+    }
   },
   "include": ["src"]
 }
