@@ -1,5 +1,5 @@
 # MAI-MIND-MAP
-
+Turn every thing into mind map.
 Preview: https://mai-mind-map.azurewebsites.net/
 
 ## Setup
