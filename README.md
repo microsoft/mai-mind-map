@@ -1,5 +1,7 @@
 # MAI-MIND-MAP
 
+Preview: https://mai-mind-map.azurewebsites.net/
+
 ## Setup
 
 Install the dependencies:
@@ -7,7 +9,7 @@ Install the dependencies:
 ```bash
 pnpm install
 ```
-Please install Extension:`Biome` for better code lint
+Please install VS-code Extension:`Biome` for better code lint
 
 
 ## Get Started
