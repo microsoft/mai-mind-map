@@ -234,7 +234,6 @@ function drawTree<D>(
     .attr('width', dragBtnWidth)
     .attr('height', dragBtnHeight)
     .attr('cursor', 'move')
-    .attr('transform', 'translate(0, -10)')
     .call(
       drag<SVGRectElement, NodeInterface<SizedRawNode<D>>>()
         .on(
