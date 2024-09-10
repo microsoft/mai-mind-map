@@ -48,7 +48,10 @@ export class Node<T> implements NodeInterface<T> {
   private preH: number;
   private preV: number;
 
-  constructor(public data: T, options: HierarchyOptions<T>) {
+  constructor(
+    public data: T,
+    options: HierarchyOptions<T>,
+  ) {
     /*
      * Gaps: filling space between nodes
      * (x, y) ----------------------

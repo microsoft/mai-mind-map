@@ -1,14 +1,14 @@
+import { D3DragEvent, drag } from 'd3-drag';
 import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
-import { drag, D3DragEvent } from 'd3-drag';
-import { useLayoutEffect, useRef, MutableRefObject } from 'react';
+import { MutableRefObject, useLayoutEffect, useRef } from 'react';
 import {
+  getDraggingX,
+  getDraggingY,
   getLinkForDirection,
   getLinkPointPairForDirection,
   getNodePosXForDirection,
   getNodePosYForDirection,
-  getDraggingX,
-  getDraggingY,
 } from '../helpers';
 import { Direction, NodeInterface, NodeLink } from '../layout';
 import { RawNode, SizedRawNode } from '../node/interface';

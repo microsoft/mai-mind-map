@@ -1,5 +1,5 @@
-import { MutableRefObject } from 'react';
 import { linkHorizontal, linkVertical } from 'd3-shape';
+import { MutableRefObject } from 'react';
 import { Direction } from '../layout';
 
 export function getLinkForDirection(direction: MutableRefObject<Direction>) {
