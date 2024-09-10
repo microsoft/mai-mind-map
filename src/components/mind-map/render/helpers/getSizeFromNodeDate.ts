@@ -4,5 +4,5 @@ export function getSizeFromNodeDate(data: Payload): [number, number] {
   if (data.cachedWidth && data.cachedHeight) {
     return [data.cachedWidth, data.cachedHeight];
   }
-  return [20, 20];
+  return [50, 50];
 }

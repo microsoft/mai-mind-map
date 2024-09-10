@@ -1,8 +1,9 @@
+import { MutableRefObject } from 'react';
 import { linkHorizontal, linkVertical } from 'd3-shape';
 import { Direction } from '../layout';
 
-export function getLinkForDirection(direction: Direction) {
-  switch (direction) {
+export function getLinkForDirection(direction: MutableRefObject<Direction>) {
+  switch (direction.current) {
     case 'LR':
     case 'RL':
     case 'H':

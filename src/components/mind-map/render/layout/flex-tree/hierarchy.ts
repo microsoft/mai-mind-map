@@ -1,4 +1,4 @@
-import { NodeInterface } from '../interface';
+import { NodeInterface, NodeLink } from '../interface';
 
 /**
  * LR: left to right
@@ -48,10 +48,7 @@ export class Node<T> implements NodeInterface<T> {
   private preH: number;
   private preV: number;
 
-  constructor(
-    public data: T,
-    options: HierarchyOptions<T>,
-  ) {
+  constructor(public data: T, options: HierarchyOptions<T>) {
     /*
      * Gaps: filling space between nodes
      * (x, y) ----------------------
@@ -137,6 +134,18 @@ export class Node<T> implements NodeInterface<T> {
         links.push({ source: node.parent, target: node });
       }
     });
+    return links;
+  }
+  public touchedLinks() {
+    const links: NodeLink<T>[] = [];
+    if (this.parent) {
+      links.push({ source: this.parent, target: this });
+    }
+    if (this.children?.length > 0) {
+      for (let i = 0; i < this.children.length; i++) {
+        links.push({ source: this, target: this.children[i] });
+      }
+    }
     return links;
   }
 

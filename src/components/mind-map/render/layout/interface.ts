@@ -15,6 +15,10 @@ export interface NodeInterface<T> {
   data: T;
   nodes(): Iterable<NodeInterface<T>>;
   links(): NodeLink<T>[];
+  touchedLinks(): NodeLink<T>[];
+  isRoot(): boolean;
+  draggingX?: number;
+  draggingY?: number;
 }
 
 export interface NodeLink<T> {

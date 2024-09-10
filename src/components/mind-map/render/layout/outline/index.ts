@@ -21,5 +21,11 @@ export default function layout<T>(root: T): NodeInterface<T> {
     links() {
       return [];
     },
+    touchedLinks() {
+      return [];
+    },
+    isRoot() {
+      return true;
+    },
   };
 }

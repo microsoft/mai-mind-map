@@ -1,4 +1,6 @@
+import { MutableRefObject } from 'react';
 import { Direction } from '../layout/flex-tree/hierarchy';
+import { NodeInterface } from '../layout/interface';
 
 export * from './getSizeFromNodeDate';
 export * from './getLinkForDirection';
@@ -21,9 +23,9 @@ export function getPaddingForDirection(direction: Direction) {
 export function getNodePosXForDirection(
   x: number,
   nodeWidth: number,
-  direction: Direction,
+  direction: MutableRefObject<Direction>,
 ) {
-  switch (direction) {
+  switch (direction.current) {
     // Horizontal layout, no need to adjust x
     case 'LR':
     case 'H':
@@ -40,9 +42,9 @@ export function getNodePosXForDirection(
 export function getNodePosYForDirection(
   y: number,
   nodeHeight: number,
-  direction: Direction,
+  direction: MutableRefObject<Direction>,
 ) {
-  switch (direction) {
+  switch (direction.current) {
     // Vertical layout, no need to adjust y
     case 'TB':
     case 'V':
@@ -57,7 +59,7 @@ export function getNodePosYForDirection(
 }
 
 export function getLinkPointPairForDirection(
-  direction: Direction,
+  direction: MutableRefObject<Direction>,
   source: [number, number, number, number], // [x,y,w,h]
   target: [number, number, number, number], // [x,y,w,h]
 ): {
@@ -66,7 +68,7 @@ export function getLinkPointPairForDirection(
 } {
   const [sourceX, sourceY, sourceW, sourceH] = source;
   const [targetX, targetY, targetW, targetH] = target;
-  switch (direction) {
+  switch (direction.current) {
     // Vertical layout
     case 'TB':
       return {
@@ -118,4 +120,12 @@ export function getLinkPointPairForDirection(
         };
       }
   }
+}
+
+export function getDraggingX<D>(node: NodeInterface<D>): number {
+  return !node.draggingX && node.draggingX !== 0 ? node.x : node.draggingX;
+}
+
+export function getDraggingY<D>(node: NodeInterface<D>): number {
+  return !node.draggingY && node.draggingY !== 0 ? node.y : node.draggingY;
 }
