@@ -29,7 +29,7 @@ export default defineConfig({
   plugins: [pluginReact()],
   html: {
     favicon: path.resolve(__dirname, './src/assets/favicon.ico'),
-    title: 'MSAI mind map',
+    title: 'MAI mind map',
   },
   server: {
     port: normalizePort(process.env.PORT || '3000'),

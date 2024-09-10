@@ -27,14 +27,14 @@ jobs:
           pnpm install
           pnpm run build --if-present
           npm run test --if-present
-          cd msai-mind-map-se
+          cd mai-mind-map-se
           pnpm install
           pnpm run build:server
           cd ..
 
       - name: Zip artifact for deployment
         run: |
-          cd msai-mind-map-se
+          cd mai-mind-map-se
           zip release.zip ./* -r
           cd ..
 
@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ./msai-mind-map-se/release.zip
+          path: ./mai-mind-map-se/release.zip
 
   deploy:
     runs-on: ubuntu-latest

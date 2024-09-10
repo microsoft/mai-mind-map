@@ -1,5 +1,5 @@
 {
-  "name": "msai-mind-map",
+  "name": "mai-mind-map",
   "private": true,
   "version": "1.0.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
     "preview": "rsbuild preview",
-    "cp": "cpx \"dist/**/*.*\" msai-mind-map-se/dist",
+    "cp": "cpx \"dist/**/*.*\" mai-mind-map-se/dist",
     "prepare": "husky"
   },
   "dependencies": {

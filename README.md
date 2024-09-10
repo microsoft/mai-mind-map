@@ -1,4 +1,4 @@
-# MSAI-MIND-MAP
+# MAI-MIND-MAP
 
 ## Setup
 

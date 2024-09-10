@@ -3,7 +3,7 @@ import './App.css';
 const App = () => {
   return (
     <div className="content">
-      <h1>MSAI mind map</h1>
+      <h1>MAI mind map</h1>
       <p>Turn every thing into mind map.</p>
     </div>
   );
