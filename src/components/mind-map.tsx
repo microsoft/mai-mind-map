@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { css } from '@base/styled';
 import { Direction } from './mind-map/render';
@@ -62,6 +63,19 @@ export function LayoutDemo() {
         getSizeFromNodeDate={getSizeFromNodeDate}
         isNodeCollapsed={(data) => data.collapsed || false}
         treeDirection={dir}
+        nodesRender={(pendingRenderNodes) => {
+          return (
+            <Fragment>
+              {pendingRenderNodes.map(([node, data]) => {
+                return (
+                  <Fragment key={data.id}>
+                    {createPortal(<pre>{data.payload.content}</pre>, node)}
+                  </Fragment>
+                );
+              })}
+            </Fragment>
+          );
+        }}
       />
     </Fragment>
   );

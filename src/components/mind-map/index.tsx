@@ -11,8 +11,10 @@ import {
   layoutFun,
   prepareNodeSize,
   useRenderWithD3,
+  SizedRawNode,
 } from './render';
 export * from './render';
+import './index.css';
 
 type MFC<D> = {
   style?: CSSProperties;
@@ -21,6 +23,9 @@ type MFC<D> = {
   isNodeCollapsed: IsNodeCollapsed<D>;
   layoutType: LayoutType;
   treeDirection: Direction;
+  nodesRender: (
+    pendingRenderNodes: [SVGForeignObjectElement, SizedRawNode<D>][],
+  ) => JSX.Element;
 };
 
 export function MindMap<D>(props: MFC<D>) {
@@ -31,6 +36,7 @@ export function MindMap<D>(props: MFC<D>) {
     treeDirection,
     getSizeFromNodeDate,
     isNodeCollapsed,
+    nodesRender,
   } = props;
   const root = useMemo(() => {
     const sizedData = prepareNodeSize(tree, getSizeFromNodeDate);
@@ -52,15 +58,18 @@ export function MindMap<D>(props: MFC<D>) {
         return layoutFun(layoutType as OUTLINE)(sizedData);
     }
   }, [tree, layoutType, treeDirection, getSizeFromNodeDate, isNodeCollapsed]);
-  const ref = useRenderWithD3(root, treeDirection);
+  const { svg, pendingRenderNodes } = useRenderWithD3(root, treeDirection);
+
+  const nodes = nodesRender(pendingRenderNodes);
 
   return root ? (
     <div style={style}>
       <svg
-        ref={ref}
+        ref={svg}
         role="presentation"
         style={{ height: '100%', width: '100%' }}
       ></svg>
+      {nodes}
     </div>
   ) : (
     <div>loading...</div>

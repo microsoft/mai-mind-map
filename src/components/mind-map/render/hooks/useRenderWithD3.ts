@@ -1,7 +1,7 @@
 import { D3DragEvent, drag } from 'd3-drag';
 import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
-import { MutableRefObject, useLayoutEffect, useRef } from 'react';
+import { MutableRefObject, useLayoutEffect, useRef, useState } from 'react';
 import {
   getDraggingX,
   getDraggingY,
@@ -21,6 +21,10 @@ export function useRenderWithD3<D>(
 ) {
   const svg = useRef<SVGSVGElement>(null);
   const directionRef = useRef<Direction>(direction);
+
+  const [pendingRenderNodes, setPendingRenderNodes] = useState<
+    [SVGForeignObjectElement, SizedRawNode<D>][]
+  >([]);
 
   useLayoutEffect(() => {
     if (!svg.current) return;
@@ -59,10 +63,11 @@ export function useRenderWithD3<D>(
       }
     }
     directionRef.current = direction;
-    drawTree(drawing, root, directionRef);
+    const nodeDataPairs = drawTree(drawing, root, directionRef);
+    setPendingRenderNodes(nodeDataPairs);
   }, [root, direction]);
 
-  return svg;
+  return { svg, pendingRenderNodes };
 }
 
 function drawTree<D>(
@@ -93,7 +98,7 @@ function drawTree<D>(
           return `translate(${x}, ${y})`;
         });
       gNode
-        .select('rect.filling-space')
+        .select('rect.node-content')
         .attr('width', (d) => d.data.content_size[0])
         .attr('height', (d) => d.data.content_size[1]);
     });
@@ -114,8 +119,8 @@ function drawTree<D>(
 
   // Determine the space size of the node
   gNode
-    .append('rect')
-    .classed('filling-space', true)
+    .append('foreignObject')
+    .classed('node-content', true)
     .attr('rx', 5)
     .attr('ry', 5)
     .attr('width', (d) => d.data.content_size[0])
@@ -402,6 +407,12 @@ function drawTree<D>(
           },
         ),
     );
-
   tempDragNode.exit().remove();
+
+  const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
+  tempDrawingNode.each(function (d) {
+    nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d.data]);
+  });
+
+  return nodeDataPairs;
 }
