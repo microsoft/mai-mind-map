@@ -52,7 +52,7 @@ export function MindMap<D>(props: MFC<D>) {
         return layoutFun(layoutType as OUTLINE)(sizedData);
     }
   }, [tree, layoutType, treeDirection, getSizeFromNodeDate, isNodeCollapsed]);
-  const ref = useRenderWithD3(root);
+  const ref = useRenderWithD3(root, treeDirection);
 
   return root ? (
     <div style={style}>
