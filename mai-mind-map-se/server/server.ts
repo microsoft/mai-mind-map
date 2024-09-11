@@ -33,6 +33,9 @@ export function run() {
   });
   app.use('/static', express.static(path.resolve(__dirname, '../dist/static')));
 
+  app.use(express.raw({ type: '*/*', limit: '10mb' }));
+  app.use('/api/', require('./controllers/docs'));
+
   app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
   });

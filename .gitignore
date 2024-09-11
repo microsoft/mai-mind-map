@@ -11,3 +11,6 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Server
+mai-mind-map-se/**/*.js
