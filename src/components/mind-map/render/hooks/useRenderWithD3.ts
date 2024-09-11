@@ -275,7 +275,6 @@ function drawTree<D>(
     .attr('class', (d) => {
       return `drag-btn _${d.data.id}${d.isRoot() ? ' root' : ''}`;
     })
-    // .classed('drag-btn', true)
     .attr('rx', 5)
     .attr('ry', 5)
     .attr('fill', 'red')
@@ -324,8 +323,54 @@ function drawTree<D>(
           event.sourceEvent.stopPropagation();
           treeState.current.dragging = true;
 
-          select(<SVGRectElement>this).style('opacity', 0.3);
-          select(`g.node._${node.data.id}`).style('opacity', 0.3);
+          // drag btn
+          const btn = select(<SVGRectElement>this);
+          btn.style('opacity', 0);
+          // draw shadow btn
+          drawing
+            .append('rect')
+            .attr('class', 'dragging-btn')
+            .attr(
+              'x',
+              getDragBtnPosXForDirection(
+                node.x,
+                node,
+                dragBtnWidth,
+                dragBtnHeight,
+                treeState,
+              ),
+            )
+            .attr(
+              'y',
+              getDragBtnPosYForDirection(
+                node.y,
+                node,
+                dragBtnWidth,
+                dragBtnHeight,
+                treeState,
+              ),
+            )
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr(
+              'width',
+              isHorizontalDirection(treeState) ? dragBtnHeight : dragBtnWidth,
+            )
+            .attr(
+              'height',
+              isHorizontalDirection(treeState) ? dragBtnWidth : dragBtnHeight,
+            )
+            .attr('fill', 'red')
+            .style('opacity', 0.3)
+            .style('pointer-events', 'none');
+
+          // node
+          drawing
+            .select(`g.node._${node.data.id}`)
+            .style('opacity', 0.3)
+            .style('pointer-events', 'none');
+
+          // link
           drawing
             .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
               `path.line._${node.data.id}`,
@@ -346,7 +391,7 @@ function drawTree<D>(
           if (node.isRoot()) return;
           event.sourceEvent.preventDefault();
           event.sourceEvent.stopPropagation();
-          // update drag btn position
+          // update shadow drag btn position
           let x = getDragBtnPosXForDirection(
             event.x,
             node,
@@ -361,19 +406,16 @@ function drawTree<D>(
             dragBtnHeight,
             treeState,
           );
-          select(<SVGRectElement>this)
-            .attr('x', x)
-            .attr('y', y);
+          drawing.select('rect.dragging-btn').attr('x', x).attr('y', y);
 
           // update node position
           const width = node.data.content_size[0];
           const height = node.data.content_size[1];
           x = getNodePosXForDirection(event.x, width, treeState);
           y = getNodePosYForDirection(event.y, height, treeState);
-          select(`g.node._${node.data.id}`).attr(
-            'transform',
-            `translate(${x}, ${y})`,
-          );
+          drawing
+            .select(`g.node._${node.data.id}`)
+            .attr('transform', `translate(${x}, ${y})`);
           node.draggingX = event.x;
           node.draggingY = event.y;
           // update link position
@@ -427,22 +469,43 @@ function drawTree<D>(
 
           const dragTran = transition().duration(300);
 
+          // remove shadow drag btn
+          drawing.select('rect.dragging-btn').remove();
+
           // update drag btn position
+          const btn = select(<SVGRectElement>this).style('opacity', 0.3);
           let x = getDragBtnPosXForDirection(
-            node.x,
+            event.x,
             node,
             dragBtnWidth,
             dragBtnHeight,
             treeState,
           );
           let y = getDragBtnPosYForDirection(
+            event.y,
+            node,
+            dragBtnWidth,
+            dragBtnHeight,
+            treeState,
+          );
+          btn.attr('x', x).attr('y', y);
+
+          x = getDragBtnPosXForDirection(
+            node.x,
+            node,
+            dragBtnWidth,
+            dragBtnHeight,
+            treeState,
+          );
+          y = getDragBtnPosYForDirection(
             node.y,
             node,
             dragBtnWidth,
             dragBtnHeight,
             treeState,
           );
-          select(<SVGRectElement>this)
+
+          btn
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             .transition(dragTran as any)
             .style('opacity', 1)
@@ -454,7 +517,9 @@ function drawTree<D>(
           const height = node.data.content_size[1];
           x = getNodePosXForDirection(node.x, width, treeState);
           y = getNodePosYForDirection(node.y, height, treeState);
-          select(`g.node._${node.data.id}`)
+          drawing
+            .select(`g.node._${node.data.id}`)
+            .style('pointer-events', '')
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             .transition(dragTran as any)
             .style('opacity', 1)
