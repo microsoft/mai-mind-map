@@ -35,7 +35,7 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd mai-mind-map-se
-          echo ${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }} > config.txt
+          echo "${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }}" > config.txt
           zip release.zip ./* -r
           cd ..
 
