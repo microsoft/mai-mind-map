@@ -1,9 +1,9 @@
 import { linkHorizontal, linkVertical } from 'd3-shape';
 import { MutableRefObject } from 'react';
-import { Direction } from '../layout';
+import { type TreeState } from '../hooks/useRenderWithD3';
 
-export function getLinkForDirection(direction: MutableRefObject<Direction>) {
-  switch (direction.current) {
+export function getLinkForDirection(treeState: MutableRefObject<TreeState>) {
+  switch (treeState.current.direction) {
     case 'LR':
     case 'RL':
     case 'H':

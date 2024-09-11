@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react';
+import { type TreeState } from '../hooks/useRenderWithD3';
 import { Direction } from '../layout/flex-tree/hierarchy';
 import { NodeInterface } from '../layout/interface';
 
@@ -23,9 +24,9 @@ export function getPaddingForDirection(direction: Direction) {
 export function getNodePosXForDirection(
   x: number,
   nodeWidth: number,
-  direction: MutableRefObject<Direction>,
+  treeState: MutableRefObject<TreeState>,
 ) {
-  switch (direction.current) {
+  switch (treeState.current.direction) {
     // Horizontal layout, no need to adjust x
     case 'LR':
     case 'H':
@@ -42,9 +43,9 @@ export function getNodePosXForDirection(
 export function getNodePosYForDirection(
   y: number,
   nodeHeight: number,
-  direction: MutableRefObject<Direction>,
+  treeState: MutableRefObject<TreeState>,
 ) {
-  switch (direction.current) {
+  switch (treeState.current.direction) {
     // Vertical layout, no need to adjust y
     case 'TB':
     case 'V':
@@ -59,7 +60,7 @@ export function getNodePosYForDirection(
 }
 
 export function getLinkPointPairForDirection(
-  direction: MutableRefObject<Direction>,
+  treeState: MutableRefObject<TreeState>,
   source: [number, number, number, number], // [x,y,w,h]
   target: [number, number, number, number], // [x,y,w,h]
 ): {
@@ -68,7 +69,7 @@ export function getLinkPointPairForDirection(
 } {
   const [sourceX, sourceY, sourceW, sourceH] = source;
   const [targetX, targetY, targetW, targetH] = target;
-  switch (direction.current) {
+  switch (treeState.current.direction) {
     // Vertical layout
     case 'TB':
       return {

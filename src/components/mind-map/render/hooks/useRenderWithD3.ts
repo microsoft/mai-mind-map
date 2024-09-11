@@ -12,6 +12,12 @@ import {
 } from '../helpers';
 import { Direction, NodeInterface, NodeLink } from '../layout';
 import { RawNode, SizedRawNode } from '../node/interface';
+export interface TreeState {
+  dragging: boolean;
+  direction: Direction;
+  scale: number;
+}
+
 const dragBtnWidth = 20;
 const dragBtnHeight = 20;
 
@@ -20,7 +26,11 @@ export function useRenderWithD3<D>(
   direction: Direction,
 ) {
   const svg = useRef<SVGSVGElement>(null);
-  const directionRef = useRef<Direction>(direction);
+  const treeStateRef = useRef<TreeState>({
+    direction,
+    dragging: false,
+    scale: 1,
+  });
 
   const [pendingRenderNodes, setPendingRenderNodes] = useState<
     [SVGForeignObjectElement, SizedRawNode<D>][]
@@ -62,8 +72,8 @@ export function useRenderWithD3<D>(
         g.dataset.ty = ty.toString();
       }
     }
-    directionRef.current = direction;
-    const nodeDataPairs = drawTree(drawing, root, directionRef);
+    treeStateRef.current.direction = direction;
+    const nodeDataPairs = drawTree(drawing, root, treeStateRef);
     setPendingRenderNodes(nodeDataPairs);
   }, [root, direction]);
 
@@ -74,7 +84,7 @@ function drawTree<D>(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   drawing: Selection<SVGGElement, unknown, null, any>,
   tree: NodeInterface<SizedRawNode<D>>,
-  direction: MutableRefObject<Direction>,
+  treeState: MutableRefObject<TreeState>,
 ) {
   const drawTran = transition().duration(500);
 
@@ -92,9 +102,9 @@ function drawTree<D>(
         .attr('height', (d) => d.data.content_size[1])
         .attr('transform', (d) => {
           const width = d.data.content_size[0];
-          const x = getNodePosXForDirection(d.x, width, direction);
+          const x = getNodePosXForDirection(d.x, width, treeState);
           const height = d.data.content_size[1];
-          const y = getNodePosYForDirection(d.y, height, direction);
+          const y = getNodePosYForDirection(d.y, height, treeState);
           return `translate(${x}, ${y})`;
         });
       gNode
@@ -111,9 +121,9 @@ function drawTree<D>(
     })
     .attr('transform', (d) => {
       const width = d.data.content_size[0];
-      const x = getNodePosXForDirection(d.x, width, direction);
+      const x = getNodePosXForDirection(d.x, width, treeState);
       const height = d.data.content_size[1];
-      const y = getNodePosYForDirection(d.y, height, direction);
+      const y = getNodePosYForDirection(d.y, height, treeState);
       return `translate(${x}, ${y})`;
     });
 
@@ -140,11 +150,11 @@ function drawTree<D>(
         .attr('height', dragBtnHeight)
         .attr('x', (d) => {
           const width = d.data.content_size[0];
-          return getNodePosXForDirection(d.x, dragBtnWidth, direction);
+          return getNodePosXForDirection(d.x, dragBtnWidth, treeState);
         })
         .attr('y', (d) => {
           const height = d.data.content_size[1];
-          return getNodePosYForDirection(d.y, dragBtnHeight, direction);
+          return getNodePosYForDirection(d.y, dragBtnHeight, treeState);
         });
     });
   tempDrawingNode.exit().remove();
@@ -175,11 +185,11 @@ function drawTree<D>(
             d.target.data.content_size[1],
           ];
           const linkPointPair = getLinkPointPairForDirection(
-            direction,
+            treeState,
             sourceRect,
             targetRect,
           );
-          const re = getLinkForDirection(direction)(linkPointPair) || '';
+          const re = getLinkForDirection(treeState)(linkPointPair) || '';
           return re;
         });
     });
@@ -206,11 +216,11 @@ function drawTree<D>(
         d.target.data.content_size[1],
       ];
       const linkPointPair = getLinkPointPairForDirection(
-        direction,
+        treeState,
         sourceRect,
         targetRect,
       );
-      const re = getLinkForDirection(direction)(linkPointPair) || '';
+      const re = getLinkForDirection(treeState)(linkPointPair) || '';
       return re;
     })
     .attr('fill', 'transparent')
@@ -230,11 +240,11 @@ function drawTree<D>(
     .attr('fill', 'red')
     .attr('x', (d) => {
       const width = d.data.content_size[0];
-      return getNodePosXForDirection(d.x, dragBtnWidth, direction);
+      return getNodePosXForDirection(d.x, dragBtnWidth, treeState);
     })
     .attr('y', (d) => {
       const height = d.data.content_size[1];
-      return getNodePosYForDirection(d.y, dragBtnHeight, direction);
+      return getNodePosYForDirection(d.y, dragBtnHeight, treeState);
     })
     .attr('width', dragBtnWidth)
     .attr('height', dragBtnHeight)
@@ -280,13 +290,13 @@ function drawTree<D>(
             // update node position
             const width = node.data.content_size[0];
             const height = node.data.content_size[1];
-            let x = getNodePosXForDirection(event.x, dragBtnWidth, direction);
-            let y = getNodePosYForDirection(event.y, dragBtnHeight, direction);
+            let x = getNodePosXForDirection(event.x, dragBtnWidth, treeState);
+            let y = getNodePosYForDirection(event.y, dragBtnHeight, treeState);
             select(<SVGRectElement>this)
               .attr('x', x)
               .attr('y', y);
-            x = getNodePosXForDirection(event.x, width, direction);
-            y = getNodePosYForDirection(event.y, height, direction);
+            x = getNodePosXForDirection(event.x, width, treeState);
+            y = getNodePosYForDirection(event.y, height, treeState);
             select(`g.node._${node.data.id}`).attr(
               'transform',
               `translate(${x}, ${y})`,
@@ -319,12 +329,12 @@ function drawTree<D>(
                     d.target.data.content_size[1],
                   ];
                   const linkPointPair = getLinkPointPairForDirection(
-                    direction,
+                    treeState,
                     sourceRect,
                     targetRect,
                   );
                   const re =
-                    getLinkForDirection(direction)(linkPointPair) || '';
+                    getLinkForDirection(treeState)(linkPointPair) || '';
                   return re;
                 });
               });
@@ -348,16 +358,16 @@ function drawTree<D>(
             // update node position
             const width = node.data.content_size[0];
             const height = node.data.content_size[1];
-            let x = getNodePosXForDirection(node.x, dragBtnWidth, direction);
-            let y = getNodePosYForDirection(node.y, dragBtnHeight, direction);
+            let x = getNodePosXForDirection(node.x, dragBtnWidth, treeState);
+            let y = getNodePosYForDirection(node.y, dragBtnHeight, treeState);
             select(<SVGRectElement>this)
               // biome-ignore lint/suspicious/noExplicitAny: <explanation>
               .transition(dragTran as any)
               .style('opacity', 1)
               .attr('x', x)
               .attr('y', y);
-            x = getNodePosXForDirection(node.x, width, direction);
-            y = getNodePosYForDirection(node.y, height, direction);
+            x = getNodePosXForDirection(node.x, width, treeState);
+            y = getNodePosYForDirection(node.y, height, treeState);
             select(`g.node._${node.data.id}`)
               // biome-ignore lint/suspicious/noExplicitAny: <explanation>
               .transition(dragTran as any)
@@ -395,12 +405,12 @@ function drawTree<D>(
                     d.target.data.content_size[1],
                   ];
                   const linkPointPair = getLinkPointPairForDirection(
-                    direction,
+                    treeState,
                     sourceRect,
                     targetRect,
                   );
                   const re =
-                    getLinkForDirection(direction)(linkPointPair) || '';
+                    getLinkForDirection(treeState)(linkPointPair) || '';
                   return re;
                 });
               });

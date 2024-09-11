@@ -7,11 +7,11 @@ import {
   LayoutType,
   OUTLINE,
   RawNode,
+  SizedRawNode,
   getPaddingForDirection,
   layoutFun,
   prepareNodeSize,
   useRenderWithD3,
-  SizedRawNode,
 } from './render';
 export * from './render';
 import './index.css';
