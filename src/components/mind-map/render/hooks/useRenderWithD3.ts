@@ -311,14 +311,21 @@ function drawTree<D>(
       isHorizontalDirection(treeState) ? dragBtnWidth : dragBtnHeight,
     );
 
-  tempDragNode.call(dragAction<D>(drawing, treeState));
-
   tempDragNode.exit().remove();
 
+  drawing
+    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
+    .call(dragAction<D>(drawing, treeState));
+
   const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
-  tempDrawingNode.each(function (d) {
-    nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d.data]);
-  });
+
+  drawing
+    .selectAll<SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>>(
+      'foreignObject.node-content',
+    )
+    .each(function (d) {
+      nodeDataPairs.push([<SVGForeignObjectElement>this, d.data]);
+    });
 
   return nodeDataPairs;
 }
