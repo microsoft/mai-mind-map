@@ -23,6 +23,7 @@ type MFC<D> = {
   isNodeCollapsed: IsNodeCollapsed<D>;
   layoutType: LayoutType;
   treeDirection: Direction;
+  moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   nodesRender: (
     pendingRenderNodes: [SVGForeignObjectElement, SizedRawNode<D>][],
   ) => JSX.Element;
@@ -36,6 +37,7 @@ export function MindMap<D>(props: MFC<D>) {
     treeDirection,
     getSizeFromNodeDate,
     isNodeCollapsed,
+    moveNodeTo,
     nodesRender,
   } = props;
   const root = useMemo(() => {
@@ -58,7 +60,11 @@ export function MindMap<D>(props: MFC<D>) {
         return layoutFun(layoutType as OUTLINE)(sizedData);
     }
   }, [tree, layoutType, treeDirection, getSizeFromNodeDate, isNodeCollapsed]);
-  const { svg, pendingRenderNodes } = useRenderWithD3(root, treeDirection);
+  const { svg, pendingRenderNodes } = useRenderWithD3(
+    root,
+    treeDirection,
+    moveNodeTo,
+  );
 
   const nodes = nodesRender(pendingRenderNodes);
 

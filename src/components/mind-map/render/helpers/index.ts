@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react';
-import { type TreeState } from '../hooks/useRenderWithD3';
+import { type TreeState } from '../hooks/constants';
 import { Direction } from '../layout/flex-tree/hierarchy';
 import { NodeInterface } from '../layout/interface';
 

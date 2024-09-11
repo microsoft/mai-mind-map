@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { css } from '@base/styled';
@@ -9,6 +9,7 @@ import {
   MindMap,
   exampleSourceData,
   getSizeFromNodeDate,
+  moveNodeTo,
 } from './mind-map/index';
 
 const SDirections = css`
@@ -37,8 +38,14 @@ const SDirections = css`
 `;
 
 export function LayoutDemo() {
-  const tree = useMemo(() => exampleSourceData, []);
+  const [treeData, setTreeData] = useState(exampleSourceData);
   const [dir, serDir] = useState<Direction>('TB');
+  const moveNodeToFun = useCallback(
+    (nodeId: string, targetId: string, index: number) => {
+      setTreeData(moveNodeTo(nodeId, targetId, index));
+    },
+    [setTreeData],
+  );
   return (
     <Fragment>
       <div className={SDirections}>
@@ -58,11 +65,12 @@ export function LayoutDemo() {
       </div>
       <MindMap
         style={{ height: '100%', width: '100%' }}
-        tree={tree}
+        tree={treeData}
         layoutType={LayoutType.FLEX_TREE}
         getSizeFromNodeDate={getSizeFromNodeDate}
         isNodeCollapsed={(data) => data.collapsed || false}
         treeDirection={dir}
+        moveNodeTo={moveNodeToFun}
         nodesRender={(pendingRenderNodes) => {
           return (
             <Fragment>

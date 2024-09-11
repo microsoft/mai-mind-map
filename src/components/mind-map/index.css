@@ -1,7 +1,7 @@
 .node-content {
   background-color: gray;
 }
-foreignObject.dragging-hover {
+foreignObject.dragging-item-over {
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
 }
 

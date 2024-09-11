@@ -70,3 +70,65 @@ export const exampleSourceData: RawNode<Payload> = {
     { id: uuid(), payload: { content: 'Jiashuang Shang' } },
   ],
 };
+
+export function moveNodeTo(
+  nodeId: string,
+  targetId: string,
+  index: number,
+): RawNode<Payload> {
+  const node = findNodeById(exampleSourceData, nodeId);
+
+  const parent = findParentNodeById(exampleSourceData, nodeId);
+
+  const target = findNodeById(exampleSourceData, targetId);
+
+  if (!node || !parent || !target || parent === node) {
+    return JSON.parse(JSON.stringify(exampleSourceData));
+  }
+  if (!target.children) {
+    target.children = [];
+  }
+  const parentChildren = parent.children || [];
+  const targetChildren = target.children || [];
+
+  const nodeIndex = parentChildren.findIndex((child) => child.id === nodeId);
+  if (nodeIndex === -1) {
+    return JSON.parse(JSON.stringify(exampleSourceData));
+  }
+  parentChildren.splice(nodeIndex, 1);
+  targetChildren.splice(index, 0, node);
+
+  return JSON.parse(JSON.stringify(exampleSourceData));
+}
+
+function findNodeById(
+  node: RawNode<Payload>,
+  id: string,
+): RawNode<Payload> | null {
+  if (node.id === id) {
+    return node;
+  }
+  for (const child of node.children || []) {
+    const found = findNodeById(child, id);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+
+function findParentNodeById(
+  node: RawNode<Payload>,
+  id: string,
+): RawNode<Payload> | null {
+  for (const child of node.children || []) {
+    if (child.id === id) {
+      return node;
+    }
+    const found = findParentNodeById(child, id);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
