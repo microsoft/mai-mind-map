@@ -6,6 +6,10 @@ import { NodeInterface } from '../layout/interface';
 export * from './getSizeFromNodeDate';
 export * from './getLinkForDirection';
 
+export function isHorizontalDirection(treeState: MutableRefObject<TreeState>) {
+  return ['LR', 'RL', 'H'].includes(treeState.current.direction);
+}
+
 export function getPaddingForDirection(direction: Direction) {
   switch (direction) {
     case 'LR':
@@ -56,6 +60,72 @@ export function getNodePosYForDirection(
     case 'H':
     case 'RL':
       return y - nodeHeight / 2;
+  }
+}
+
+export function getDragBtnPosXForDirection<D>(
+  x: number,
+  node: NodeInterface<D>,
+  btnWidth: number,
+  btnHeight: number,
+  treeState: MutableRefObject<TreeState>,
+) {
+  const {
+    inSize: { width: nodeWidth },
+  } = node;
+  if (node.isRoot()) {
+    return x;
+  }
+  switch (treeState.current.direction) {
+    // Horizontal layout, no need to adjust x
+    case 'LR':
+      return x;
+    case 'RL':
+      return x + nodeWidth - btnHeight;
+    case 'H':
+      if (node.x > (node.parent?.x || 0)) {
+        return x;
+      } else {
+        return x + nodeWidth - btnHeight;
+      }
+    // Vertical layout, adjust x by half of node width
+    case 'TB':
+    case 'V':
+    case 'BT':
+      return x - btnWidth / 2;
+  }
+}
+
+export function getDragBtnPosYForDirection<D>(
+  y: number,
+  node: NodeInterface<D>,
+  btnWidth: number,
+  btnHeight: number,
+  treeState: MutableRefObject<TreeState>,
+) {
+  const {
+    inSize: { height: nodeHeight },
+  } = node;
+  if (node.isRoot()) {
+    return y;
+  }
+  switch (treeState.current.direction) {
+    // Horizontal layout, no need to adjust x
+    case 'LR':
+    case 'RL':
+    case 'H':
+      return y - btnWidth / 2;
+    // Vertical layout, adjust x by half of node width
+    case 'TB':
+      return y;
+    case 'BT':
+      return y + nodeHeight - btnHeight;
+    case 'V':
+      if (node.y > (node.parent?.y || 0)) {
+        return y;
+      } else {
+        return y + nodeHeight - btnHeight;
+      }
   }
 }
 

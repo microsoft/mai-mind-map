@@ -5,7 +5,7 @@ npm run check
 exitCode="$?"
 
 if [ "$exitCode" -ne 0 ]; then
-  echo "🚫  Lint failed"
+  echo "🚫  Lint failed, please run 'npm run check:write'"
   exit 1
 fi
 

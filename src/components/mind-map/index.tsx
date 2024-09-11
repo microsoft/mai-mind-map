@@ -67,7 +67,7 @@ export function MindMap<D>(props: MFC<D>) {
       <svg
         ref={svg}
         role="presentation"
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: '100%', width: '100%', display: 'block' }}
       ></svg>
       {nodes}
     </div>

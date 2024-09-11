@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rsbuild build && npm run cp",
-    "check": "biome check --write",
+    "check": "biome check",
+    "check:write": "biome check --write && npm run format",
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
     "preview": "rsbuild preview",
