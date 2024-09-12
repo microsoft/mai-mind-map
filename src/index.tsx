@@ -1,19 +1,22 @@
 import React, { createElement } from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import './global.css';
 
 import { WithStore } from '@base/atom';
-import { LayoutDemo } from './components/mind-map';
-import { OutlineView } from './components/outline';
+import { router } from './router';
 
-const search = new URLSearchParams(location.search);
+const App = () => {
+  return <RouterProvider router={router}></RouterProvider>;
+};
+
 const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
       <WithStore>
-        {createElement(search.get('view') === 'outline' ? OutlineView : LayoutDemo)}
+        <App />
       </WithStore>
     </React.StrictMode>,
   );

@@ -1,11 +1,12 @@
-.node-content {
-  background-color: gray;
-}
-foreignObject.dragging-item-over {
-  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+.config-controller {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
 }
 
-.drag-btn.root {
-  pointer-events: none;
-  display: none;
+.scale-control {
+  
 }

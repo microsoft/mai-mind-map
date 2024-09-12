@@ -1,83 +1,58 @@
-import { CSSProperties, useMemo } from 'react';
+import { Fragment, useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { LayoutControl } from './LayoutControl';
+import { ScaleControl } from './ScaleControl';
+import { Direction } from './render';
+
 import {
-  Direction,
-  FLEX_TREE,
-  GetSizeFromNodeDate,
-  IsNodeCollapsed,
   LayoutType,
-  OUTLINE,
-  RawNode,
-  SizedRawNode,
-  getPaddingForDirection,
-  layoutFun,
-  prepareNodeSize,
-  useRenderWithD3,
-} from './render';
-export * from './render';
+  MindMap,
+  exampleSourceData,
+  getSizeFromNodeDate,
+  moveNodeTo,
+} from './MindMap';
 import './index.css';
 
-type MFC<D> = {
-  style?: CSSProperties;
-  tree: RawNode<D>;
-  getSizeFromNodeDate: GetSizeFromNodeDate<D>;
-  isNodeCollapsed: IsNodeCollapsed<D>;
-  layoutType: LayoutType;
-  treeDirection: Direction;
-  moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
-  nodesRender: (
-    pendingRenderNodes: [SVGForeignObjectElement, SizedRawNode<D>][],
-  ) => JSX.Element;
-};
-
-export function MindMap<D>(props: MFC<D>) {
-  const {
-    style,
-    tree,
-    layoutType,
-    treeDirection,
-    getSizeFromNodeDate,
-    isNodeCollapsed,
-    moveNodeTo,
-    nodesRender,
-  } = props;
-  const root = useMemo(() => {
-    const sizedData = prepareNodeSize(tree, getSizeFromNodeDate);
-    switch (layoutType) {
-      case LayoutType.FLEX_TREE:
-        return layoutFun(layoutType as FLEX_TREE)(sizedData, {
-          direction: treeDirection,
-          getInfo: (d) => ({
-            id: d.id,
-            padding: getPaddingForDirection(treeDirection),
-            size: { width: d.content_size[0], height: d.content_size[1] },
-            collapsed: isNodeCollapsed(d.payload),
-          }),
-          getChildren: (d) => d.children || [],
-        });
-      case LayoutType.OUTLINE:
-        return layoutFun(layoutType as OUTLINE)(sizedData);
-      default:
-        return layoutFun(layoutType as OUTLINE)(sizedData);
-    }
-  }, [tree, layoutType, treeDirection, getSizeFromNodeDate, isNodeCollapsed]);
-  const { svg, pendingRenderNodes } = useRenderWithD3(
-    root,
-    treeDirection,
-    moveNodeTo,
+export function MindMapView() {
+  const [treeData, setTreeData] = useState(exampleSourceData);
+  const [dir, serDir] = useState<Direction>('TB');
+  const [scale, setScale] = useState(1);
+  const moveNodeToFun = useCallback(
+    (nodeId: string, targetId: string, index: number) => {
+      setTreeData(moveNodeTo(nodeId, targetId, index));
+    },
+    [setTreeData],
   );
+  return (
+    <Fragment>
+      <div className="config-controller">
+        <LayoutControl direction={dir} setDirection={serDir} />
 
-  const nodes = nodesRender(pendingRenderNodes);
-
-  return root ? (
-    <div style={style}>
-      <svg
-        ref={svg}
-        role="presentation"
-        style={{ height: '100%', width: '100%', display: 'block' }}
-      ></svg>
-      {nodes}
-    </div>
-  ) : (
-    <div>loading...</div>
+        <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
+      </div>
+      <MindMap
+        style={{ height: '100%', width: '100%' }}
+        tree={treeData}
+        layoutType={LayoutType.FLEX_TREE}
+        getSizeFromNodeDate={getSizeFromNodeDate}
+        isNodeCollapsed={(data) => data.collapsed || false}
+        treeDirection={dir}
+        scale={scale}
+        moveNodeTo={moveNodeToFun}
+        nodesRender={(pendingRenderNodes) => {
+          return (
+            <Fragment>
+              {pendingRenderNodes.map(([node, data]) => {
+                return (
+                  <Fragment key={data.id}>
+                    {createPortal(<pre>{data.payload.content}</pre>, node)}
+                  </Fragment>
+                );
+              })}
+            </Fragment>
+          );
+        }}
+      />
+    </Fragment>
   );
 }

@@ -1,5 +1,5 @@
 import { uuid } from '@base/atom';
-import { exampleSourceData } from '../mind-map/index';
+import { exampleSourceData } from '../mind-map/MindMap';
 
 const TextAreaPrefix = uuid();
 export function getTextAreaId(id: string) {

@@ -1,11 +1,20 @@
+import { Fragment, useState } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 import './App.css';
 
 const App = () => {
   return (
-    <div className="content">
-      <h1>MAI mind map</h1>
-      <p>Turn every thing into mind map.</p>
-    </div>
+    <Fragment>
+      <ul className="layout-sl">
+        <li>
+          <Link to="mindmap">MindMap</Link>
+        </li>
+        <li>
+          <Link to="outline">Outline</Link>
+        </li>
+      </ul>
+      <Outlet />
+    </Fragment>
   );
 };
 

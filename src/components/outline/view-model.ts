@@ -66,7 +66,7 @@ export class ViewModel {
 
     prevId = prev.children[index - 1];
     prev = all[prevId];
-    while (prev.children && prev.children.length && !prev.collapsed) {
+    while (prev.children?.length && !prev.collapsed) {
       prevId = prev.children[prev.children.length - 1];
       prev = all[prevId];
     }
@@ -76,7 +76,7 @@ export class ViewModel {
   public findNextIncludingEx(id: string) {
     const { all, child2Parent } = this;
     const current = all[id];
-    if (current.children && current.children.length && !current.collapsed) {
+    if (current.children?.length && !current.collapsed) {
       const first = current.children[0];
       return all[first];
     }
@@ -88,6 +88,7 @@ export class ViewModel {
       if (index < 0) return;
       const next = list[index + 1];
       if (next) return all[next];
+      // biome-ignore lint/style/noParameterAssign: <explanation>
       id = parentId;
       parentId = child2Parent[parentId];
     }
@@ -121,6 +122,8 @@ export class ViewModel {
     const current = all[id];
     current.children = (current.children || []).concat(siblings);
     all[id] = { ...current };
+    // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+    // biome-ignore lint/complexity/noForEach: <explanation>
     siblings.forEach((sid) => (child2Parent[sid] = id));
 
     // step4: add current to newParent
@@ -178,7 +181,7 @@ export class ViewModel {
     if (index > 0) {
       prevId = parentChildren[index - 1];
       prev = all[prevId];
-      while (prev.children && prev.children.length && !prev.collapsed) {
+      while (prev.children?.length && !prev.collapsed) {
         prevId = prev.children[prev.children.length - 1];
         prev = all[prevId];
       }
@@ -191,6 +194,8 @@ export class ViewModel {
       prev.children = prev.children
         ? [...prev.children, ...children]
         : children;
+      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+      // biome-ignore lint/complexity/noForEach: <explanation>
       children.forEach((cid) => (child2Parent[cid] = prevId));
     }
     all[prevId] = { ...prev };

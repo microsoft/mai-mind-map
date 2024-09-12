@@ -32,13 +32,14 @@ import { dragAction, handleDragItemHoverOnAction } from './dragAction';
 export function useRenderWithD3<D>(
   root: NodeInterface<SizedRawNode<D>>,
   direction: Direction,
+  scale: number,
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void,
 ) {
   const svg = useRef<SVGSVGElement>(null);
   const treeStateRef = useRef<TreeState>({
     direction,
     dragging: false,
-    scale: 1,
+    scale: scale,
     moveNodeTo: () => {
       throw new Error('moveNodeTo not implemented');
     },
@@ -67,7 +68,10 @@ export function useRenderWithD3<D>(
         if (g) {
           const tx = +(g.dataset.tx || 0) + event.dx;
           const ty = +(g.dataset.ty || 0) + event.dy;
-          gSl.attr('transform', `translate(${tx}, ${ty})`);
+          gSl.attr(
+            'transform',
+            `translate(${tx}, ${ty}) scale(${treeStateRef.current.scale})`,
+          );
           g.dataset.tx = tx;
           g.dataset.ty = ty;
         }
@@ -83,7 +87,10 @@ export function useRenderWithD3<D>(
       drawing = svgSl
         .append('g')
         .classed('drawing', true)
-        .attr('transform', `translate(${tx}, ${ty})`);
+        .attr(
+          'transform',
+          `translate(${tx}, ${ty}) scale(${treeStateRef.current.scale})`,
+        );
       const g = drawing.node();
       if (g) {
         g.dataset.tx = tx.toString();
@@ -92,6 +99,23 @@ export function useRenderWithD3<D>(
     }
     setDrawing(drawing);
   }, []);
+
+  useEffect(() => {
+    treeStateRef.current.scale = scale;
+
+    if (drawing) {
+      const g = drawing.node();
+      if (g) {
+        const tx = g.dataset.tx;
+        const ty = g.dataset.ty;
+        if (tx && ty) {
+          drawing.attr('transform', `translate(${tx}, ${ty}) scale(${scale})`);
+        }
+        g.dataset.tx = tx;
+        g.dataset.ty = ty;
+      }
+    }
+  }, [scale, drawing]);
 
   useEffect(() => {
     treeStateRef.current.direction = direction;

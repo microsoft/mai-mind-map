@@ -1,0 +1,11 @@
+.node-content {
+  background-color: gray;
+}
+foreignObject.dragging-item-over {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.drag-btn.root {
+  pointer-events: none;
+  display: none;
+}
