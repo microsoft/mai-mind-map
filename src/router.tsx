@@ -2,7 +2,7 @@ import 'react';
 
 import { createHashRouter } from 'react-router-dom';
 import App from './App';
-import { MindMapView } from './components/mind-map/Index.tsx';
+import { MindMapView } from './components/mind-map/MapIndex.tsx';
 import { OutlineView } from './components/outline';
 
 export const router = createHashRouter([
