@@ -1,7 +1,7 @@
 import { uuid } from '@base/atom';
 import { css } from '@root/base/styled';
 import React, { memo, useState, useRef, CSSProperties, useEffect } from 'react';
-import { focusTextArea, getTextAreaId } from './common';
+import { INDENT, focusTextArea, getTextAreaId } from './common';
 import Toolbox from './tool-box';
 import { TreeNode, ViewModel } from './view-model';
 
@@ -20,14 +20,23 @@ const SArrow = css`
   transition: 100ms;
 `;
 const SBox = css`
+  position: relative;
   display: flex;
   align-items: stretch;
   &:hover .${SArrow} {
     opacity: 1;
   }
+  .drag-in {
+    position: absolute;
+    height: 2px;
+    border-radius: 2px;
+    bottom: 0;
+    background-color: #0252ff;
+  }
 `;
 const SHead = css`
   position: relative;
+  flex: 0 0 auto;
 `;
 const SDot = css`
   position: absolute;
@@ -60,6 +69,16 @@ const SText = css`
   height: 34px;
   line-height: 34px;
   overflow: hidden;
+`;
+const SDragItem = css`
+  background-color: rgba(240, 248, 255, 0.75);
+  border: 1px solid #0252ff;
+  padding: 4px 4px 4px 20px;
+  border-radius: 4px;
+  position: absolute;
+  top: -100000px;
+  left: -100000px;
+  z-index: -10000;
 `;
 
 /**
@@ -163,19 +182,39 @@ function Editor(props: { view: ViewModel; node: TreeNode }) {
         const el = e.target as HTMLTextAreaElement;
         handleKey(e, view, node, el, text, setText);
       }}
+      onDragOver={e => e.preventDefault()}
     />
   );
 }
 
+const indicator = document.createElement('div');
+indicator.classList.add(SDragItem);
+document.body.appendChild(indicator);
+
 function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
   const { view, node, depth } = props;
-  const { id, collapsed, children } = node;
+  const { id, collapsed, children, payload } = node;
   const tbox = useRef<Toolbox>(null);
+  const [dragIn, setDragIn] = useState(false);
+
   const hasChildren = Boolean(children?.length);
+  const width = (depth + 1) * INDENT;
 
   return (
-    <div className={SBox}>
-      <div className={SHead} style={{ width: 32 * depth + 32 }}>
+    <div
+      className={SBox}
+      onDragEnter={() => setDragIn(true)}
+      onDragLeave={() => setDragIn(false)}
+      onDrop={(e) => {
+        setDragIn(false);
+        const from = e.dataTransfer.getData('text/plain');
+        if (view.get(from)) view.drag(from, id);
+      }}
+    >
+      {dragIn && (
+        <div className="drag-in" style={{ left: width, width: `calc(100% - ${width}px)` }} />
+      )}
+      <div className={SHead} style={{ width }}>
         {hasChildren && (
           <div
             className={SArrow}
@@ -187,6 +226,12 @@ function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
         <div
           className={SDot}
           data-collapsed={collapsed}
+          draggable
+          onDragStart={(e) => {
+            indicator.innerText = payload.content;
+            e.dataTransfer.setDragImage(indicator, 0, 0);
+            e.dataTransfer.setData('text/plain', id);
+          }}
           onClick={(e) => {
             const el = e.target as HTMLDivElement;
             const { x, y, height } = el.getBoundingClientRect();

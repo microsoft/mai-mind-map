@@ -1,5 +1,6 @@
 import { css } from '@root/base/styled';
 import React, { useMemo, useReducer, Fragment } from 'react';
+import { INDENT } from './common';
 import Treeline from './tree-line';
 import { ViewModel } from './view-model';
 
@@ -26,7 +27,7 @@ const SSection = css`
     top: 0;
     height: 100%;
     width: 1px;
-    background-color: #ccc;
+    border-left: 1px dashed #ccc;
   }
 `;
 
@@ -59,7 +60,7 @@ export function OutlineView() {
     });
     return (
       <section className={SSection}>
-        {depth > 0 && <div className="vline" style={{ left: depth * 32 - 20 }} />}
+        {depth > 0 && <div className="vline" style={{ left: (depth - 1) * INDENT + 17 }} />}
         {children}
       </section>
     );

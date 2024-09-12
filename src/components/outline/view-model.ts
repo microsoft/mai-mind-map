@@ -204,6 +204,44 @@ export class ViewModel {
     return prev;
   }
 
+  public drag(fromId: string, toId: string) {
+    if (fromId === RootId) return;
+    if (fromId === toId) return;
+
+    const { all, child2Parent } = this;
+    const to = all[toId];
+    if (child2Parent[fromId] === toId) return;
+
+    // step1: remove [from] from parent
+    const fpid = child2Parent[fromId];
+    const fp = all[fpid];
+    fp.children = fp.children?.filter((cid) => cid !== fromId);
+    all[fpid] = { ...fp };
+
+    // step2-1: add [from] to the children of [to]
+    // biome-ignore lint/complexity/useOptionalChain: <explanation>
+    if (to.children && to.children.length && !to.collapsed) {
+      to.children = [fromId, ...to.children];
+      all[toId] = { ...to };
+      child2Parent[fromId] = toId;
+      this.notify();
+      return;
+    }
+
+    // step2-2: add [from] after [to]
+    const tpid = child2Parent[toId];
+    const tp = all[tpid];
+    const children = tp.children || [];
+    const i = children.indexOf(toId) + 1;
+    if (i === 0) return;
+    all[tpid] = {
+      ...tp,
+      children: [...children.slice(0, i), fromId, ...children.slice(i)],
+    };
+    child2Parent[fromId] = tpid;
+    this.notify();
+  }
+
   public add(
     parent: string,
     id: string,

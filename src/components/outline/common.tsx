@@ -6,6 +6,8 @@ export function getTextAreaId(id: string) {
   return TextAreaPrefix + '-' + id;
 }
 
+export const INDENT = 32;
+
 export function focusTextArea(id: string, at?: number) {
   const textarea = document.getElementById(getTextAreaId(id)) as HTMLTextAreaElement;
   if (!textarea) return;
