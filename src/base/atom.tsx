@@ -9,7 +9,7 @@ import {
 } from 'react';
 
 const UNIQ = Symbol('Fingerprint');
-const uuid = () => Math.round((Math.random() + 1) * Date.now()).toString(36);
+export const uuid = () => Math.round((Math.random() + 1) * Date.now()).toString(36);
 
 type Caller<T> = (data: T) => void;
 type Reduce<T> = (data: T) => T;
