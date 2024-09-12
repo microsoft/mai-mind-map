@@ -15,13 +15,13 @@ export function getPaddingForDirection(direction: Direction) {
     case 'LR':
     case 'RL':
     case 'H':
-      return { v: 5, h: 30 };
+      return { v: 10, h: 30 };
     case 'BT':
     case 'TB':
     case 'V':
-      return { v: 30, h: 5 };
+      return { v: 30, h: 10 };
     default: // This is a safety net for future changes
-      return { v: 5, h: 30 };
+      return { v: 10, h: 30 };
   }
 }
 

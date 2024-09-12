@@ -76,6 +76,7 @@ export function moveNodeTo(
   targetId: string,
   index: number,
 ): RawNode<Payload> {
+  console.log('moveNodeTo', nodeId, targetId, index);
   const node = findNodeById(exampleSourceData, nodeId);
 
   const parent = findParentNodeById(exampleSourceData, nodeId);
@@ -95,8 +96,16 @@ export function moveNodeTo(
   if (nodeIndex === -1) {
     return JSON.parse(JSON.stringify(exampleSourceData));
   }
+
+  let targetIndex = index;
+  if (parentChildren === targetChildren) {
+    if (index > nodeIndex) {
+      targetIndex -= 1;
+    }
+  }
+
   parentChildren.splice(nodeIndex, 1);
-  targetChildren.splice(index, 0, node);
+  targetChildren.splice(targetIndex, 0, node);
 
   return JSON.parse(JSON.stringify(exampleSourceData));
 }
