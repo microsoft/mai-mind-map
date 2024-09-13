@@ -311,11 +311,9 @@ function drawTree<D>(
   const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
 
   drawing.nodeGroup
-    .selectAll<SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>>(
-      'foreignObject.node-content',
-    )
+    .selectAll<SVGGElement, NodeInterface<SizedRawNode<D>>>('g.node')
     .each(function (d) {
-      nodeDataPairs.push([<SVGForeignObjectElement>this, d.data]);
+      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d.data]);
     });
 
   return nodeDataPairs;
