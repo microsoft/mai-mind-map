@@ -70,57 +70,19 @@ export function dragAction<D>(
 
         // drag btn
         const btn = select(<SVGRectElement>this);
-        btn.style('opacity', 0);
-        // draw shadow btn
+        btn.classed('dragging-btn', true);
         drawing
-          .append('rect')
-          .attr('class', 'dragging-btn')
-          .attr(
-            'x',
-            getDragBtnPosXForDirection(
-              node.x,
-              node,
-              dragBtnWidth,
-              dragBtnHeight,
-              treeState,
-            ),
+          .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
+            'rect.drag-btn:not(.dragging-btn)',
           )
-          .attr(
-            'y',
-            getDragBtnPosYForDirection(
-              node.y,
-              node,
-              dragBtnWidth,
-              dragBtnHeight,
-              treeState,
-            ),
-          )
-          .attr('rx', dragBtnRadius)
-          .attr('ry', dragBtnRadius)
-          .attr(
-            'width',
-            isHorizontalDirection(treeState) ? dragBtnHeight : dragBtnWidth,
-          )
-          .attr(
-            'height',
-            isHorizontalDirection(treeState) ? dragBtnWidth : dragBtnHeight,
-          )
-          .attr('fill', 'red')
-          .style('opacity', 0.3)
           .style('pointer-events', 'none');
 
         // node
         drawing
           .select(`g.node._${node.data.id}`)
-          .style('opacity', 0.3)
-          .style('pointer-events', 'none');
 
-        // link
-        drawing
-          .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
-            `path.line._${node.data.id}`,
-          )
-          .style('opacity', 0.2);
+          .classed('dragging-node', true)
+          .style('pointer-events', 'none');
       },
     )
     .on(
@@ -136,30 +98,15 @@ export function dragAction<D>(
         if (node.isRoot()) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
-        // update shadow drag btn position
-        let x = getDragBtnPosXForDirection(
-          event.x,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
-        );
-        let y = getDragBtnPosYForDirection(
-          event.y,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
-        );
-        drawing.select('rect.dragging-btn').attr('x', x).attr('y', y);
 
         // update node position
         const width = node.data.content_size[0];
         const height = node.data.content_size[1];
-        x = getNodePosXForDirection(event.x, width, treeState);
-        y = getNodePosYForDirection(event.y, height, treeState);
+        const x = getNodePosXForDirection(event.x, width, treeState);
+        const y = getNodePosYForDirection(event.y, height, treeState);
         drawing
           .select(`g.node._${node.data.id}`)
+          .style('opacity', 0.3)
           .attr('transform', `translate(${x}, ${y})`);
         node.draggingX = event.x;
         node.draggingY = event.y;
@@ -168,6 +115,7 @@ export function dragAction<D>(
           .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
             `path.line._${node.data.id}`,
           )
+          .style('opacity', 0.2)
           .data(node.touchedLinks(), (link) => {
             const key = `${link.source.data.id}-${link.target.data.id}`;
             return key;
@@ -212,29 +160,28 @@ export function dragAction<D>(
         event.sourceEvent.stopPropagation();
         treeState.current.dragging = false;
 
-        // remove shadow drag btn
-        drawing.select('rect.dragging-btn').remove();
-        // update drag btn position to the end position
-        const dragBtn = select(<SVGRectElement>this).style('opacity', 1);
-        let x = getDragBtnPosXForDirection(
-          event.x,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
+        // restore other drag btn pointer events
+        drawing
+          .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
+            'rect.drag-btn:not(.dragging-btn)',
+          )
+          .style('pointer-events', '');
+
+        // update drag btn position to the end position, remove dragging class
+        const dragBtn = select(<SVGRectElement>this).classed(
+          'dragging-btn',
+          false,
         );
-        let y = getDragBtnPosYForDirection(
-          event.y,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
-        );
+
+        let [width, height] = node.data.content_size;
+        let x = getNodePosXForDirection(event.x, width, treeState);
+        let y = getNodePosYForDirection(event.y, height, treeState);
         dragBtn.attr('x', x).attr('y', y);
 
         // restore node opacity and other styles
         const nodeItem = drawing
           .select(`g.node._${node.data.id}`)
+          .classed('dragging-node', false)
           .style('pointer-events', '')
           .style('opacity', 1);
         // clear dragging state
@@ -256,11 +203,11 @@ export function dragAction<D>(
         >(`foreignObject.${draggingItemOverClass}`);
         if (overNodes.data().length) {
           overNodes.classed(draggingItemOverClass, false);
-          const from = node.data;
-          const to = overNodes.data()[0].data;
+          const from = node;
+          const to = overNodes.data()[0];
 
-          if (to.id !== node.parent?.data.id) {
-            treeState.current.moveNodeTo(from.id, to.id, 0);
+          if (to.id !== from.parent?.id && !to.hasAncestor(node)) {
+            treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
             return;
           }
         }
@@ -616,33 +563,16 @@ export function dragAction<D>(
 
         const dragTran = transition().duration(300);
 
-        // animate drag btn to final position
-        x = getDragBtnPosXForDirection(
-          node.x,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
-        );
-        y = getDragBtnPosYForDirection(
-          node.y,
-          node,
-          dragBtnWidth,
-          dragBtnHeight,
-          treeState,
-        );
-
+        // animate drag btn and nodes to original position
+        width = node.data.content_size[0];
+        height = node.data.content_size[1];
+        x = getNodePosXForDirection(node.x, width, treeState);
+        y = getNodePosYForDirection(node.y, height, treeState);
         dragBtn
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)
           .attr('x', x)
           .attr('y', y);
-
-        // animate node to original position
-        const width = node.data.content_size[0];
-        const height = node.data.content_size[1];
-        x = getNodePosXForDirection(node.x, width, treeState);
-        y = getNodePosYForDirection(node.y, height, treeState);
         nodeItem
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)

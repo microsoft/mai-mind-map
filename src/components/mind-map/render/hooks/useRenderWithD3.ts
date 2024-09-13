@@ -177,7 +177,6 @@ function drawTree<D>(
     .attr('class', (d) => {
       return `line _${d.source.data.id} _${d.target.data.id}`;
     })
-
     .attr('d', (d) => {
       const sourceRect: [number, number, number, number] = [
         d.source.x,
@@ -270,31 +269,15 @@ function drawTree<D>(
       update
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .transition(drawTran as any)
-        .attr(
-          'width',
-          isHorizontalDirection(treeState) ? dragBtnHeight : dragBtnWidth,
-        )
-        .attr(
-          'height',
-          isHorizontalDirection(treeState) ? dragBtnWidth : dragBtnHeight,
-        )
+        .attr('width', (d) => d.data.content_size[0])
+        .attr('height', (d) => d.data.content_size[1])
         .attr('x', (d) => {
-          return getDragBtnPosXForDirection(
-            d.x,
-            d,
-            dragBtnWidth,
-            dragBtnHeight,
-            treeState,
-          );
+          const width = d.data.content_size[0];
+          return getNodePosXForDirection(d.x, width, treeState);
         })
         .attr('y', (d) => {
-          return getDragBtnPosYForDirection(
-            d.y,
-            d,
-            dragBtnWidth,
-            dragBtnHeight,
-            treeState,
-          );
+          const height = d.data.content_size[1];
+          return getNodePosYForDirection(d.y, height, treeState);
         });
     });
 
@@ -306,34 +289,17 @@ function drawTree<D>(
     })
     .attr('rx', dragBtnRadius)
     .attr('ry', dragBtnRadius)
-    .attr('fill', 'red')
-    .attr('cursor', 'move')
+    .attr('fill', 'transparent')
     .attr('x', (d) => {
-      return getDragBtnPosXForDirection(
-        d.x,
-        d,
-        dragBtnWidth,
-        dragBtnHeight,
-        treeState,
-      );
+      const width = d.data.content_size[0];
+      return getNodePosXForDirection(d.x, width, treeState);
     })
     .attr('y', (d) => {
-      return getDragBtnPosYForDirection(
-        d.y,
-        d,
-        dragBtnWidth,
-        dragBtnHeight,
-        treeState,
-      );
+      const height = d.data.content_size[1];
+      return getNodePosYForDirection(d.y, height, treeState);
     })
-    .attr(
-      'width',
-      isHorizontalDirection(treeState) ? dragBtnHeight : dragBtnWidth,
-    )
-    .attr(
-      'height',
-      isHorizontalDirection(treeState) ? dragBtnWidth : dragBtnHeight,
-    );
+    .attr('width', (d) => d.data.content_size[0])
+    .attr('height', (d) => d.data.content_size[1]);
 
   tempDragNode.exit().remove();
 

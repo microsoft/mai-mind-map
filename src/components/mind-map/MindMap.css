@@ -9,3 +9,7 @@ foreignObject.dragging-item-over {
   pointer-events: none;
   display: none;
 }
+.dragging-node {
+  position: relative;
+  z-index: 10000;
+}

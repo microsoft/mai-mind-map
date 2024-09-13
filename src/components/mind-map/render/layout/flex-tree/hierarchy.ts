@@ -151,6 +151,14 @@ export class Node<T> implements NodeInterface<T> {
     }
     return links;
   }
+  hasAncestor(node: NodeInterface<T>): boolean {
+    let current = this.parent;
+    while (current) {
+      if (current.id === node.id) return true;
+      current = current.parent;
+    }
+    return false;
+  }
 
   // position helper functions
   public get right() {

@@ -17,6 +17,7 @@ export interface NodeInterface<T> {
   links(): NodeLink<T>[];
   touchedLinks(): NodeLink<T>[];
   isRoot(): boolean;
+  hasAncestor(node: NodeInterface<T>): boolean;
   draggingX?: number;
   draggingY?: number;
 }

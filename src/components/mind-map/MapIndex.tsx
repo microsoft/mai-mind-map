@@ -11,7 +11,7 @@ import {
   getSizeFromNodeDate,
   moveNodeTo,
 } from './MindMap';
-import './index.css';
+import './MapIndex.css';
 
 export function MindMapView() {
   const [treeData, setTreeData] = useState(exampleSourceData);

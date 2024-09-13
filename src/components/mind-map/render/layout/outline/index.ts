@@ -27,5 +27,8 @@ export default function layout<T>(root: T): NodeInterface<T> {
     isRoot() {
       return true;
     },
+    hasAncestor(node: NodeInterface<T>): boolean {
+      return false;
+    },
   };
 }
