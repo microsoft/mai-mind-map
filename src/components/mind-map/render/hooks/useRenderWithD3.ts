@@ -25,7 +25,7 @@ import { type Drawing, type TreeState, dragBtnRadius } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
 
 export function useRenderWithD3<D>(
-  root: NodeInterface<SizedRawNode<D>>,
+  root: NodeInterface<SizedRawNode<D>> | null,
   direction: Direction,
   scale: number,
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void,
@@ -121,7 +121,7 @@ export function useRenderWithD3<D>(
   useEffect(() => {
     treeStateRef.current.direction = direction;
     treeStateRef.current.moveNodeTo = moveNodeTo;
-    if (drawing) {
+    if (drawing && root) {
       const nodeDataPairs = drawTree(drawing, root, treeStateRef);
       setPendingRenderNodes(nodeDataPairs);
     }

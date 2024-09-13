@@ -1,8 +1,7 @@
-import { Payload } from '../model/index';
-
-export function getSizeFromNodeDate(data: Payload): [number, number] {
-  if (data.cachedWidth && data.cachedHeight) {
-    return [data.cachedWidth, data.cachedHeight];
+export function getSizeFromNodeDate(elId: string): [number, number] {
+  const el = document.getElementById(elId);
+  if (el) {
+    return [el.offsetWidth, el.offsetHeight];
   }
-  return [50, 50];
+  return [50, 30];
 }

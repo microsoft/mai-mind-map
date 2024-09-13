@@ -71,6 +71,25 @@ export const exampleSourceData: RawNode<Payload> = {
   ],
 };
 
+export function expandTreeToArray<P>(root: RawNode<P> | null): RawNode<P>[] {
+  if (!root) {
+    return [];
+  }
+  const result: RawNode<P>[] = [];
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    if (!node) {
+      continue;
+    }
+    result.push(node);
+    if (node.children) {
+      stack.push(...node.children);
+    }
+  }
+  return result;
+}
+
 export function moveNodeTo(
   nodeId: string,
   targetId: string,

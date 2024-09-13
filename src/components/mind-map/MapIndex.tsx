@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { LayoutControl } from './LayoutControl';
+import { NodeContent } from './NodeContent';
 import { ScaleControl } from './ScaleControl';
 import { Direction } from './render';
 
@@ -33,8 +34,6 @@ export function MindMapView() {
       <MindMap
         style={{ height: '100%', width: '100%' }}
         tree={treeData}
-        layoutType={LayoutType.FLEX_TREE}
-        getSizeFromNodeDate={getSizeFromNodeDate}
         isNodeCollapsed={(data) => data.collapsed || false}
         treeDirection={dir}
         scale={scale}
@@ -45,7 +44,10 @@ export function MindMapView() {
               {pendingRenderNodes.map(([node, data]) => {
                 return (
                   <Fragment key={data.id}>
-                    {createPortal(<pre>{data.payload.content}</pre>, node)}
+                    {createPortal(
+                      <NodeContent id={data.id} data={data.payload} />,
+                      node,
+                    )}
                   </Fragment>
                 );
               })}
