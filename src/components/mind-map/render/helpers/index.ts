@@ -25,110 +25,6 @@ export function getPaddingForDirection(direction: Direction) {
   }
 }
 
-export function getNodePosXForDirection(
-  x: number,
-  nodeWidth: number,
-  treeState: MutableRefObject<TreeState>,
-) {
-  switch (treeState.current.direction) {
-    // Horizontal layout, no need to adjust x
-    case 'LR':
-    case 'H':
-    case 'RL':
-      return x;
-    // Vertical layout, adjust x by half of node width
-    case 'TB':
-    case 'V':
-    case 'BT':
-      return x - nodeWidth / 2;
-  }
-}
-
-export function getNodePosYForDirection(
-  y: number,
-  nodeHeight: number,
-  treeState: MutableRefObject<TreeState>,
-) {
-  switch (treeState.current.direction) {
-    // Vertical layout, no need to adjust y
-    case 'TB':
-    case 'V':
-    case 'BT':
-      return y;
-    // Horizontal layout, adjust y by half of node height
-    case 'LR':
-    case 'H':
-    case 'RL':
-      return y - nodeHeight / 2;
-  }
-}
-
-export function getDragBtnPosXForDirection<D>(
-  x: number,
-  node: NodeInterface<D>,
-  btnWidth: number,
-  btnHeight: number,
-  treeState: MutableRefObject<TreeState>,
-) {
-  const {
-    inSize: { width: nodeWidth },
-  } = node;
-  if (node.isRoot()) {
-    return x;
-  }
-  switch (treeState.current.direction) {
-    // Horizontal layout, no need to adjust x
-    case 'LR':
-      return x;
-    case 'RL':
-      return x + nodeWidth - btnHeight;
-    case 'H':
-      if (node.x > (node.parent?.x || 0)) {
-        return x;
-      } else {
-        return x + nodeWidth - btnHeight;
-      }
-    // Vertical layout, adjust x by half of node width
-    case 'TB':
-    case 'V':
-    case 'BT':
-      return x - btnWidth / 2;
-  }
-}
-
-export function getDragBtnPosYForDirection<D>(
-  y: number,
-  node: NodeInterface<D>,
-  btnWidth: number,
-  btnHeight: number,
-  treeState: MutableRefObject<TreeState>,
-) {
-  const {
-    inSize: { height: nodeHeight },
-  } = node;
-  if (node.isRoot()) {
-    return y;
-  }
-  switch (treeState.current.direction) {
-    // Horizontal layout, no need to adjust x
-    case 'LR':
-    case 'RL':
-    case 'H':
-      return y - btnWidth / 2;
-    // Vertical layout, adjust x by half of node width
-    case 'TB':
-      return y;
-    case 'BT':
-      return y + nodeHeight - btnHeight;
-    case 'V':
-      if (node.y > (node.parent?.y || 0)) {
-        return y;
-      } else {
-        return y + nodeHeight - btnHeight;
-      }
-  }
-}
-
 export function getLinkPointPairForDirection(
   treeState: MutableRefObject<TreeState>,
   source: [number, number, number, number], // [x,y,w,h]
@@ -139,55 +35,56 @@ export function getLinkPointPairForDirection(
 } {
   const [sourceX, sourceY, sourceW, sourceH] = source;
   const [targetX, targetY, targetW, targetH] = target;
+  // const { v, h } = getPaddingForDirection(treeState.current.direction);
   switch (treeState.current.direction) {
     // Vertical layout
     case 'TB':
       return {
-        source: [sourceX, sourceY + sourceH],
-        target: [targetX, targetY],
+        source: [sourceX + sourceW / 2, sourceY + sourceH],
+        target: [targetX + targetW / 2, targetY],
       };
     case 'BT':
       return {
-        source: [sourceX, sourceY],
-        target: [targetX, targetY + targetH],
+        source: [sourceX + sourceW / 2, sourceY],
+        target: [targetX + targetW / 2, targetY + targetH],
       };
     case 'V':
       if (sourceY < targetY) {
         // TB
         return {
-          source: [sourceX, sourceY + sourceH],
-          target: [targetX, targetY],
+          source: [sourceX + sourceW / 2, sourceY + sourceH],
+          target: [targetX + targetW / 2, targetY],
         };
       } else {
         // BT
         return {
-          source: [sourceX, sourceY],
-          target: [targetX, targetY + targetH],
+          source: [sourceX + sourceW / 2, sourceY],
+          target: [targetX + targetW / 2, targetY + targetH],
         };
       }
     // Horizontal layout
     case 'LR':
       return {
-        source: [sourceX + sourceW, sourceY],
-        target: [targetX, targetY],
+        source: [sourceX + sourceW, sourceY + sourceH / 2],
+        target: [targetX, targetY + targetH / 2],
       };
     case 'RL':
       return {
-        source: [sourceX, sourceY],
-        target: [targetX + targetW, targetY],
+        source: [sourceX, sourceY + sourceH / 2],
+        target: [targetX + targetW, targetY + targetH / 2],
       };
     case 'H':
       if (sourceX < targetX) {
         // LR
         return {
-          source: [sourceX + sourceW, sourceY],
-          target: [targetX, targetY],
+          source: [sourceX + sourceW, sourceY + sourceH / 2],
+          target: [targetX, targetY + targetH / 2],
         };
       } else {
         // RL
         return {
-          source: [sourceX, sourceY],
-          target: [targetX + targetW, targetY],
+          source: [sourceX, sourceY + sourceH / 2],
+          target: [targetX + targetW, targetY + targetH / 2],
         };
       }
   }

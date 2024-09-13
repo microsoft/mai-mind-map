@@ -3,15 +3,10 @@ import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
 import { MutableRefObject } from 'react';
 import {
-  getDragBtnPosXForDirection,
-  getDragBtnPosYForDirection,
   getDraggingX,
   getDraggingY,
   getLinkForDirection,
   getLinkPointPairForDirection,
-  getNodePosXForDirection,
-  getNodePosYForDirection,
-  isHorizontalDirection,
 } from '../helpers';
 import { preventDrag } from '../helpers/d3Helper';
 import { NodeInterface, NodeLink } from '../layout';
@@ -100,14 +95,10 @@ export function dragAction<D>(
         event.sourceEvent.stopPropagation();
 
         // update node position
-        const width = node.data.content_size[0];
-        const height = node.data.content_size[1];
-        const x = getNodePosXForDirection(event.x, width, treeState);
-        const y = getNodePosYForDirection(event.y, height, treeState);
         drawing.nodeGroup
           .select(`g.node._${node.data.id}`)
           .style('opacity', 0.3)
-          .attr('transform', `translate(${x}, ${y})`);
+          .attr('transform', `translate(${event.x}, ${event.y})`);
         node.draggingX = event.x;
         node.draggingY = event.y;
         // update link position
@@ -173,10 +164,7 @@ export function dragAction<D>(
           false,
         );
 
-        let [width, height] = node.data.content_size;
-        let x = getNodePosXForDirection(event.x, width, treeState);
-        let y = getNodePosYForDirection(event.y, height, treeState);
-        dragBtn.attr('x', x).attr('y', y);
+        dragBtn.attr('x', event.x).attr('y', event.y);
 
         // restore node opacity and other styles
         const nodeItem = drawing.nodeGroup
@@ -573,19 +561,15 @@ export function dragAction<D>(
         const dragTran = transition().duration(300);
 
         // animate drag btn and nodes to original position
-        width = node.data.content_size[0];
-        height = node.data.content_size[1];
-        x = getNodePosXForDirection(node.x, width, treeState);
-        y = getNodePosYForDirection(node.y, height, treeState);
         dragBtn
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)
-          .attr('x', x)
-          .attr('y', y);
+          .attr('x', node.x)
+          .attr('y', node.y);
         nodeItem
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)
-          .attr('transform', `translate(${x}, ${y})`);
+          .attr('transform', `translate(${node.x}, ${node.y})`);
 
         // update link to original position
         linkLine

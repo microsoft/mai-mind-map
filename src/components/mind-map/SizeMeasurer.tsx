@@ -8,10 +8,12 @@ import { Payload } from './render/model/interface';
 const sizeMeasurerClass = css`
   position: absolute;
   z-index: -1000;
-  left: 100%;
-  top: 0;
+  left: 0;
+  top: 0px;
   visibility: hidden;
   pointer-events: none;
+  height: 20px;
+  overflow: hidden;
 `;
 
 const idPrefix = 'mnc';

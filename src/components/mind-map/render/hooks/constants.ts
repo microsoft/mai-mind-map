@@ -12,7 +12,3 @@ export interface Drawing {
   nodeGroup: Selection<SVGGElement, unknown, null, undefined>;
   pathGroup: Selection<SVGGElement, unknown, null, undefined>;
 }
-
-export const dragBtnWidth = 20;
-export const dragBtnHeight = 10;
-export const dragBtnRadius = 5;

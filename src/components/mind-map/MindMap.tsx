@@ -47,8 +47,7 @@ export function MindMap<D>(props: MFC<D>) {
       direction: treeDirection,
       getInfo: (d) => ({
         id: d.id,
-        // padding: getPaddingForDirection(treeDirection),
-        padding: { v: 0, h: 0 },
+        padding: getPaddingForDirection(treeDirection),
         size: { width: d.content_size[0], height: d.content_size[1] },
         collapsed: isNodeCollapsed(d.payload),
       }),
