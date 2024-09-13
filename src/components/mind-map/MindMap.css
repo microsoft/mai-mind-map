@@ -10,6 +10,6 @@ foreignObject.dragging-item-over {
   display: none;
 }
 .dragging-node {
-  position: relative;
+  position: absolute;
   z-index: 10000;
 }

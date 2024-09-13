@@ -16,12 +16,7 @@ import {
 import { preventDrag } from '../helpers/d3Helper';
 import { NodeInterface, NodeLink } from '../layout';
 import { SizedRawNode } from '../node/interface';
-import {
-  type TreeState,
-  dragBtnHeight,
-  dragBtnRadius,
-  dragBtnWidth,
-} from './constants';
+import { type Drawing, type TreeState } from './constants';
 const draggingItemOverClass = 'dragging-item-over';
 
 // Handle the action that some item is dragged over the node
@@ -49,9 +44,10 @@ export function handleDragItemHoverOnAction<D, E extends Element>(
 }
 
 export function dragAction<D>(
-  drawing: Selection<SVGGElement, unknown, null, undefined>,
+  drawing: Drawing,
   treeState: MutableRefObject<TreeState>,
 ) {
+  let cachedAnchorPoint: SVGGElement | undefined;
   return drag<SVGRectElement, NodeInterface<SizedRawNode<D>>>()
     .on(
       'start',
@@ -71,18 +67,22 @@ export function dragAction<D>(
         // drag btn
         const btn = select(<SVGRectElement>this);
         btn.classed('dragging-btn', true);
-        drawing
+        drawing.dragGroup
           .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
             'rect.drag-btn:not(.dragging-btn)',
           )
           .style('pointer-events', 'none');
 
         // node
-        drawing
-          .select(`g.node._${node.data.id}`)
-
-          .classed('dragging-node', true)
+        const contentNode = drawing.nodeGroup
+          .select<SVGGElement>(`g.node._${node.data.id}`)
           .style('pointer-events', 'none');
+        console.log(contentNode.node()?.nextSibling);
+        cachedAnchorPoint = contentNode.node()?.nextSibling as SVGGElement;
+        // move the node to the top
+        if (cachedAnchorPoint) {
+          contentNode.raise();
+        }
       },
     )
     .on(
@@ -104,14 +104,14 @@ export function dragAction<D>(
         const height = node.data.content_size[1];
         const x = getNodePosXForDirection(event.x, width, treeState);
         const y = getNodePosYForDirection(event.y, height, treeState);
-        drawing
+        drawing.nodeGroup
           .select(`g.node._${node.data.id}`)
           .style('opacity', 0.3)
           .attr('transform', `translate(${x}, ${y})`);
         node.draggingX = event.x;
         node.draggingY = event.y;
         // update link position
-        drawing
+        drawing.pathGroup
           .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
             `path.line._${node.data.id}`,
           )
@@ -161,7 +161,7 @@ export function dragAction<D>(
         treeState.current.dragging = false;
 
         // restore other drag btn pointer events
-        drawing
+        drawing.dragGroup
           .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
             'rect.drag-btn:not(.dragging-btn)',
           )
@@ -179,33 +179,42 @@ export function dragAction<D>(
         dragBtn.attr('x', x).attr('y', y);
 
         // restore node opacity and other styles
-        const nodeItem = drawing
-          .select(`g.node._${node.data.id}`)
-          .classed('dragging-node', false)
+        const nodeItem = drawing.nodeGroup
+          .select<SVGGElement>(`g.node._${node.data.id}`)
           .style('pointer-events', '')
           .style('opacity', 1);
+        // restore node z-index
+        const nodeItemEl = nodeItem.node();
+        if (cachedAnchorPoint && nodeItemEl) {
+          nodeItemEl.parentNode?.insertBefore(nodeItemEl, cachedAnchorPoint);
+        }
+
         // clear dragging state
         node.draggingX = undefined;
         node.draggingY = undefined;
 
         // restore link opacity
 
-        const linkLine = drawing
+        const linkLine = drawing.pathGroup
           .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
             `path.line._${node.data.id}`,
           )
           .style('opacity', 1);
 
         // 1. check if this item should be dropped on another item
-        const overNodes = drawing.selectAll<
+        const overNodes = drawing.nodeGroup.selectAll<
           SVGForeignObjectElement,
           NodeInterface<SizedRawNode<D>>
         >(`foreignObject.${draggingItemOverClass}`);
         if (overNodes.data().length) {
           overNodes.classed(draggingItemOverClass, false);
           const from = node;
-          const to = overNodes.data()[0];
-
+          // the g tag is the parent of the foreignObject, it has the data of the node
+          const g: SVGGElement = <SVGGElement>overNodes.node()?.parentNode;
+          const to = select<SVGGElement, NodeInterface<SizedRawNode<D>>>(
+            g,
+          ).data()[0];
+          console.log(from, to);
           if (to.id !== from.parent?.id && !to.hasAncestor(node)) {
             treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
             return;

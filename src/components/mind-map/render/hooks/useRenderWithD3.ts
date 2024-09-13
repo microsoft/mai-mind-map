@@ -21,12 +21,7 @@ import {
 
 import { Direction, NodeInterface, NodeLink } from '../layout';
 import { SizedRawNode } from '../node/interface';
-import {
-  type TreeState,
-  dragBtnHeight,
-  dragBtnRadius,
-  dragBtnWidth,
-} from './constants';
+import { type Drawing, type TreeState, dragBtnRadius } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
 
 export function useRenderWithD3<D>(
@@ -49,12 +44,7 @@ export function useRenderWithD3<D>(
     [SVGForeignObjectElement, SizedRawNode<D>][]
   >([]);
 
-  const [drawing, setDrawing] = useState<Selection<
-    SVGGElement,
-    unknown,
-    null,
-    undefined
-  > | null>(null);
+  const [drawing, setDrawing] = useState<Drawing | null>(null);
 
   useLayoutEffect(() => {
     if (!svg.current) return;
@@ -96,20 +86,31 @@ export function useRenderWithD3<D>(
         g.dataset.tx = tx.toString();
         g.dataset.ty = ty.toString();
       }
+      const pathGroup = drawing.append('g').classed('path-group', true);
+      const nodeGroup = drawing.append('g').classed('node-group', true);
+      const dragGroup = drawing.append('g').classed('drag-group', true);
+      setDrawing({
+        drawingGroup: drawing,
+        dragGroup,
+        nodeGroup,
+        pathGroup,
+      });
     }
-    setDrawing(drawing);
   }, []);
 
   useEffect(() => {
     treeStateRef.current.scale = scale;
 
     if (drawing) {
-      const g = drawing.node();
+      const g = drawing.drawingGroup.node();
       if (g) {
         const tx = g.dataset.tx;
         const ty = g.dataset.ty;
         if (tx && ty) {
-          drawing.attr('transform', `translate(${tx}, ${ty}) scale(${scale})`);
+          drawing.drawingGroup.attr(
+            'transform',
+            `translate(${tx}, ${ty}) scale(${scale})`,
+          );
         }
         g.dataset.tx = tx;
         g.dataset.ty = ty;
@@ -130,14 +131,14 @@ export function useRenderWithD3<D>(
 }
 
 function drawTree<D>(
-  drawing: Selection<SVGGElement, unknown, null, undefined>,
+  drawing: Drawing,
   tree: NodeInterface<SizedRawNode<D>>,
   treeState: MutableRefObject<TreeState>,
 ) {
   const drawTran = transition().duration(500);
 
   // for path
-  const tempDrawingPath = drawing
+  const tempDrawingPath = drawing.pathGroup
     .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>('path.line')
     .data(tree.links(), (link) => {
       const key = `${link.source.data.id}-${link.target.data.id}`;
@@ -205,7 +206,7 @@ function drawTree<D>(
   tempDrawingPath.exit().remove();
 
   // for node
-  const tempDrawingNode = drawing
+  const tempDrawingNode = drawing.nodeGroup
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('g.node')
     .data(tree.nodes(), (d) => {
       return d.data.id;
@@ -260,7 +261,7 @@ function drawTree<D>(
   tempDrawingNode.exit().remove();
 
   // for drag button
-  const tempDragNode = drawing
+  const tempDragNode = drawing.dragGroup
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
     .data(tree.nodes(), (d) => {
       return d.data.id;
@@ -303,13 +304,13 @@ function drawTree<D>(
 
   tempDragNode.exit().remove();
 
-  drawing
+  drawing.dragGroup
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
     .call(dragAction<D>(drawing, treeState));
 
   const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
 
-  drawing
+  drawing.nodeGroup
     .selectAll<SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>>(
       'foreignObject.node-content',
     )
