@@ -60,7 +60,7 @@ export function OutlineView() {
     });
     return (
       <section className={SSection}>
-        {depth > 0 && <div className="vline" style={{ left: (depth - 1) * INDENT + 17 }} />}
+        {depth > 0 && <div className="vline" style={{ left: depth * INDENT + 5.5 }} />}
         {children}
       </section>
     );

@@ -10,21 +10,22 @@ import { TreeNode, ViewModel } from './view-model';
  * Styles for this file (install `vscode-style-components` ext for better dev)
  * ----------------------------------------------------------------------------------------------------
  */
+const DotSize = 6;
 const SArrow = css`
+  flex: 0 0 ${DotSize * 2}px;
   cursor: pointer;
-  opacity: 0;
-  position: absolute;
-  right: 28px;
-  top: 50%;
   font-size: 12px;
   transition: 100ms;
+  text-align: center;
+  background-color: white;
+  color: rgba(0, 0, 0, 0.1);
 `;
 const SBox = css`
   position: relative;
   display: flex;
   align-items: stretch;
   &:hover .${SArrow} {
-    opacity: 1;
+    color: black;
   }
   .drag-in {
     position: absolute;
@@ -35,24 +36,23 @@ const SBox = css`
   }
 `;
 const SHead = css`
-  position: relative;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: ${INDENT - (DotSize * 1.5)}px;
 `;
 const SDot = css`
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform-origin: center center;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 5px;
+  flex: 0 0 ${DotSize}px;
+  height: ${DotSize}px;
+  margin-right: ${DotSize}px;
+  border-radius: ${DotSize}px;
   background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: 0.2s;
   &:hover {
     background: rgb(84, 165, 197);
-    transform: scale(1.3) translateY(-50%);
+    transform: scale(1.3);
     box-shadow: rgb(151, 212, 240) 0px 0px 0px 5px;
   }
   &[data-collapsed="true"] {
@@ -198,7 +198,7 @@ function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
   const [dragIn, setDragIn] = useState(false);
 
   const hasChildren = Boolean(children?.length);
-  const width = (depth + 1) * INDENT;
+  const width = INDENT * (depth + 1) + DotSize * 2.5;
 
   return (
     <div
@@ -218,7 +218,7 @@ function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
         {hasChildren && (
           <div
             className={SArrow}
-            style={{ transform: collapsed ? 'translateY(-50%) rotate(-90deg)' : 'translateY(-50%)' }}
+            style={{ transform: collapsed ? 'rotate(-90deg)' : undefined }}
             onClick={() => view.toggleCollapsed(id)}>
             ▼
           </div>
