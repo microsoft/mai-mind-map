@@ -33,23 +33,24 @@ function submitSelected() {
   });
 }
 
-function navigateWebApp() {
-  Office.context.ui.displayDialogAsync("https://mai-mind-map.azurewebsites.net");
+function navigateWebApp(docId: string) {
+  Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net?docId=${docId}`);
 }
 
 function uploadDocument(content: string) {
   createDocument()
-    .then(response => {
+    .then((response) => {
       const docId = response.doc_id;
       console.log("New doc created: ", docId);
       return updateContent(docId, content);
     })
-    .then(success => {
-      navigateWebApp();
+    .then((result) => {
+      const docId = result.doc_id;
+      navigateWebApp(docId);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error: ", error);
-    })
+    });
 }
 
 function createDocument() {
@@ -92,11 +93,11 @@ function updateContent(docId: string, content: string) {
     };
 
     request.open("PATCH", url, true);
-    request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify(data));
   });
 }
 
 function docName() {
-  return `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`
+  return `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`;
 }
