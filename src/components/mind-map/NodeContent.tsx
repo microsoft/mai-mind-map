@@ -47,6 +47,7 @@ export const NodeContent = memo<{
     useEffect(() => {
       if (!ref.current) return;
       ref.current.textContent = data.content;
+      ref.current.focus();
     }, []);
     return (
       <div className={SNodeItem} style={{ minWidth, minHeight }}>
