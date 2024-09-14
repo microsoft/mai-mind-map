@@ -21,6 +21,7 @@ const SNodeContentText = css`
   white-space: pre-wrap;
   border-radius: 5px;
   outline: none !important;
+  line-height: 1.4;
 `;
 
 export const editingNodePreId = 'editing-node-pre';
