@@ -48,22 +48,26 @@ export function useRenderWithD3<D>(
     if (!svg.current) return;
     const svgSl = select(svg.current);
     svgSl.call(
-      drag<SVGSVGElement, unknown>().on('drag', function (event) {
-        event.sourceEvent.preventDefault();
-        event.sourceEvent.stopPropagation();
-        const gSl = select(this).select<SVGGElement>('g.drawing');
-        const g = gSl.node();
-        if (g) {
-          const tx = +(g.dataset.tx || 0) + event.dx;
-          const ty = +(g.dataset.ty || 0) + event.dy;
-          gSl.attr(
-            'transform',
-            `translate(${tx}, ${ty}) scale(${treeStateRef.current.scale})`,
-          );
-          g.dataset.tx = tx;
-          g.dataset.ty = ty;
-        }
-      }),
+      drag<SVGSVGElement, unknown>()
+        .on('start', (event) => {
+          treeStateRef.current.setEditingNode(null);
+        })
+        .on('drag', function (event) {
+          event.sourceEvent.preventDefault();
+          event.sourceEvent.stopPropagation();
+          const gSl = select(this).select<SVGGElement>('g.drawing');
+          const g = gSl.node();
+          if (g) {
+            const tx = +(g.dataset.tx || 0) + event.dx;
+            const ty = +(g.dataset.ty || 0) + event.dy;
+            gSl.attr(
+              'transform',
+              `translate(${tx}, ${ty}) scale(${treeStateRef.current.scale})`,
+            );
+            g.dataset.tx = tx;
+            g.dataset.ty = ty;
+          }
+        }),
     );
 
     let drawing = svgSl.select<SVGGElement>('g.drawing');
