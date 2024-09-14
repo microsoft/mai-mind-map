@@ -46,7 +46,7 @@ class PresentationButton extends Component<PresentationButtonProps, Presentation
             if (!fullscreenView) {
                 return;
             }
-            fullscreenView.requestFullscreen().catch(err => {
+            fullscreenView.requestFullscreen && fullscreenView.requestFullscreen().catch(err => {
                 console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
             });
         });
@@ -57,7 +57,7 @@ class PresentationButton extends Component<PresentationButtonProps, Presentation
         if (!fullscreenView) {
             return;
         }
-        document.exitFullscreen();
+        document.exitFullscreen && document.exitFullscreen();
         this.setState({
             fullscreen: false,
         });
