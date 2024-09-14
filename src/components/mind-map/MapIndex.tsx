@@ -8,10 +8,13 @@ import { Direction } from './render';
 import {
   LayoutType,
   MindMap,
+  addNode,
+  delNode,
   getExampleSourceData,
   getSizeFromNodeDate,
   modifyNodeContent,
   moveNodeTo,
+  toggleCollapseNode,
 } from './MindMap';
 import './MapIndex.css';
 
@@ -31,6 +34,24 @@ export function MindMapView() {
     },
     [setTreeData],
   );
+  const toggleCollapseNodeFun = useCallback(
+    (nodeId: string) => {
+      setTreeData(toggleCollapseNode(nodeId));
+    },
+    [setTreeData],
+  );
+  const addNodeFun = useCallback(
+    (parentId: string, content: string) => {
+      setTreeData(addNode(parentId, content));
+    },
+    [setTreeData],
+  );
+  const delNodeFun = useCallback(
+    (id: string) => {
+      setTreeData(delNode(id));
+    },
+    [setTreeData],
+  );
   return (
     <Fragment>
       <div className="config-controller">
@@ -46,6 +67,9 @@ export function MindMapView() {
         scale={scale}
         modifyNode={modifyNode}
         moveNodeTo={moveNodeToFun}
+        toggleCollapseNode={toggleCollapseNodeFun}
+        addNode={addNodeFun}
+        delNode={delNodeFun}
       />
     </Fragment>
   );

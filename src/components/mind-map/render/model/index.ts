@@ -184,3 +184,60 @@ export function modifyNodeContent(
   }
   return exampleSourceData;
 }
+
+export function toggleCollapseNode(nodeId: string): RawNode<Payload> {
+  const node = findNodeById(exampleSourceData, nodeId);
+
+  if (!node || !node.children) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+  const target = findNodeById(exampleSourceData, nodeId);
+  if (target) {
+    target.payload.collapsed = !target.payload.collapsed;
+  }
+  return exampleSourceData;
+}
+
+export function addNode(parentId: string, content: string): RawNode<Payload> {
+  let parent = findNodeById(exampleSourceData, parentId);
+
+  if (!parent) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+
+  const newNode: RawNode<Payload> = {
+    id: uuid(),
+    payload: { content },
+  };
+
+  // biome-ignore lint/style/noNonNullAssertion: <explanation>
+  parent = findNodeById(exampleSourceData, parentId)!;
+  if (!parent.children) {
+    parent.children = [];
+  }
+  parent.children.push(newNode);
+
+  return exampleSourceData;
+}
+
+export function delNode(id: string): RawNode<Payload> {
+  let parent = findParentNodeById(exampleSourceData, id);
+  let index = parent?.children?.findIndex((child) => child.id === id) || -1;
+
+  if (!parent || index === -1) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+  parent = findParentNodeById(exampleSourceData, id);
+  index = parent?.children?.findIndex((child) => child.id === id) || -1;
+  if (index !== -1) {
+    parent?.children?.splice(index, 1);
+  }
+
+  return exampleSourceData;
+}

@@ -9,13 +9,28 @@ export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;
   translate: [number, number];
 }
+const SToolbar = css`
+  position: absolute;
+  top: -30px;
+  left: 0;
+  display: flex;
+`;
 
 export const EditingNode: FC<{
   node: EditingNodeType<Payload> | null;
   modifyNode: (nodeId: string, content: string) => void;
   setEditingNode: (node: EditingNodeType<Payload> | null) => void;
+  toggleCollapseNode(nodeId: string): void;
+  addNode(parentId: string, content: string): void;
+  delNode(id: string): void;
 }> = (props) => {
-  const { node: pendingNode, modifyNode } = props;
+  const {
+    node: pendingNode,
+    modifyNode,
+    toggleCollapseNode,
+    addNode,
+    delNode,
+  } = props;
 
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
@@ -51,6 +66,32 @@ export const EditingNode: FC<{
         boxShadow: '0 0 10px 0 #1890ff',
       }}
     >
+      <div className={SToolbar}>
+        <button
+          onClick={() => {
+            toggleCollapseNode(id);
+            setEditingNode(null);
+          }}
+        >
+          Col
+        </button>
+        <button
+          onClick={() => {
+            addNode(id, ' ');
+            setEditingNode(null);
+          }}
+        >
+          Add
+        </button>
+        <button
+          onClick={() => {
+            delNode(id);
+            setEditingNode(null);
+          }}
+        >
+          Del
+        </button>
+      </div>
       <NodeContent
         id={id}
         data={data.payload}

@@ -30,6 +30,9 @@ type MFC<D> = {
   scale: number;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
+  toggleCollapseNode(nodeId: string): void;
+  addNode(parentId: string, content: string): void;
+  delNode(id: string): void;
 };
 
 export function MindMap(props: MFC<Payload>) {
@@ -41,6 +44,9 @@ export function MindMap(props: MFC<Payload>) {
     isNodeCollapsed,
     moveNodeTo,
     modifyNode,
+    toggleCollapseNode,
+    addNode,
+    delNode,
   } = props;
   const [sizedData, setSizedData] = useState<SizedRawNode<Payload> | null>(
     null,
@@ -92,6 +98,9 @@ export function MindMap(props: MFC<Payload>) {
           node={editingNode}
           modifyNode={modifyNode}
           setEditingNode={setEditingNode}
+          toggleCollapseNode={toggleCollapseNode}
+          addNode={addNode}
+          delNode={delNode}
         />
       </div>
     </Fragment>
