@@ -1,4 +1,4 @@
-import { exampleSourceData } from '../mind-map/MindMap';
+import { getExampleSourceData } from '../mind-map/MindMap';
 import PresentationButton from './presentation-button/presentation-button';
 import { PresentationNode } from './presentation-model/presentation-node';
 
@@ -17,7 +17,7 @@ function presentationNodeFromSampleData(node: Node): PresentationNode {
     };
 }
 
-const mockFromSampleData = presentationNodeFromSampleData(exampleSourceData);
+const mockFromSampleData = presentationNodeFromSampleData(getExampleSourceData());
 
 export {
     PresentationButton,
