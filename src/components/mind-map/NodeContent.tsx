@@ -34,6 +34,7 @@ export const NodeContent = memo<{
   minWidth?: number;
   minHeight?: number;
   onBlur?: () => void;
+  onEditorKeyDown?: (e: React.KeyboardEvent<HTMLPreElement>) => void;
 }>(
   (props) => {
     const {
@@ -63,6 +64,7 @@ export const NodeContent = memo<{
             onBlurCapture={(e) => {
               props.onBlur && props.onBlur();
             }}
+            onKeyDown={props.onEditorKeyDown}
           ></pre>
         ) : (
           <pre id={`${idPrefix}-${id}`} className={SNodeContentText}>

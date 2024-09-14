@@ -97,7 +97,7 @@ export function MindMap(props: MFC<Payload>) {
         <EditingNode
           node={editingNode}
           modifyNode={modifyNode}
-          setEditingNode={setEditingNode}
+          setPendingEditNode={setEditingNode}
           toggleCollapseNode={toggleCollapseNode}
           addNode={addNode}
           delNode={delNode}

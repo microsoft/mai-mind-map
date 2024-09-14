@@ -194,7 +194,7 @@ function drawTree<D>(
       return re;
     })
     .attr('fill', 'transparent')
-    .attr('stroke', 'green');
+    .attr('stroke', 'cadetblue');
 
   tempDrawingPath.exit().remove();
 

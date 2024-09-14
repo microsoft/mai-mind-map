@@ -1,5 +1,6 @@
 import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState } from 'react';
+import { AddChild, Collapse, Delete, Expand } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
@@ -19,7 +20,7 @@ const SToolbar = css`
 export const EditingNode: FC<{
   node: EditingNodeType<Payload> | null;
   modifyNode: (nodeId: string, content: string) => void;
-  setEditingNode: (node: EditingNodeType<Payload> | null) => void;
+  setPendingEditNode: (node: EditingNodeType<Payload> | null) => void;
   toggleCollapseNode(nodeId: string): void;
   addNode(parentId: string, content: string): void;
   delNode(id: string): void;
@@ -28,6 +29,7 @@ export const EditingNode: FC<{
     node: pendingNode,
     modifyNode,
     toggleCollapseNode,
+    setPendingEditNode,
     addNode,
     delNode,
   } = props;
@@ -67,30 +69,38 @@ export const EditingNode: FC<{
       }}
     >
       <div className={SToolbar}>
-        <button
-          onClick={() => {
-            toggleCollapseNode(id);
-            setEditingNode(null);
-          }}
-        >
-          Col
-        </button>
+        {data.children?.length && (
+          <button
+            onClick={() => {
+              toggleCollapseNode(id);
+              setEditingNode(null);
+            }}
+            title={data.payload.collapsed ? 'Expand' : 'Collapse'}
+          >
+            {data.payload.collapsed ? <Expand /> : <Collapse />}
+          </button>
+        )}
+
         <button
           onClick={() => {
             addNode(id, ' ');
             setEditingNode(null);
           }}
+          title="Add Child"
         >
-          Add
+          <AddChild />
         </button>
-        <button
-          onClick={() => {
-            delNode(id);
-            setEditingNode(null);
-          }}
-        >
-          Del
-        </button>
+        {node.parent && (
+          <button
+            onClick={() => {
+              delNode(id);
+              setEditingNode(null);
+            }}
+            title="Delete"
+          >
+            <Delete />
+          </button>
+        )}
       </div>
       <NodeContent
         id={id}
@@ -99,6 +109,11 @@ export const EditingNode: FC<{
         idPrefix="enc"
         minWidth={node.data.content_size[0]}
         minHeight={node.data.content_size[1]}
+        onEditorKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            setPendingEditNode(null);
+          }
+        }}
         onBlur={() => {
           // console.log('onBlur');
           // props.setEditingNode(null);
