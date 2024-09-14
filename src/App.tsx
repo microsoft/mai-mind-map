@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import './App.css';
+import { PresentationButton, mockFromSampleData } from './components/presentation';
 
 const App = () => {
   return (
@@ -11,6 +12,9 @@ const App = () => {
         </li>
         <li>
           <Link to="outline">Outline</Link>
+        </li>
+        <li>
+          <PresentationButton rootNode={mockFromSampleData}>Presenter View</PresentationButton>
         </li>
       </ul>
       <Outlet />
