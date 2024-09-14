@@ -51,6 +51,12 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
             return;
         }
         this.switchPage(lastPage, newPage);
+
+        document.addEventListener('keydown', this.handleKeybordEvent);
+    }
+
+    componentWillUnmount(): void {
+        document.removeEventListener('keydown', this.handleKeybordEvent);
     }
 
     componentDidUpdate(prevProps: Readonly<PresentationViewComponentProps>, prevState: Readonly<PresentationViewComponentState>, snapshot?: any): void {
@@ -62,6 +68,25 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
                 return;
             }
             this.switchPage(lastPage, newPage);
+        }
+    }
+
+    private handleKeybordEvent = (event: { key: any; }) => {
+        switch (event.key) {
+            case 'ArrowUp':
+            case 'ArrowLeft':
+            case 'PageUp':
+                this.prevPage();
+                break;
+            case 'ArrowDown':
+            case 'ArrowRight':
+            case 'PageDown':
+            case 'Enter':
+            case ' ':
+                this.nextPage();
+                break;
+            default:
+                break;
         }
     }
 
@@ -101,9 +126,13 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
         return false;
     }
 
-    private buildNewPage = (pageConfig: PresentationViewComponentConfig, newPage: PresentationPage, shouldAnimation: boolean, switchMode: PresentationSwitchMode) => {
-        let newpPageConfig = pageConfig;
-        newpPageConfig.animation = false;
+    private buildNewPage = (pageConfig: PresentationViewComponentConfig, 
+        newPage: PresentationPage, 
+        shouldAnimation: boolean, 
+        switchMode: PresentationSwitchMode,
+    ) => {
+        let newPageConfig = pageConfig;
+        newPageConfig.animation = false;
         const transitionTime = 0.5;
         const transition = `transform ${transitionTime}s, visibility ${transitionTime}s`;
         const transformCenter = 'translateX(0)';
@@ -114,15 +143,15 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
             if (shouldAnimation) {
                 if (switchMode === PresentationSwitchMode.BACK) {
                     // move to center
-                    newpPageConfig.page = newPage;
-                    newpPageConfig.style = { 
+                    newPageConfig.page = newPage;
+                    newPageConfig.style = {
                         transform: transformCenter,
                         transition,
                         visibility: 'visible',
                     };
                 } else if (switchMode === PresentationSwitchMode.PUSH) {
                     // move to right
-                    newpPageConfig.style = { 
+                    newPageConfig.style = {
                         transform: transformRight,
                         transition: undefined,
                         visibility: 'hidden',
@@ -134,15 +163,15 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
             if (shouldAnimation) {
                 if (switchMode === PresentationSwitchMode.BACK) {
                     // move to left
-                    newpPageConfig.style = { 
-                        transform: transformLeft, 
+                    newPageConfig.style = {
+                        transform: transformLeft,
                         transition: undefined,
                         visibility: 'hidden',
                     };
                 } else if (switchMode === PresentationSwitchMode.PUSH) {
                     // move to center
-                    newpPageConfig.page = newPage;
-                    newpPageConfig.style = { 
+                    newPageConfig.page = newPage;
+                    newPageConfig.style = {
                         transform: transformCenter,
                         transition,
                         visibility: 'visible',
@@ -154,39 +183,39 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
             if (shouldAnimation) {
                 if (switchMode === PresentationSwitchMode.BACK) {
                     // move to right
-                    newpPageConfig.style = { 
+                    newPageConfig.style = {
                         transform: transformRight,
                         transition,
                         visibility: 'hidden',
                     };
                 } else if (switchMode === PresentationSwitchMode.PUSH) {
                     // move to left
-                    newpPageConfig.style = { 
+                    newPageConfig.style = {
                         transform: transformLeft,
                         transition,
                         visibility: 'hidden',
                     };
                 } else if (switchMode === PresentationSwitchMode.UPDATE) {
                     // update
-                    newpPageConfig.page = newPage;
-                    newpPageConfig.style = { 
+                    newPageConfig.page = newPage;
+                    newPageConfig.style = {
                         transform: transformCenter,
                         transition,
                         visibility: 'visible',
                     };
-                    newpPageConfig.animation = true;
+                    newPageConfig.animation = true;
                 }
             } else {
                 // move to center
-                newpPageConfig.page = newPage;
-                newpPageConfig.style = { 
+                newPageConfig.page = newPage;
+                newPageConfig.style = {
                     transform: transformCenter,
                     transition,
                     visibility: 'visible',
                 };
             }
         }
-        return newpPageConfig;
+        return newPageConfig;
     }
 
     private switchPage = (lastPage: PresentationPage | null, newPage: PresentationPage) => {
@@ -215,32 +244,66 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
         const { id, exitFullscreen } = this.props;
         const { pageA, pageB, pageC } = this.state;
         return (
-            <div className='presentation-view' id={id}>
-                <PageViewComponent
-                    page={pageA.page}
+            <div
+                className='presentation-view'
+                id={id}
+            >
+                <div
+                    onClick={this.nextPage}
                     style={{
-                        ...pageA.style,
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
                     }}
-                    animation={pageA.animation}
-                ></PageViewComponent>
-                <PageViewComponent
-                    page={pageB.page}
-                    style={{
-                        ...pageB.style,
-                    }}
-                    animation={pageB.animation}
-                ></PageViewComponent>
-                <PageViewComponent
-                    page={pageC.page}
-                    style={{
-                        ...pageC.style,
-                    }}
-                    animation={pageC.animation}
-                ></PageViewComponent>
+                >
+                    <PageViewComponent
+                        ref={this.pageARef}
+                        page={pageA.page}
+                        style={{
+                            ...pageA.style,
+                        }}
+                        animation={pageA.animation}
+                    ></PageViewComponent>
+                    <PageViewComponent
+                        ref={this.pageBRef}
+                        page={pageB.page}
+                        style={{
+                            ...pageB.style,
+                        }}
+                        animation={pageB.animation}
+                    ></PageViewComponent>
+                    <PageViewComponent
+                        ref={this.pageCRef}
+                        page={pageC.page}
+                        style={{
+                            ...pageC.style,
+                        }}
+                        animation={pageC.animation}
+                    ></PageViewComponent>
+
+                </div>
+
                 <div className='presentation-control-bar'>
-                    <button onClick={this.prevPage}>Prev</button>
-                    <button onClick={this.nextPage}>Next</button>
-                    <button onClick={exitFullscreen}>
+                    <button
+                        onClick={this.prevPage}
+                        style={{
+                            cursor: 'pointer',
+                        }}
+                    >Prev</button>
+                    <button
+                        onClick={this.nextPage}
+                        style={{
+                            cursor: 'pointer',
+                        }}
+                    >Next</button>
+                    <button
+                        onClick={exitFullscreen}
+                        style={{
+                            cursor: 'pointer',
+                        }}
+                    >
                         Exit
                     </button>
                 </div>

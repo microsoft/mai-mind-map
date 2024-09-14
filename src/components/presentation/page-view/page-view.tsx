@@ -82,12 +82,13 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
             return { x, y };
         }) || [];
 
-        this.setState({ beiginPoint, endPoints });
+        this.setState({ beiginPoint, endPoints});
     };
 
     render() {
         const { beiginPoint, endPoints } = this.state;
-        const { mode, node, child } = this.props.page || {};
+        const { page, animation } = this.props;
+        const { mode, node, child } = page || {};
         const childIndex = node?.children?.map(child => child.id).indexOf(child?.id || '') || 0;
         const childrenLength = node?.children?.length || 1;
         const showTitle = (!!node?.text) ? 1 : 0;
@@ -95,9 +96,10 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
         const showImages = (!!node?.images) ? 1 : 0;
         const mainCount = showTitle + showNote + showImages;
         const showTree = mode === PresentationMode.TREE && beiginPoint && endPoints;
-        const animation = this.props.animation;
         const animationTime = 0.5;
         const imagesCount = node?.images?.length || 0;
+        const lineWidth = childrenLength < 30 ? 4 : 2;
+        const lineColor = 'white';
         return (
             <div
                 className='presentation-view-component'
@@ -118,14 +120,15 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                 <PageTreeComponent
                     beginPoint={beiginPoint || { x: 0, y: 0 }}
                     endPoints={endPoints || []}
-                    lineWidth={childrenLength < 30 ? 4 : 2}
-                    color='white'
+                    lineWidth={lineWidth}
+                    color={lineColor}
                     style={{
                         transition: animation ? `all ${animationTime}s` : undefined,
                         visibility: showTree ? 'visible' : 'hidden',
                         opacity: showTree ? 1 : 0,
                     }}
                 ></PageTreeComponent>
+
                 <div
                     className='presentation-view-main-area'
                     style={{
@@ -204,7 +207,7 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                     className='presentation-view-tree-content'
                     ref={this.treeContentRef}
                     style={{
-                        gridTemplateColumns: `5px 1fr`,
+                        gridTemplateColumns: `100%`,
                         gridTemplateRows: `repeat(${childrenLength}, 1fr)`,
                         gap: '10px',
                         alignItems: 'center',
@@ -219,25 +222,48 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                 >
                     {node?.children?.map((child, index) => {
                         return (
-                            <React.Fragment
+                            <div
                                 key={child.id}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                }}
                             >
                                 <div
                                     className='presentation-view-tree-item-line'
                                     style={{
+                                        transition: `backgroundColor ${animationTime}s ease ${animationTime}s`,
                                         backgroundColor: index === childIndex ? '#E94F4B' : 'transparent',
+                                        flexShrink: '0',
                                     }}
                                 ></div>
                                 <div
-                                    className='presentation-view-tree-item-title'
+                                    className={`presentation-view-tree-item-title` + (index === childIndex ? ' presentation-view-tree-item-title-current' : '')}
                                     style={{
+                                        transition: `color ${animationTime}s ease ${animationTime}s`,
                                         color: index <= childIndex ? 'white' : 'rgba(255, 255, 255, 0.2)',
                                         fontSize: `clamp(12px, ${50 / childrenLength}vh, 48px)`,
+                                        flexGrow: '0',
+                                        flexShrink: '1',
                                     }}
                                 >
                                     {child.text}
                                 </div>
-                            </React.Fragment>
+                                <div
+                                    style={{
+                                      minWidth: '5%',
+                                      height: `${lineWidth}px`,
+                                      borderBottomLeftRadius: `${lineWidth/2}px`,
+                                      borderTopLeftRadius: `${lineWidth/2}px`,
+                                      flexShrink: '0',
+                                      flexGrow: '1',
+                                      visibility: index === childIndex ? 'visible' : 'hidden',
+                                    }}
+                                ></div>
+                            </div>
                         );
                     })}
                 </div>

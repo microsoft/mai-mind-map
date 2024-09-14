@@ -64,19 +64,26 @@ class PresentationButton extends Component<PresentationButtonProps, Presentation
     }
 
     render() {
-        const { className, id, style, rootNode} = this.props;
+        const { className, id, style, rootNode } = this.props;
         const { fullscreen } = this.state;
         return (
-            <div 
+            <div
                 id={id}
                 onClick={this.enterFullscreen}
                 style={{
-                    cursor: 'pointer',
                     ...style
                 }}
                 className={className}
             >
-                {this.props.children}
+                <div
+                    style={{
+                        cursor: 'pointer',
+                    }}
+                >
+                    {
+                        this.props.children
+                    }
+                </div>
                 {
                     fullscreen &&
                     <PresentationViewComponent
