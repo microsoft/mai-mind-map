@@ -154,7 +154,7 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                                 className='presentation-view-main-title'
                                 style={{
                                     transition: animation ? `all ${animationTime}s` : undefined,
-                                    fontSize: `clamp(12px, 8em, 25vh)`,
+                                    fontSize: `15vh`,
                                     maxWidth: '100%',
                                 }}
                             >{node?.text}</div>
@@ -165,7 +165,7 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                                 className='presentation-view-main-description'
                                 style={{
                                     transition: animation ? `all ${animationTime}s` : undefined,
-                                    fontSize: `4em`,
+                                    fontSize: `8vh`,
                                     overflow: 'hidden',
                                     maxWidth: '100%',
                                 }}
@@ -245,7 +245,7 @@ class PageViewComponent extends Component<PageViewComponentProps, PageViewCompon
                                     style={{
                                         transition: `color ${animationTime}s ease ${animationTime}s`,
                                         color: index <= childIndex ? 'white' : 'rgba(255, 255, 255, 0.2)',
-                                        fontSize: `clamp(12px, ${50 / childrenLength}vh, 4em)`,
+                                        fontSize: `clamp(12px, ${50 / childrenLength}vh, 4vh)`,
                                         flexGrow: '0',
                                         flexShrink: '1',
                                     }}
