@@ -18,6 +18,7 @@ const SToolbar = css`
 `;
 
 export const EditingNode: FC<{
+  scale: number;
   node: EditingNodeType<Payload> | null;
   modifyNode: (nodeId: string, content: string) => void;
   setPendingEditNode: (node: EditingNodeType<Payload> | null) => void;
@@ -26,6 +27,7 @@ export const EditingNode: FC<{
   delNode(id: string): void;
 }> = (props) => {
   const {
+    scale,
     node: pendingNode,
     modifyNode,
     toggleCollapseNode,
@@ -60,10 +62,12 @@ export const EditingNode: FC<{
   return (
     <div
       style={{
+        transformOrigin: '0 0',
         position: 'absolute',
         width: 'fit-content',
-        left: x + tx,
-        top: y + ty,
+        left: x * scale + tx,
+        top: y * scale + ty,
+        transform: `scale(${scale})`,
         zIndex: 1000,
         boxShadow: '0 0 10px 0 #1890ff',
       }}

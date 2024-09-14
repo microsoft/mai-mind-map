@@ -95,6 +95,7 @@ export function MindMap(props: MFC<Payload>) {
           );
         })}
         <EditingNode
+          scale={scale}
           node={editingNode}
           modifyNode={modifyNode}
           setPendingEditNode={setEditingNode}
