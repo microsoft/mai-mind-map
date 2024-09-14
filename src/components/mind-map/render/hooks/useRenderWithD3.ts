@@ -256,7 +256,22 @@ function drawTree<D>(
         .attr('width', (d) => d.data.content_size[0])
         .attr('height', (d) => d.data.content_size[1])
         .attr('x', (d) => d.x)
-        .attr('y', (d) => d.y);
+        .attr('y', (d) => d.y)
+        .attrTween('rx', function (d) {
+          const oldX = this.x.baseVal.value;
+          const oldY = this.y.baseVal.value;
+          return (t) => {
+            const newX = d.x * t + oldX * (1 - t);
+            const newY = d.y * t + oldY * (1 - t);
+            // notify editing box's position via event
+            window.dispatchEvent(
+              new CustomEvent(`update-pos-${d.data.id}`, {
+                detail: [newX, newY],
+              }),
+            );
+            return '0';
+          };
+        });
     });
 
   tempDragNode

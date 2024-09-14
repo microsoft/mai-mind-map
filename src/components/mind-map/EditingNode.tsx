@@ -39,6 +39,11 @@ export const EditingNode: FC<{
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
 
+  const [pos, setPos] = useState<[number, number]>([
+    editingNode?.node?.x || 0,
+    editingNode?.node?.y || 0,
+  ]);
+
   useEffect(() => {
     // get current editing content and submit change
     const perEl = document.getElementById(editingNodePreId);
@@ -54,11 +59,33 @@ export const EditingNode: FC<{
     setEditingNode(pendingNode);
   }, [pendingNode, modifyNode]);
 
+  useEffect(() => {
+    if (editingNode) {
+      setPos([editingNode.node.x, editingNode.node.y]);
+      const controller = new AbortController();
+      window.addEventListener(
+        `update-pos-${editingNode.node.data.id}`,
+        (e) => {
+          console.log((e as CustomEvent<[number, number]>).detail);
+          setPos((e as CustomEvent<[number, number]>).detail);
+        },
+        { signal: controller.signal },
+      );
+      return () => {
+        controller.abort();
+      };
+    }
+  }, [editingNode]);
+
+  useEffect(() => {}, []);
+
   // const { node: editingNode } = props;
   if (!editingNode) return null;
   const { node, translate } = editingNode;
-  const { id, data, x, y } = node;
+  const { id, data } = node;
   const [tx, ty] = translate;
+  const x = pos[0] || node.x;
+  const y = pos[1] || node.y;
   return (
     <div
       style={{
