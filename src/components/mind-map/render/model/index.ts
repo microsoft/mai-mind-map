@@ -226,16 +226,16 @@ export function addNode(parentId: string, content: string): RawNode<Payload> {
 
 export function delNode(id: string): RawNode<Payload> {
   let parent = findParentNodeById(exampleSourceData, id);
-  let index = parent?.children?.findIndex((child) => child.id === id) || -1;
+  let index = parent?.children?.findIndex((child) => child.id === id);
 
-  if (!parent || index === -1) {
+  if (!parent || index === -1 || index === undefined) {
     return exampleSourceData;
   }
 
   exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
   parent = findParentNodeById(exampleSourceData, id);
-  index = parent?.children?.findIndex((child) => child.id === id) || -1;
-  if (index !== -1) {
+  index = parent?.children?.findIndex((child) => child.id === id);
+  if (index !== undefined && index !== -1) {
     parent?.children?.splice(index, 1);
   }
 
