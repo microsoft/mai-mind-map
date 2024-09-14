@@ -31,6 +31,10 @@ jobs:
           pnpm install
           pnpm run build:server
           cd ..
+          cd office-addin
+          pnpm install
+          pnpm run build
+          cd ..
 
       - name: Zip artifact for deployment
         run: |
@@ -63,7 +67,7 @@ jobs:
         run: |
           unzip release.zip
           echo "${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }}" > config.txt
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -78,4 +82,3 @@ jobs:
           app-name: 'mai-mind-map'
           slot-name: 'Production'
           package: .
-          

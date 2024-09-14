@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 
 const devCerts = require("office-addin-dev-certs");
+const path = require('path');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.microsoft.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://mai-mind-map.azurewebsites.net/addin/";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -23,6 +24,7 @@ module.exports = async (env, options) => {
     },
     output: {
       clean: true,
+      path: path.resolve(__dirname, "../mai-mind-map-se/dist/addin/"),
     },
     resolve: {
       extensions: [".ts", ".html", ".js"],
