@@ -17,7 +17,7 @@ const draggingItemOverClass = 'dragging-item-over';
 // Handle the action that some item is dragged over the node
 export function handleDragItemHoverOnAction<D, E extends Element>(
   sl: Selection<E, NodeInterface<SizedRawNode<D>>, SVGGElement, unknown>,
-  treeState: MutableRefObject<TreeState>,
+  treeState: MutableRefObject<TreeState<D>>,
 ) {
   sl.on('mouseenter', function (event, d) {
     if (treeState.current.dragging) {
@@ -40,7 +40,7 @@ export function handleDragItemHoverOnAction<D, E extends Element>(
 
 export function dragAction<D>(
   drawing: Drawing,
-  treeState: MutableRefObject<TreeState>,
+  treeState: MutableRefObject<TreeState<D>>,
 ) {
   let cachedAnchorPoint: SVGGElement | undefined;
   return drag<SVGRectElement, NodeInterface<SizedRawNode<D>>>()
@@ -72,7 +72,6 @@ export function dragAction<D>(
         const contentNode = drawing.nodeGroup
           .select<SVGGElement>(`g.node._${node.data.id}`)
           .style('pointer-events', 'none');
-        console.log(contentNode.node()?.nextSibling);
         cachedAnchorPoint = contentNode.node()?.nextSibling as SVGGElement;
         // move the node to the top
         if (cachedAnchorPoint) {

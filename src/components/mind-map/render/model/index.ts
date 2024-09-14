@@ -4,7 +4,7 @@ import { Payload } from './interface';
 let i = 1;
 const uuid = () => (i++).toString();
 
-export const exampleSourceData: RawNode<Payload> = {
+let exampleSourceData: RawNode<Payload> = {
   id: uuid(),
   payload: { content: 'Scott' },
   children: [
@@ -71,6 +71,10 @@ export const exampleSourceData: RawNode<Payload> = {
   ],
 };
 
+export function getExampleSourceData() {
+  return exampleSourceData;
+}
+
 export function expandTreeToArray<P>(root: RawNode<P> | null): RawNode<P>[] {
   if (!root) {
     return [];
@@ -96,6 +100,8 @@ export function moveNodeTo(
   index: number,
 ): RawNode<Payload> {
   console.log('moveNodeTo', nodeId, targetId, index);
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+
   const node = findNodeById(exampleSourceData, nodeId);
 
   const parent = findParentNodeById(exampleSourceData, nodeId);
@@ -103,7 +109,7 @@ export function moveNodeTo(
   const target = findNodeById(exampleSourceData, targetId);
 
   if (!node || !parent || !target || parent === node) {
-    return JSON.parse(JSON.stringify(exampleSourceData));
+    return exampleSourceData;
   }
   if (!target.children) {
     target.children = [];
@@ -113,7 +119,7 @@ export function moveNodeTo(
 
   const nodeIndex = parentChildren.findIndex((child) => child.id === nodeId);
   if (nodeIndex === -1) {
-    return JSON.parse(JSON.stringify(exampleSourceData));
+    return exampleSourceData;
   }
 
   let targetIndex = index;
@@ -126,7 +132,7 @@ export function moveNodeTo(
   parentChildren.splice(nodeIndex, 1);
   targetChildren.splice(targetIndex, 0, node);
 
-  return JSON.parse(JSON.stringify(exampleSourceData));
+  return exampleSourceData;
 }
 
 function findNodeById(
@@ -159,4 +165,17 @@ function findParentNodeById(
     }
   }
   return null;
+}
+
+export function modifyNodeContent(
+  nodeId: string,
+  content: string,
+): RawNode<Payload> {
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+
+  const node = findNodeById(exampleSourceData, nodeId);
+  if (node) {
+    node.payload.content = content;
+  }
+  return exampleSourceData;
 }

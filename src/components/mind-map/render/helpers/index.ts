@@ -6,7 +6,9 @@ import { NodeInterface } from '../layout/interface';
 export * from './getSizeFromNodeDate';
 export * from './getLinkForDirection';
 
-export function isHorizontalDirection(treeState: MutableRefObject<TreeState>) {
+export function isHorizontalDirection<D>(
+  treeState: MutableRefObject<TreeState<D>>,
+) {
   return ['LR', 'RL', 'H'].includes(treeState.current.direction);
 }
 
@@ -25,8 +27,8 @@ export function getPaddingForDirection(direction: Direction) {
   }
 }
 
-export function getLinkPointPairForDirection(
-  treeState: MutableRefObject<TreeState>,
+export function getLinkPointPairForDirection<D>(
+  treeState: MutableRefObject<TreeState<D>>,
   source: [number, number, number, number], // [x,y,w,h]
   target: [number, number, number, number], // [x,y,w,h]
 ): {

@@ -1,4 +1,7 @@
 import { CSSProperties, Fragment, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { EditingNode, EditingNodeType } from './EditingNode';
+import { NodeContent } from './NodeContent';
 import { SizeMeasurer } from './SizeMeasurer';
 import {
   Direction,
@@ -6,6 +9,7 @@ import {
   GetSizeFromNodeDate,
   IsNodeCollapsed,
   LayoutType,
+  NodeInterface,
   OUTLINE,
   RawNode,
   SizedRawNode,
@@ -14,6 +18,7 @@ import {
   prepareNodeSize,
   useRenderWithD3,
 } from './render';
+import { Payload } from './render/model/interface';
 export * from './render';
 import './MindMap.css';
 
@@ -24,12 +29,10 @@ type MFC<D> = {
   treeDirection: Direction;
   scale: number;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
-  nodesRender: (
-    pendingRenderNodes: [SVGForeignObjectElement, SizedRawNode<D>][],
-  ) => JSX.Element;
+  modifyNode: (nodeId: string, content: string) => void;
 };
 
-export function MindMap<D>(props: MFC<D>) {
+export function MindMap(props: MFC<Payload>) {
   const {
     style,
     tree,
@@ -37,9 +40,13 @@ export function MindMap<D>(props: MFC<D>) {
     scale,
     isNodeCollapsed,
     moveNodeTo,
-    nodesRender,
+    modifyNode,
   } = props;
-  const [sizedData, setSizedData] = useState<SizedRawNode<D> | null>(null);
+  const [sizedData, setSizedData] = useState<SizedRawNode<Payload> | null>(
+    null,
+  );
+  const [editingNode, setEditingNode] =
+    useState<EditingNodeType<Payload> | null>(null);
 
   const root = useMemo(() => {
     if (!sizedData) return null;
@@ -53,27 +60,39 @@ export function MindMap<D>(props: MFC<D>) {
       }),
       getChildren: (d) => d.children || [],
     });
-  }, [tree, treeDirection, sizedData, isNodeCollapsed]);
+  }, [treeDirection, sizedData, isNodeCollapsed]);
   const { svg, pendingRenderNodes } = useRenderWithD3(
     root,
     treeDirection,
     scale,
     moveNodeTo,
+    setEditingNode,
   );
-
-  const nodes = nodesRender(pendingRenderNodes);
 
   return (
     <Fragment>
       <SizeMeasurer root={tree} onSize={setSizedData} />
-
       <div style={style}>
         <svg
           ref={svg}
           role="presentation"
           style={{ height: '100%', width: '100%', display: 'block' }}
         ></svg>
-        {nodes}
+        {pendingRenderNodes.map(([node, data]) => {
+          return (
+            <Fragment key={data.id}>
+              {createPortal(
+                <NodeContent id={data.id} data={data.payload} />,
+                node,
+              )}
+            </Fragment>
+          );
+        })}
+        <EditingNode
+          node={editingNode}
+          modifyNode={modifyNode}
+          setEditingNode={setEditingNode}
+        />
       </div>
     </Fragment>
   );

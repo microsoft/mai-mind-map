@@ -24,10 +24,7 @@ export function SizeMeasurer<D>(props: {
 }) {
   const { root, onSize } = props;
   const el = useRef<HTMLDivElement>(null);
-  const nodeList = useMemo(() => {
-    return expandTreeToArray(root);
-  }, [root]);
-
+  const nodeList = expandTreeToArray(root);
   useLayoutEffect(() => {
     if (!el.current?.children.length) {
       return;
@@ -37,21 +34,23 @@ export function SizeMeasurer<D>(props: {
       (elId) => {
         const el = document.getElementById(elId);
         if (el) {
-          return [el.offsetWidth, el.offsetHeight];
+          const rect = el.getBoundingClientRect();
+          return [rect.width, rect.height];
         }
         return [113, 30];
       },
       idPrefix,
     );
+    console.log('onSize', sizedDate);
     onSize(sizedDate);
-  }, [root, nodeList]);
+  }, [root, onSize]);
 
   return (
     <div className={sizeMeasurerClass} ref={el}>
       {nodeList.map((node) => {
         return (
           <NodeContent
-            key={node.id}
+            key={`m_${node.id}`}
             id={node.id}
             data={node.payload as Payload}
             idPrefix={idPrefix}

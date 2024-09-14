@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { type EditingNodeType } from '../../EditingNode';
 import {
   getLinkForDirection,
   getLinkPointPairForDirection,
@@ -24,15 +25,17 @@ export function useRenderWithD3<D>(
   direction: Direction,
   scale: number,
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void,
+  setEditingNode: (node: EditingNodeType<D> | null) => void,
 ) {
   const svg = useRef<SVGSVGElement>(null);
-  const treeStateRef = useRef<TreeState>({
+  const treeStateRef = useRef<TreeState<D>>({
     direction,
     dragging: false,
     scale: scale,
     moveNodeTo: () => {
       throw new Error('moveNodeTo not implemented');
     },
+    setEditingNode: setEditingNode,
   });
 
   const [pendingRenderNodes, setPendingRenderNodes] = useState<
@@ -105,11 +108,12 @@ export function useRenderWithD3<D>(
   useEffect(() => {
     treeStateRef.current.direction = direction;
     treeStateRef.current.moveNodeTo = moveNodeTo;
+    treeStateRef.current.setEditingNode = setEditingNode;
     if (drawing && root) {
       const nodeDataPairs = drawTree(drawing, root, treeStateRef);
       setPendingRenderNodes(nodeDataPairs);
     }
-  }, [drawing, direction, root, moveNodeTo]);
+  }, [drawing, direction, root, moveNodeTo, setEditingNode]);
 
   return { svg, pendingRenderNodes };
 }
@@ -117,8 +121,9 @@ export function useRenderWithD3<D>(
 function drawTree<D>(
   drawing: Drawing,
   tree: NodeInterface<SizedRawNode<D>>,
-  treeState: MutableRefObject<TreeState>,
+  treeState: MutableRefObject<TreeState<D>>,
 ) {
+  // console.log('drawTree', JSON.stringify(tree));
   const drawTran = transition().duration(500);
 
   // for path
@@ -199,13 +204,11 @@ function drawTree<D>(
       const gNode = update
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .transition(drawTran as any)
-        .attr('width', (d) => d.data.content_size[0])
-        .attr('height', (d) => d.data.content_size[1])
         .attr('transform', (d) => {
           return `translate(${d.x}, ${d.y})`;
         });
       gNode
-        .select('rect.node-content')
+        .select('foreignObject.node-content')
         .attr('width', (d) => d.data.content_size[0])
         .attr('height', (d) => d.data.content_size[1]);
     });
@@ -256,13 +259,25 @@ function drawTree<D>(
     .enter()
     .append('rect')
     .attr('class', (d) => {
-      return `drag-btn _${d.data.id}${d.isRoot() ? ' root' : ''}`;
+      return `drag-btn _${d.data.id}}`;
     })
     .attr('fill', 'transparent')
     .attr('x', (d) => d.x)
     .attr('y', (d) => d.y)
     .attr('width', (d) => d.data.content_size[0])
-    .attr('height', (d) => d.data.content_size[1]);
+    .attr('height', (d) => d.data.content_size[1])
+    .on('click', (event, d) => {
+      const drawingEl = <SVGGElement>drawing.drawingGroup.node();
+      const tx = +(drawingEl.dataset.tx || 0);
+      const ty = +(drawingEl.dataset.ty || 0);
+      treeState.current.setEditingNode(null);
+      setTimeout(() => {
+        treeState.current.setEditingNode({
+          node: d,
+          translate: [tx, ty],
+        });
+      }, 50);
+    });
 
   tempDragNode.exit().remove();
 
