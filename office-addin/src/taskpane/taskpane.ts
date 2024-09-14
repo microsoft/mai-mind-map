@@ -17,8 +17,7 @@ function submitAll() {
     const body: Word.Body = context.document.body;
     body.load("text");
     await context.sync();
-    document.getElementById("test-content").innerHTML = body.text;
-    navigateWebApp();
+    uploadDocument(body.text);
   });
 }
 
@@ -28,8 +27,7 @@ function submitSelected() {
       document.getElementById("test-content").innerHTML = asyncResult.error.message;
     } else {
       if (asyncResult.value) {
-        document.getElementById("test-content").innerHTML = asyncResult.value as string;
-        navigateWebApp();
+        uploadDocument(asyncResult.value as string);
       }
     }
   });
@@ -37,4 +35,68 @@ function submitSelected() {
 
 function navigateWebApp() {
   Office.context.ui.displayDialogAsync("https://mai-mind-map.azurewebsites.net");
+}
+
+function uploadDocument(content: string) {
+  createDocument()
+    .then(response => {
+      const docId = response.doc_id;
+      console.log("New doc created: ", docId);
+      return updateContent(docId, content);
+    })
+    .then(success => {
+      navigateWebApp();
+    })
+    .catch(error => {
+      console.error("Error: ", error);
+    })
+}
+
+function createDocument() {
+  return new Promise((resolve, reject) => {
+    const url = "https://mai-mind-map.azurewebsites.net/api/new";
+    const name = docName();
+    const data = { name };
+
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          resolve(JSON.parse(request.responseText));
+        } else {
+          reject(request.statusText);
+        }
+      }
+    };
+
+    request.open("POST", url, true);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify(data));
+  });
+}
+
+function updateContent(docId: string, content: string) {
+  return new Promise((resolve, reject) => {
+    const url = `https://mai-mind-map.azurewebsites.net/api/update/${docId}`;
+    const data = { content };
+
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          resolve(JSON.parse(request.responseText));
+        } else {
+          reject(request.statusText);
+        }
+      }
+    };
+
+    request.open("PATCH", url, true);
+    request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    request.send(JSON.stringify(data));
+  });
+}
+
+function docName() {
+  return `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`
 }
