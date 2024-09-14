@@ -1,5 +1,6 @@
 foreignObject.node-content{
   overflow: visible;
+  border-radius: 5px;
 }
 
 foreignObject.dragging-item-over {
