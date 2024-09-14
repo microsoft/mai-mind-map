@@ -35,7 +35,6 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd mai-mind-map-se
-          echo "${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }}" > config.txt
           zip release.zip ./* -r
           cd ..
 
@@ -61,7 +60,9 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: |
+          unzip release.zip
+          echo "${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }}" > config.txt
       
       - name: Login to Azure
         uses: azure/login@v2
