@@ -1,0 +1,19 @@
+.presentation-view {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+
+    background-color: #1F2329;
+}
+
+.presentation-control-bar {
+    position: fixed;
+    width: 100%;
+    bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
