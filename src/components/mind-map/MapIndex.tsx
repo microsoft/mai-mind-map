@@ -60,7 +60,12 @@ export function MindMapView() {
         <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
       </div>
       <MindMap
-        style={{ height: '100%', width: '100%', position: 'relative' }}
+        style={{
+          height: '100%',
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
         tree={treeData}
         isNodeCollapsed={(data) => data.collapsed || false}
         treeDirection={dir}

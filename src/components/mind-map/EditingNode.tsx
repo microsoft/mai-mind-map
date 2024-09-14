@@ -66,7 +66,6 @@ export const EditingNode: FC<{
       window.addEventListener(
         `update-pos-${editingNode.node.data.id}`,
         (e) => {
-          console.log((e as CustomEvent<[number, number]>).detail);
           setPos((e as CustomEvent<[number, number]>).detail);
         },
         { signal: controller.signal },
