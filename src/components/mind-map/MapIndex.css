@@ -5,8 +5,5 @@
   transform: translateX(-50%);
   display: flex;
   gap: 8px;
-}
-
-.scale-control {
-  
+  z-index: 2;
 }

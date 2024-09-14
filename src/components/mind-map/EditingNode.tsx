@@ -1,5 +1,5 @@
 import { css } from '@base/styled';
-import { FC, useEffect, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
@@ -10,6 +10,15 @@ export interface EditingNodeType<D> {
   translate: [number, number];
 }
 
+const SEditingBG = css`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 999;
+`;
+
 export const EditingNode: FC<{
   node: EditingNodeType<Payload> | null;
   modifyNode: (nodeId: string, content: string) => void;
@@ -18,7 +27,7 @@ export const EditingNode: FC<{
   const { node: pendingNode, modifyNode } = props;
 
   const [editingNode, setEditingNode] =
-    useState<EditingNodeType<Payload> | null>(pendingNode);
+    useState<EditingNodeType<Payload> | null>(null);
 
   useEffect(() => {
     // get current editing content and submit change
@@ -41,27 +50,36 @@ export const EditingNode: FC<{
   const { id, data, x, y } = node;
   const [tx, ty] = translate;
   return (
-    <div
-      style={{
-        position: 'absolute',
-        width: 'fit-content',
-        left: x + tx,
-        top: y + ty,
-        boxShadow: '0 0 10px 0 #1890ff',
-      }}
-    >
-      <NodeContent
-        id={id}
-        data={data.payload}
-        editAble={true}
-        idPrefix="enc"
-        minWidth={node.data.content_size[0]}
-        minHeight={node.data.content_size[1]}
-        onBlur={() => {
-          console.log('onBlur');
+    <Fragment>
+      <div
+        className={SEditingBG}
+        onMouseDown={() => {
           props.setEditingNode(null);
         }}
-      />
-    </div>
+      ></div>
+      <div
+        style={{
+          position: 'absolute',
+          width: 'fit-content',
+          left: x + tx,
+          top: y + ty,
+          zIndex: 1000,
+          boxShadow: '0 0 10px 0 #1890ff',
+        }}
+      >
+        <NodeContent
+          id={id}
+          data={data.payload}
+          editAble={true}
+          idPrefix="enc"
+          minWidth={node.data.content_size[0]}
+          minHeight={node.data.content_size[1]}
+          onBlur={() => {
+            // console.log('onBlur');
+            // props.setEditingNode(null);
+          }}
+        />
+      </div>
+    </Fragment>
   );
 };

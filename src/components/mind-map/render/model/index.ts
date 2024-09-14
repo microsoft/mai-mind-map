@@ -171,9 +171,14 @@ export function modifyNodeContent(
   nodeId: string,
   content: string,
 ): RawNode<Payload> {
-  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+  let node = findNodeById(exampleSourceData, nodeId);
 
-  const node = findNodeById(exampleSourceData, nodeId);
+  if (!node || node.payload.content === content) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+  node = findNodeById(exampleSourceData, nodeId);
   if (node) {
     node.payload.content = content;
   }

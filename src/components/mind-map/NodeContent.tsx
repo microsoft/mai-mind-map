@@ -43,12 +43,13 @@ export const NodeContent = memo<{
       minHeight,
       idPrefix = 'nc',
     } = props;
+    const { content } = data;
     const ref = useRef<HTMLPreElement>(null);
     useEffect(() => {
       if (!ref.current) return;
-      ref.current.textContent = data.content;
+      ref.current.textContent = content;
       ref.current.focus();
-    }, []);
+    }, [content]);
     return (
       <div className={SNodeItem} style={{ minWidth, minHeight }}>
         {editAble ? (
@@ -64,7 +65,7 @@ export const NodeContent = memo<{
           ></pre>
         ) : (
           <pre id={`${idPrefix}-${id}`} className={SNodeContentText}>
-            {data.content}
+            {content}
           </pre>
         )}
       </div>

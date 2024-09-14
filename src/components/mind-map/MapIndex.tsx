@@ -17,7 +17,7 @@ import './MapIndex.css';
 
 export function MindMapView() {
   const [treeData, setTreeData] = useState(getExampleSourceData());
-  const [dir, serDir] = useState<Direction>('TB');
+  const [dir, serDir] = useState<Direction>('H');
   const [scale, setScale] = useState(1);
   const moveNodeToFun = useCallback(
     (nodeId: string, targetId: string, index: number) => {

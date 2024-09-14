@@ -270,13 +270,10 @@ function drawTree<D>(
       const drawingEl = <SVGGElement>drawing.drawingGroup.node();
       const tx = +(drawingEl.dataset.tx || 0);
       const ty = +(drawingEl.dataset.ty || 0);
-      treeState.current.setEditingNode(null);
-      setTimeout(() => {
-        treeState.current.setEditingNode({
-          node: d,
-          translate: [tx, ty],
-        });
-      }, 50);
+      treeState.current.setEditingNode({
+        node: d,
+        translate: [tx, ty],
+      });
     });
 
   tempDragNode.exit().remove();
