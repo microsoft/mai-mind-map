@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 const devCerts = require("office-addin-dev-certs");
+const path = require('path');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -23,6 +24,7 @@ module.exports = async (env, options) => {
     },
     output: {
       clean: true,
+      path: path.resolve(__dirname, "../mai-mind-map-se/dist/addin/"),
     },
     resolve: {
       extensions: [".ts", ".html", ".js"],

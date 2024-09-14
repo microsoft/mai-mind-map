@@ -12,7 +12,7 @@
     "dev_server_port": 3000
   },
   "scripts": {
-    "build": "webpack --mode production && npm run cp",
+    "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
     "lint": "office-addin-lint check",
@@ -25,8 +25,7 @@
     "start:web": "office-addin-debugging start manifest.xml web",
     "stop": "office-addin-debugging stop manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
-    "watch": "webpack --mode development --watch",
-    "cp": "cpx \"dist/**/*.*\" ../mai-mind-map-se/dist/addin"
+    "watch": "webpack --mode development --watch"
   },
   "dependencies": {
     "core-js": "^3.36.0",

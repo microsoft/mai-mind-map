@@ -32,8 +32,8 @@ jobs:
           pnpm run build:server
           cd ..
           cd office-addin
-          npm install
-          npm run build
+          pnpm install
+          pnpm run build
           cd ..
 
       - name: Zip artifact for deployment
