@@ -11,7 +11,7 @@ let exampleSourceData: RawNode<Payload> = {
     { id: uuid(), payload: { content: 'Jian Lin' } },
     {
       id: uuid(),
-      payload: { content: 'Yang Huangfu' },
+      payload: { content: 'Yang Huangfu', collapsed: true },
       children: [
         { id: uuid(), payload: { content: 'Jianhui Zeng' } },
         { id: uuid(), payload: { content: 'Jiaming Mao' } },

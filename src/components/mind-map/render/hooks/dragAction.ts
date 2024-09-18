@@ -54,6 +54,7 @@ export function dragAction<D>(
         >,
         node,
       ) {
+        treeState.current.setEditingNode(null);
         if (node.isRoot()) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
@@ -105,7 +106,9 @@ export function dragAction<D>(
           .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
             `path.line._${node.data.id}`,
           )
-          .style('opacity', 0.2)
+          .style('opacity', (d) =>
+            d.target.inCollapsedItem || d.source.inCollapsedItem ? 0 : 0.2,
+          )
           .data(node.touchedLinks(), (link) => {
             const key = `${link.source.data.id}-${link.target.data.id}`;
             return key;
@@ -186,7 +189,9 @@ export function dragAction<D>(
           .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
             `path.line._${node.data.id}`,
           )
-          .style('opacity', 1);
+          .style('opacity', (d) =>
+            d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
+          );
 
         // 1. check if this item should be dropped on another item
         const overNodes = drawing.nodeGroup.selectAll<

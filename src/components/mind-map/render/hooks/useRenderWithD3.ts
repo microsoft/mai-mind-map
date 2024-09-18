@@ -141,6 +141,9 @@ function drawTree<D>(
       update
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .transition(drawTran as any)
+        .style('opacity', (d) =>
+          d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
+        )
         .attr('d', (d) => {
           const sourceRect: [number, number, number, number] = [
             d.source.x,
@@ -171,6 +174,9 @@ function drawTree<D>(
     .attr('class', (d) => {
       return `line _${d.source.data.id} _${d.target.data.id}`;
     })
+    .style('opacity', (d) =>
+      d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
+    )
     .attr('d', (d) => {
       const sourceRect: [number, number, number, number] = [
         d.source.x,
@@ -208,6 +214,8 @@ function drawTree<D>(
       const gNode = update
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .transition(drawTran as any)
+        .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
+        .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
         .attr('transform', (d) => {
           return `translate(${d.x}, ${d.y})`;
         });
@@ -220,6 +228,8 @@ function drawTree<D>(
   const gNode = tempDrawingNode
     .enter()
     .append('g')
+    .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
+    .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
     .attr('class', (d) => {
       return `node _${d.data.id}`;
     })
@@ -253,10 +263,20 @@ function drawTree<D>(
       update
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .transition(drawTran as any)
+        .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
         .attr('width', (d) => d.data.content_size[0])
         .attr('height', (d) => d.data.content_size[1])
         .attr('x', (d) => d.x)
         .attr('y', (d) => d.y)
+        .attr('ry', (d) => {
+          // notify editing box's content data via event
+          window.dispatchEvent(
+            new CustomEvent(`update-data-${d.data.id}`, {
+              detail: d,
+            }),
+          );
+          return 0;
+        })
         .attrTween('rx', function (d) {
           const oldX = this.x.baseVal.value;
           const oldY = this.y.baseVal.value;
@@ -278,8 +298,9 @@ function drawTree<D>(
     .enter()
     .append('rect')
     .attr('class', (d) => {
-      return `drag-btn _${d.data.id}}`;
+      return `drag-btn _${d.data.id}`;
     })
+    .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
     .attr('fill', 'transparent')
     .attr('x', (d) => d.x)
     .attr('y', (d) => d.y)
