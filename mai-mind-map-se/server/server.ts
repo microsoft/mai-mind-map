@@ -36,6 +36,8 @@ export function run() {
   app.use(express.raw({ type: '*/*', limit: '10mb' }));
   app.use('/api/', require('./controllers/docs'));
 
+  app.use('/addin', express.static(path.resolve(__dirname, '../dist/addin')));
+
   app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
   });
