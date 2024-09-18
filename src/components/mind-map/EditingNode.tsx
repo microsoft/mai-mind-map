@@ -98,7 +98,6 @@ export const EditingNode: FC<{
   const [tx, ty] = translate;
   const x = pos[0] || node.x;
   const y = pos[1] || node.y;
-  console.log('xy', x, y);
   return (
     <div
       style={{

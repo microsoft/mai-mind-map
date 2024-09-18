@@ -54,7 +54,7 @@ export function dragAction<D>(
         >,
         node,
       ) {
-        treeState.current.setEditingNode(null);
+        // treeState.current.setEditingNode(null);
         if (node.isRoot()) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
