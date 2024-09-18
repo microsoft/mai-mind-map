@@ -1,24 +1,53 @@
-import { Fragment, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import './App.css';
-import { PresentationButton, mockFromSampleData } from './components/presentation';
+import { MindMap, MindMapList, Presenter } from './components/icons/icons';
+import { STreeViewController } from './components/mind-map/Controller';
+import {
+  PresentationButton,
+  mockFromSampleData,
+} from './components/presentation';
+import {
+  TreeViewControllerPortal,
+  useTreeViewControl,
+} from './components/state/treeViewState';
 
 const App = () => {
+  const { treeViewControlRef, portal } = useTreeViewControl();
+
+  const location = useLocation();
   return (
-    <Fragment>
-      <ul className="layout-sl">
-        <li>
-          <Link to="mindmap">MindMap</Link>
-        </li>
-        <li>
-          <Link to="outline">Outline</Link>
-        </li>
-        <li>
-          <PresentationButton rootNode={mockFromSampleData}>Presenter View</PresentationButton>
-        </li>
-      </ul>
+    <TreeViewControllerPortal.Provider value={portal}>
+      <div className="control-panel">
+        <ul className="layout-sl">
+          <li className={location.pathname == '/mindmap' ? 'active' : ''}>
+            <Link to="mindmap">
+              <MindMap />
+              &nbsp;MindMap
+            </Link>
+          </li>
+          <li className={location.pathname == '/outline' ? 'active' : ''}>
+            <Link to="outline">
+              <MindMapList />
+              &nbsp;Outline
+            </Link>
+          </li>
+          <li>
+            <PresentationButton
+              rootNode={mockFromSampleData}
+              style={{
+                padding: 10,
+                display: 'flex',
+              }}
+            >
+              <Presenter />
+              &nbsp;Presenter
+            </PresentationButton>
+          </li>
+        </ul>
+        <div ref={treeViewControlRef} className={STreeViewController}></div>
+      </div>
       <Outlet />
-    </Fragment>
+    </TreeViewControllerPortal.Provider>
   );
 };
 

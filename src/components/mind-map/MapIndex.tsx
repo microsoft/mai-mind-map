@@ -1,21 +1,19 @@
 import { Fragment, useCallback, useState } from 'react';
 
-import { LayoutControl } from './LayoutControl';
+import { Controller } from './Controller';
 
-import { ScaleControl } from './ScaleControl';
 import { Direction } from './render';
 
 import {
-  LayoutType,
   MindMap,
   addNode,
   delNode,
   getExampleSourceData,
-  getSizeFromNodeDate,
   modifyNodeContent,
   moveNodeTo,
   toggleCollapseNode,
 } from './MindMap';
+
 import './MapIndex.css';
 
 export function MindMapView() {
@@ -54,11 +52,7 @@ export function MindMapView() {
   );
   return (
     <Fragment>
-      <div className="config-controller">
-        <LayoutControl direction={dir} setDirection={serDir} />
-
-        <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
-      </div>
+      <Controller dir={dir} serDir={serDir} scale={scale} setScale={setScale} />
       <MindMap
         style={{
           height: '100%',

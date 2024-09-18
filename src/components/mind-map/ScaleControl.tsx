@@ -1,4 +1,14 @@
+import { css } from '@base/styled';
 import { FC } from 'react';
+
+const SScaleControl = css`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  & > .label {
+    width: 55px;
+  }
+`;
 
 function scaler(val: number) {
   let re;
@@ -30,8 +40,8 @@ export const ScaleControl: FC<{
 }> = (props) => {
   const { scale, setScale } = props;
   return (
-    <div className="scale-control">
-      Scale:{' '}
+    <div className={SScaleControl}>
+      <span className="label">Scale:</span>
       <input
         type="range"
         name="Scale"
