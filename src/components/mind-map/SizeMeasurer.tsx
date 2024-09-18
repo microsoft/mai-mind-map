@@ -41,7 +41,6 @@ export function SizeMeasurer<D>(props: {
       },
       idPrefix,
     );
-    console.log('onSize', sizedDate);
     onSize(sizedDate);
   }, [root, onSize]);
 

@@ -127,7 +127,7 @@ function drawTree<D>(
   tree: NodeInterface<SizedRawNode<D>>,
   treeState: MutableRefObject<TreeState<D>>,
 ) {
-  // console.log('drawTree', JSON.stringify(tree));
+  console.log('drawTree');
   const drawTran = transition().duration(500);
 
   // for path

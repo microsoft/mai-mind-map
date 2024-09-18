@@ -2,7 +2,7 @@ import { Fragment, useCallback, useState } from 'react';
 
 import { Controller } from './Controller';
 
-import { Direction } from './render';
+import { Direction, Payload } from './render';
 
 import {
   MindMap,
@@ -15,6 +15,10 @@ import {
 } from './MindMap';
 
 import './MapIndex.css';
+
+function isNodeCollapsed(data: Payload): boolean {
+  return data.collapsed || false;
+}
 
 export function MindMapView() {
   const [treeData, setTreeData] = useState(getExampleSourceData());
@@ -61,7 +65,7 @@ export function MindMapView() {
           overflow: 'hidden',
         }}
         tree={treeData}
-        isNodeCollapsed={(data) => data.collapsed || false}
+        isNodeCollapsed={isNodeCollapsed}
         treeDirection={dir}
         scale={scale}
         modifyNode={modifyNode}
