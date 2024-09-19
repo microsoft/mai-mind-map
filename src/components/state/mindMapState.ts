@@ -1,12 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
-  addNode as addNodeFun,
-  delNode as delNodeFun,
   getExampleSourceData,
-  modifyNodeContent,
-  moveNodeTo as moveNodeToFun,
-  toggleCollapseNode as toggleCollapseNodeFun,
 } from '@root/components/mind-map/render/model';
 import { Payload } from '@root/components/mind-map/render/model/interface';
 import { RawNode } from '@root/components/mind-map/render/node/interface';
