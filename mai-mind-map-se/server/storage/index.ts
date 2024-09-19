@@ -4,7 +4,7 @@ import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob'
 import { v4 as uuidv4 } from 'uuid';
 const CONTAINER_NAME = 'docs'
 const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{"name": "new_blank_doc"}`, 'utf8');
-const SUCCESS = 'success';
+export const SUCCESS = 'success';
 let blobServiceClient: BlobServiceClient;
 try {
   blobServiceClient = BlobServiceClient.fromConnectionString(readConfig());
@@ -107,7 +107,7 @@ export async function NewDoc(): Promise<Response> {
   }
 }
 
-function handleError(error: unknown): string {
+export function handleError(error: unknown): string {
   if (typeof error === 'string') {
     return error;
   } else if (error instanceof Error) {
