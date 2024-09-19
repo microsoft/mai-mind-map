@@ -20,10 +20,21 @@ function isNodeCollapsed(data: Payload): boolean {
   return data.collapsed || false;
 }
 
+let direction: Direction = 'H';
+let scaleValue = 1;
+
 export function MindMapView() {
   const [treeData, setTreeData] = useState(getExampleSourceData());
-  const [dir, serDir] = useState<Direction>('H');
-  const [scale, setScale] = useState(1);
+  const [dir, setDirFun] = useState<Direction>(direction);
+  const [scale, setScaleFun] = useState(scaleValue);
+  const setDir = useCallback((dir: Direction) => {
+    setDirFun(dir);
+    direction = dir;
+  }, []);
+  const setScale = useCallback((scale: number) => {
+    setScaleFun(scale);
+    scaleValue = scale;
+  }, []);
   const moveNodeToFun = useCallback(
     (nodeId: string, targetId: string, index: number) => {
       setTreeData(moveNodeTo(nodeId, targetId, index));
@@ -56,7 +67,7 @@ export function MindMapView() {
   );
   return (
     <Fragment>
-      <Controller dir={dir} serDir={serDir} scale={scale} setScale={setScale} />
+      <Controller dir={dir} serDir={setDir} scale={scale} setScale={setScale} />
       <MindMap
         style={{
           height: '100%',
