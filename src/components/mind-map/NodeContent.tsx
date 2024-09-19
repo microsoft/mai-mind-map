@@ -97,7 +97,7 @@ export const NodeContent = memo<{
             data-id={id}
             className={SNodeContentText}
             contentEditable={true}
-            onBlurCapture={(e) => {
+            onBlur={(e) => {
               props.onBlur && props.onBlur();
             }}
             onKeyDown={props.onEditorKeyDown}

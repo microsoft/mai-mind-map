@@ -4,7 +4,7 @@ import { MindMap, MindMapList, Presenter } from './components/icons/icons';
 import { STreeViewController } from './components/mind-map/Controller';
 import {
   PresentationButton,
-  mockFromSampleData,
+  presentationNodeFromSampleData,
 } from './components/presentation';
 import {
   MindMapState,
@@ -37,7 +37,7 @@ const App = () => {
             </li>
             <li>
               <PresentationButton
-                rootNode={mockFromSampleData}
+                rootNode={presentationNodeFromSampleData(treeState.mindMapData)}
                 style={{
                   padding: 10,
                   display: 'flex',
