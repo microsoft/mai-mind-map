@@ -77,7 +77,6 @@ export const NodeContent = memo<{
       ref.current.textContent = content;
       ref.current.focus();
     }, [content]);
-    console.log('render node content', id, content, data.collapsed);
     return (
       <div className={SNodeItem} style={{ minWidth, minHeight }}>
         {data.collapsed && !editAble && (
