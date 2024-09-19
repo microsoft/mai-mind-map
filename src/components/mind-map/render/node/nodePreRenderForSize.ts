@@ -1,3 +1,4 @@
+import { listDocuments } from '@root/model/api';
 import { GetSizeFromNodeDate, RawNode, SizedRawNode } from './interface';
 
 export default function prepareNodeSize<Mdata>(
@@ -17,3 +18,5 @@ export default function prepareNodeSize<Mdata>(
     content_size,
   };
 }
+
+listDocuments().then(console.log);

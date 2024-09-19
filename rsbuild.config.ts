@@ -33,5 +33,8 @@ export default defineConfig({
   },
   server: {
     port: normalizePort(process.env.PORT || '3000'),
+    proxy: IS_PROD ? {} : {
+      '/api': 'https://mai-mind-map.azurewebsites.net/'
+    },
   },
 });
