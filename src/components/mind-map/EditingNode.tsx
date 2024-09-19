@@ -23,7 +23,7 @@ export const EditingNode: FC<{
   modifyNode: (nodeId: string, content: string) => void;
   setPendingEditNode: (node: EditingNodeType<Payload> | null) => void;
   toggleCollapseNode(nodeId: string): void;
-  addNode(parentId: string, content: string): void;
+  addNode(parentId: string, index: number, content: string): void;
   delNode(id: string): void;
 }> = (props) => {
   const {
@@ -125,7 +125,7 @@ export const EditingNode: FC<{
 
         <button
           onClick={() => {
-            addNode(id, ' ');
+            addNode(id, data.children?.length ?? 0, ' ');
           }}
           title="Add Child"
         >

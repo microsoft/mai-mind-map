@@ -51,15 +51,15 @@ const iterateUntil = <T>(gen: () => T) => (predict: (t: T) => boolean): T => {
   return val;
 };
 
-const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 10);
+const genId = () => Math.random().toString(36).padEnd(10, "0").slice(2, 10);
 
 export const add =
-  (cur: MindMapCp) =>
   (
     parentId: string,
     idx: number,
     { stringProps, numberProps, booleanProps }: MindMapNodeProps
-  ): MindMapOp | undefined => {
+  ) =>
+  (cur: MindMapCp): MindMapOp | undefined => {
     const t = Date.now();
     if (idx < 0 || idx > (cur[parentId]?.children ?? []).length)
       return undefined;
@@ -91,8 +91,8 @@ export const add =
   };
 
 export const remove =
-  (cur: MindMapCp) =>
-  (nodeId: string): MindMapOp | undefined => {
+  (nodeId: string) =>
+  (cur: MindMapCp): MindMapOp | undefined => {
     if (!cur[nodeId]) return undefined;
     const { stringProps, numberProps, booleanProps } = cur[nodeId];
     const nodeOp = {} as MindMapNodeOp;
@@ -130,44 +130,50 @@ export const remove =
     return op;
   };
 
-export const update = (cur: MindMapCp) => (nodeId: string, {
-  stringProps,
-  numberProps,
-  booleanProps,
-}: MindMapNodeProps): MindMapOp | undefined => {
-  const t = Date.now();
-  const {
-    stringProps: strPropsCur = {},
-    numberProps: numPropsCur = {},
-    booleanProps: boolPropsCur = {},
-  } = cur[nodeId] || {};
-  const nodeOp: MindMapNodeOp = {};
-  if (stringProps)
-    nodeOp.stringProps = mapRec(stringProps, (v, key) => ({
-      f: strPropsCur[key] ?? $fullDocLwwString.initial(),
-      t: { t, v },
-    }));
-  if (numberProps)
-    nodeOp.numberProps = mapRec(numberProps, (v, key) => ({
-      f: numPropsCur[key] ?? $fullDocLwwNumber.initial(),
-      t: { t, v },
-    }));
-  if (booleanProps)
-    nodeOp.booleanProps = mapRec(booleanProps, (v, key) => ({
-      f: boolPropsCur[key] ?? $fullDocLwwBoolean.initial(),
-      t: { t, v },
-    }));
-  return { [nodeId]: nodeOp };
-}
+export const modify =
+  (
+    nodeId: string,
+    updater: (props: MindMapNodeProps) => MindMapNodeProps,
+  ) =>
+  (cur: MindMapCp): MindMapOp | undefined => {
+    const t = Date.now();
+    const {
+      stringProps: strPropsCur = {},
+      numberProps: numPropsCur = {},
+      booleanProps: boolPropsCur = {},
+    } = cur[nodeId] || {};
+    const { stringProps, numberProps, booleanProps } = updater({
+      stringProps: mapRec(strPropsCur, ({ v }) => v),
+      numberProps: mapRec(numPropsCur, ({ v }) => v),
+      booleanProps: mapRec(boolPropsCur, ({ v }) => v),
+    });
+    const nodeOp: MindMapNodeOp = {};
+    if (stringProps)
+      nodeOp.stringProps = mapRec(stringProps, (v, key) => ({
+        f: strPropsCur[key] ?? $fullDocLwwString.initial(),
+        t: { t, v },
+      }));
+    if (numberProps)
+      nodeOp.numberProps = mapRec(numberProps, (v, key) => ({
+        f: numPropsCur[key] ?? $fullDocLwwNumber.initial(),
+        t: { t, v },
+      }));
+    if (booleanProps)
+      nodeOp.booleanProps = mapRec(booleanProps, (v, key) => ({
+        f: boolPropsCur[key] ?? $fullDocLwwBoolean.initial(),
+        t: { t, v },
+      }));
+    return { [nodeId]: nodeOp };
+  };
 
 export const move =
-  (cur: MindMapCp) =>
-  (nodeId: string, parentId: string, idx: number): MindMapOp | undefined => {
+  (nodeId: string, parentId: string, idx: number) =>
+  (cur: MindMapCp): MindMapOp | undefined => {
     const t = Date.now();
     if (idx < 0 || idx > (cur[parentId]?.children ?? []).length)
       return undefined;
 
-    const op: MindMapOp = { };
+    const op: MindMapOp = {};
 
     Object.keys(cur).forEach((key) => {
       const { children = [] } = cur[key];
@@ -186,10 +192,12 @@ export const move =
 
     op[parentId] ??= {};
     op[parentId].children ??= {};
-    (op[parentId].children as ArrayOp<Timestamped<string>>).ins = [{
-      idx,
-      arr: [{ t, v: nodeId }],
-    }];
+    (op[parentId].children as ArrayOp<Timestamped<string>>).ins = [
+      {
+        idx,
+        arr: [{ t, v: nodeId }],
+      },
+    ];
 
     return op;
   };

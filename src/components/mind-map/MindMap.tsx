@@ -31,7 +31,7 @@ type MFC<D> = {
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
   toggleCollapseNode(nodeId: string): void;
-  addNode(parentId: string, content: string): void;
+  addNode(parentId: string, index: number, content: string): void;
   delNode(id: string): void;
 };
 
