@@ -1,27 +1,195 @@
-import { Ordered } from "./ot-doc/algebra";
-import { arrayDocument } from "./ot-doc/array-document";
-import { OpType } from "./ot-doc/document-meta";
-import { gwwDocument } from "./ot-doc/gww-document";
-import { recordDocument } from "./ot-doc/record-document";
-import { structDocument } from "./ot-doc/struct-document";
+import { $eqPrime } from "./ot-doc/algebra";
+import { $invDocArr, ArrayOp, ArrayOplet } from "./ot-doc/array";
+import { $InvDoc } from "./ot-doc/document";
+import { $fullDocRecord, $invDocRecord, Rec, mapRec } from "./ot-doc/record";
+import { Update } from "./ot-doc/singleton";
+import { $invDocStruct } from "./ot-doc/struct";
+import {
+  $eqTimestamped,
+  $fullDocLwwBoolean,
+  $fullDocLwwNumber,
+  $fullDocLwwString,
+  Timestamped,
+} from "./ot-doc/timestamped";
 
-type Timestamped<T> = { t: number, v: T };
-const timestamped = <T>({ equ = (a) => (b) => a === b, lt = (a) => (b) => a < b }: Partial<Ordered<T>> = {}): Ordered<Timestamped<T>> => ({
-  equ: (a) => (b) => a.t === b.t && equ(a.v)(b.v),
-  lt: (a) => (b) => a.t < b.t || (a.t === b.t && lt(a.v)(b.v)),
-});
+export type MindMapNodeProps = Partial<{
+  stringProps: Rec<string>;
+  numberProps: Rec<number>;
+  booleanProps: Rec<boolean>;
+}>;
 
-export const mindMapMeta = recordDocument(structDocument({
-  children: arrayDocument(timestamped<string>()),
-  props: structDocument({
-    string: recordDocument(gwwDocument(timestamped<string>())),
-    number: recordDocument(gwwDocument(timestamped<number>())),
-    boolean: recordDocument(gwwDocument(timestamped<boolean>())),
-  }),
+export type MindMapNodeCp = Partial<{
+  stringProps: Rec<Timestamped<string>>;
+  numberProps: Rec<Timestamped<number>>;
+  booleanProps: Rec<Timestamped<boolean>>;
+  children: Timestamped<string>[];
+}>;
+
+export type MindMapCp = Rec<MindMapNodeCp>;
+
+export type MindMapNodeOp = Partial<{
+  children: ArrayOp<Timestamped<string>>;
+  stringProps: Rec<Update<Timestamped<string>>>;
+  numberProps: Rec<Update<Timestamped<number>>>;
+  booleanProps: Rec<Update<Timestamped<boolean>>>;
+}>;
+
+export type MindMapOp = Rec<MindMapNodeOp>;
+
+export const $invDocMindMap: $InvDoc<MindMapCp, MindMapOp> = $invDocRecord($invDocStruct({
+  children: $invDocArr<Timestamped<string>>($eqTimestamped($eqPrime<string>())),
+  stringProps: $fullDocRecord($fullDocLwwString),
+  numberProps: $fullDocRecord($fullDocLwwNumber),
+  booleanProps: $fullDocRecord($fullDocLwwBoolean),
 }));
 
-export type MindMapOp = OpType<typeof mindMapMeta>;
-
-export const add = (cur: MindMapOp) => (nodeId: string, parentId: string, text: string): MindMapOp | undefined => {
-  return undefined;
+const iterateUntil = <T>(gen: () => T) => (predict: (t: T) => boolean): T => {
+  let val: T;
+  do {
+    val = gen();
+  } while (!predict(val));
+  return val;
 };
+
+const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 10);
+
+export const add =
+  (cur: MindMapCp) =>
+  (
+    parentId: string,
+    idx: number,
+    { stringProps, numberProps, booleanProps }: MindMapNodeProps
+  ): MindMapOp | undefined => {
+    const t = Date.now();
+    if (idx < 0 || idx > (cur[parentId]?.children ?? []).length)
+      return undefined;
+    const nodeId = iterateUntil(genId)((id) => !cur[id]);
+    const nodeOp: MindMapNodeOp = {};
+    if (stringProps)
+      nodeOp.stringProps = mapRec(stringProps, (v) => ({
+        f: $fullDocLwwString.initial(),
+        t: { t, v },
+      }));
+    if (numberProps)
+      nodeOp.numberProps = mapRec(numberProps, (v) => ({
+        f: $fullDocLwwNumber.initial(),
+        t: { t, v },
+      }));
+    if (booleanProps)
+      nodeOp.booleanProps = mapRec(booleanProps, (v) => ({
+        f: $fullDocLwwBoolean.initial(),
+        t: { t, v },
+      }));
+    return {
+      [nodeId]: nodeOp,
+      [parentId]: {
+        children: {
+          ins: [{ idx, arr: [{ t, v: nodeId }] }],
+        },
+      },
+    };
+  };
+
+export const remove =
+  (cur: MindMapCp) =>
+  (nodeId: string): MindMapOp | undefined => {
+    if (!cur[nodeId]) return undefined;
+    const { stringProps, numberProps, booleanProps } = cur[nodeId];
+    const nodeOp = {} as MindMapNodeOp;
+
+    if (stringProps)
+      nodeOp.stringProps = mapRec(stringProps, (f) => ({
+        f,
+        t: $fullDocLwwString.initial(),
+      }));
+    if (numberProps)
+      nodeOp.numberProps = mapRec(numberProps, (f) => ({
+        f,
+        t: $fullDocLwwNumber.initial(),
+      }));
+    if (booleanProps)
+      nodeOp.booleanProps = mapRec(booleanProps, (f) => ({
+        f,
+        t: $fullDocLwwBoolean.initial(),
+      }));
+
+    const op: MindMapOp = { [nodeId]: nodeOp };
+
+    Object.keys(cur).forEach((key) => {
+      const { children = [] } = cur[key];
+      const del = children.reduce((m, { t, v }, idx) => {
+        if (v === nodeId) m.unshift({ idx, arr: [{ t, v }] });
+        return m;
+      }, [] as ArrayOplet<Timestamped<string>>[]);
+      if (del.length > 0) {
+        op[key] ??= {};
+        op[key].children = { del };
+      }
+    });
+
+    return op;
+  };
+
+export const update = (cur: MindMapCp) => (nodeId: string, {
+  stringProps,
+  numberProps,
+  booleanProps,
+}: MindMapNodeProps): MindMapOp | undefined => {
+  const t = Date.now();
+  const {
+    stringProps: strPropsCur = {},
+    numberProps: numPropsCur = {},
+    booleanProps: boolPropsCur = {},
+  } = cur[nodeId] || {};
+  const nodeOp: MindMapNodeOp = {};
+  if (stringProps)
+    nodeOp.stringProps = mapRec(stringProps, (v, key) => ({
+      f: strPropsCur[key] ?? $fullDocLwwString.initial(),
+      t: { t, v },
+    }));
+  if (numberProps)
+    nodeOp.numberProps = mapRec(numberProps, (v, key) => ({
+      f: numPropsCur[key] ?? $fullDocLwwNumber.initial(),
+      t: { t, v },
+    }));
+  if (booleanProps)
+    nodeOp.booleanProps = mapRec(booleanProps, (v, key) => ({
+      f: boolPropsCur[key] ?? $fullDocLwwBoolean.initial(),
+      t: { t, v },
+    }));
+  return { [nodeId]: nodeOp };
+}
+
+export const move =
+  (cur: MindMapCp) =>
+  (nodeId: string, parentId: string, idx: number): MindMapOp | undefined => {
+    const t = Date.now();
+    if (idx < 0 || idx > (cur[parentId]?.children ?? []).length)
+      return undefined;
+
+    const op: MindMapOp = { };
+
+    Object.keys(cur).forEach((key) => {
+      const { children = [] } = cur[key];
+      const del = children.reduce((m, { t, v }, i) => {
+        if (v === nodeId) {
+          m.unshift({ idx: i, arr: [{ t, v }] });
+          if (parentId === key && i < idx) idx -= 1;
+        }
+        return m;
+      }, [] as ArrayOplet<Timestamped<string>>[]);
+      if (del.length > 0) {
+        op[key] ??= {};
+        op[key].children = { del };
+      }
+    });
+
+    op[parentId] ??= {};
+    op[parentId].children ??= {};
+    (op[parentId].children as ArrayOp<Timestamped<string>>).ins = [{
+      idx,
+      arr: [{ t, v: nodeId }],
+    }];
+
+    return op;
+  };
