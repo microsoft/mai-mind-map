@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useContext, useState } from 'react';
 
 import { Controller } from './Controller';
 
@@ -14,6 +14,8 @@ import {
   toggleCollapseNode,
 } from './MindMap';
 
+import { MindMapState } from '../state/mindMapState';
+
 import './MapIndex.css';
 
 function isNodeCollapsed(data: Payload): boolean {
@@ -24,7 +26,6 @@ let direction: Direction = 'H';
 let scaleValue = 1;
 
 export function MindMapView() {
-  const [treeData, setTreeData] = useState(getExampleSourceData());
   const [dir, setDirFun] = useState<Direction>(direction);
   const [scale, setScaleFun] = useState(scaleValue);
   const setDir = useCallback((dir: Direction) => {
@@ -35,37 +36,9 @@ export function MindMapView() {
     setScaleFun(scale);
     scaleValue = scale;
   }, []);
-  const moveNodeToFun = useCallback(
-    (nodeId: string, targetId: string, index: number) => {
-      setTreeData(moveNodeTo(nodeId, targetId, index));
-    },
-    [setTreeData],
-  );
-  const modifyNode = useCallback(
-    (nodeId: string, content: string) => {
-      setTreeData(modifyNodeContent(nodeId, content));
-    },
-    [setTreeData],
-  );
-  const toggleCollapseNodeFun = useCallback(
-    (nodeId: string) => {
-      setTreeData(toggleCollapseNode(nodeId));
-    },
-    [setTreeData],
-  );
-  const addNodeFun = useCallback(
-    (parentId: string, content: string) => {
-      setTreeData(addNode(parentId, content));
-    },
-    [setTreeData],
-  );
-  const delNodeFun = useCallback(
-    (id: string) => {
-      setTreeData(delNode(id));
-    },
-    [setTreeData],
-  );
-  return (
+  const treeState = useContext(MindMapState);
+
+  return treeState ? (
     <Fragment>
       <Controller dir={dir} serDir={setDir} scale={scale} setScale={setScale} />
       <MindMap
@@ -75,16 +48,16 @@ export function MindMapView() {
           position: 'relative',
           overflow: 'hidden',
         }}
-        tree={treeData}
+        tree={treeState.mindMapData}
         isNodeCollapsed={isNodeCollapsed}
         treeDirection={dir}
         scale={scale}
-        modifyNode={modifyNode}
-        moveNodeTo={moveNodeToFun}
-        toggleCollapseNode={toggleCollapseNodeFun}
-        addNode={addNodeFun}
-        delNode={delNodeFun}
+        modifyNode={treeState.modifyNode}
+        moveNodeTo={treeState.moveNodeTo}
+        toggleCollapseNode={treeState.toggleCollapseNode}
+        addNode={treeState.addNode}
+        delNode={treeState.delNode}
       />
     </Fragment>
-  );
+  ) : null;
 }

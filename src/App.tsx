@@ -7,47 +7,52 @@ import {
   mockFromSampleData,
 } from './components/presentation';
 import {
+  MindMapState,
   TreeViewControllerPortal,
+  useMindMapState,
   useTreeViewControl,
-} from './components/state/treeViewState';
+} from './components/state/mindMapState';
 
 const App = () => {
   const { treeViewControlRef, portal } = useTreeViewControl();
+  const treeState = useMindMapState();
 
   const location = useLocation();
   return (
-    <TreeViewControllerPortal.Provider value={portal}>
-      <div className="control-panel">
-        <ul className="layout-sl">
-          <li className={location.pathname == '/mindmap' ? 'active' : ''}>
-            <Link to="mindmap">
-              <MindMap />
-              &nbsp;MindMap
-            </Link>
-          </li>
-          <li className={location.pathname == '/outline' ? 'active' : ''}>
-            <Link to="outline">
-              <MindMapList />
-              &nbsp;Outline
-            </Link>
-          </li>
-          <li>
-            <PresentationButton
-              rootNode={mockFromSampleData}
-              style={{
-                padding: 10,
-                display: 'flex',
-              }}
-            >
-              <Presenter />
-              &nbsp;Presenter
-            </PresentationButton>
-          </li>
-        </ul>
-        <div ref={treeViewControlRef} className={STreeViewController}></div>
-      </div>
-      <Outlet />
-    </TreeViewControllerPortal.Provider>
+    <MindMapState.Provider value={treeState}>
+      <TreeViewControllerPortal.Provider value={portal}>
+        <div className="control-panel">
+          <ul className="layout-sl">
+            <li className={location.pathname == '/mindmap' ? 'active' : ''}>
+              <Link to="mindmap">
+                <MindMap />
+                &nbsp;MindMap
+              </Link>
+            </li>
+            <li className={location.pathname == '/outline' ? 'active' : ''}>
+              <Link to="outline">
+                <MindMapList />
+                &nbsp;Outline
+              </Link>
+            </li>
+            <li>
+              <PresentationButton
+                rootNode={mockFromSampleData}
+                style={{
+                  padding: 10,
+                  display: 'flex',
+                }}
+              >
+                <Presenter />
+                &nbsp;Presenter
+              </PresentationButton>
+            </li>
+          </ul>
+          <div ref={treeViewControlRef} className={STreeViewController}></div>
+        </div>
+        <Outlet />
+      </TreeViewControllerPortal.Provider>
+    </MindMapState.Provider>
   );
 };
 

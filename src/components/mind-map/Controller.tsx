@@ -1,5 +1,5 @@
 import { css } from '@base/styled';
-import { TreeViewControllerPortal } from '@root/components/state/treeViewState';
+import { TreeViewControllerPortal } from '@root/components/state/mindMapState';
 import { FC, Fragment, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { LayoutControl } from './LayoutControl';
