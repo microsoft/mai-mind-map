@@ -23,7 +23,13 @@ const App = () => {
       <TreeViewControllerPortal.Provider value={portal}>
         <div className="control-panel">
           <ul className="layout-sl">
-            <li className={location.pathname == '/mindmap' ? 'active' : ''}>
+            <li
+              className={
+                location.pathname == '/mindmap' || location.pathname == '/'
+                  ? 'active'
+                  : ''
+              }
+            >
               <Link to="mindmap">
                 <MindMap />
                 &nbsp;MindMap
