@@ -1,6 +1,7 @@
 import { uuid } from '@base/atom';
-import { getExampleSourceData } from '../mind-map/MindMap';
-const exampleSourceData = getExampleSourceData();
+
+import { Payload } from '@root/components/mind-map/render/model/interface';
+import { RawNode } from '@root/components/mind-map/render/node/interface';
 
 const TextAreaPrefix = uuid();
 export function getTextAreaId(id: string) {
@@ -10,7 +11,9 @@ export function getTextAreaId(id: string) {
 export const INDENT = 24;
 
 export function focusTextArea(id: string, at?: number) {
-  const textarea = document.getElementById(getTextAreaId(id)) as HTMLTextAreaElement;
+  const textarea = document.getElementById(
+    getTextAreaId(id),
+  ) as HTMLTextAreaElement;
   if (!textarea) return;
   textarea.focus();
   const total = textarea.value.length;
@@ -19,21 +22,21 @@ export function focusTextArea(id: string, at?: number) {
   textarea.setSelectionRange(at, at);
 }
 
-export function mockFromSampleData() {
-  interface Node {
-    id: string;
-    payload: { content: string };
-    children?: Node[];
-  };
+export interface OutlineNode {
+  id: string;
+  payload: Payload;
+  children?: string[];
+}
 
-  const all: Record<string, { id: string; payload: { content: string }; children?: string[] }> = {};
+export function handleSourceData(sourceData: RawNode<Payload>) {
+  const all: Record<string, OutlineNode> = {};
   const child2Parent: Record<string, string> = {};
 
-  const handle = (node: Node, parent: string) => {
-    const { id, payload: { content }, children } = node;
+  const handle = (node: RawNode<Payload>, parent: string) => {
+    const { id, children } = node;
     all[id] = {
       id,
-      payload: { content },
+      payload: Object.assign({}, node.payload),
       children: children?.map((c) => {
         handle(c, id);
         return c.id;
@@ -42,13 +45,13 @@ export function mockFromSampleData() {
     child2Parent[id] = parent;
   };
 
-  const RootId = exampleSourceData.id;
-  exampleSourceData.children?.forEach(c => handle(c, RootId));
+  const RootId = sourceData.id;
+  sourceData.children?.forEach((c) => handle(c, RootId));
   all[RootId] = {
     id: RootId,
-    payload: exampleSourceData.payload,
-    children: exampleSourceData.children?.map(c => c.id),
+    payload: sourceData.payload,
+    children: sourceData.children?.map((c) => c.id),
   };
-
+  console.log('all', all);
   return { all, child2Parent, RootId };
 }

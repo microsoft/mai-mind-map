@@ -1,10 +1,10 @@
-import { $Eq, $Ord } from "./algebra";
-import { $FullDoc, $idn, $Init, $InvDoc } from "./document";
-import { just, nothing } from "./maybe";
+import { $Eq, $Ord } from './algebra';
+import { $FullDoc, $Init, $InvDoc, $idn } from './document';
+import { just, nothing } from './maybe';
 
 // f: update from value
 // t: update to value
-export type Update<A> = { f: A, t: A } | null;
+export type Update<A> = { f: A; t: A } | null;
 
 // Eq a => Eq (Update a)
 export const $eqUpdate = <A>({ equals }: $Eq<A>): $Eq<Update<A>> => ({
@@ -15,7 +15,7 @@ export const $eqUpdate = <A>({ equals }: $Eq<A>): $Eq<Update<A>> => ({
     if (!a || !b) {
       return false;
     }
-    return (equals(a.f)(b.f) && equals(a.t)(b.t))
+    return equals(a.f)(b.f) && equals(a.t)(b.t);
   },
 });
 
@@ -26,9 +26,9 @@ export const $invDocUpdate = <A>({
 }: $Eq<A> & $Init<A>): $InvDoc<A, Update<A>> => ({
   initial,
   ...$idn(null),
-  compose:
-    (op) => op ? ((v) => equals(v)(op.f) ? just(op.t) : nothing()) : just,
-  invert: op => op ? { f: op.t, t: op.f } : null,
+  compose: (op) =>
+    op ? (v) => (equals(v)(op.f) ? just(op.t) : nothing()) : just,
+  invert: (op) => (op ? { f: op.t, t: op.f } : null),
   cpEquals: equals,
   opEquals: $eqUpdate({ equals }).equals,
 });
@@ -50,4 +50,3 @@ export const $fullDocGww = <A>({
     return just(lessThan(tA)(tB) ? { f: tA, t: tB } : null);
   },
 });
-

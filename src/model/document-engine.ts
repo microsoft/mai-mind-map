@@ -1,5 +1,5 @@
-import { Observable, mutable } from "./observable";
-import { $InvDoc } from "./ot-doc/document";
+import { Observable, mutable } from './observable';
+import { $InvDoc } from './ot-doc/document';
 
 export type DocumentEngine<Cp, Op> = {
   model: Observable<Cp>;
@@ -12,17 +12,18 @@ export type DocumentEngine<Cp, Op> = {
 
 export const documentEngine = <Cp, Op>(
   { initial, compose, invert, identity }: $InvDoc<Cp, Op>,
-  initialCp?: Cp
+  initialCp?: Cp,
 ): DocumentEngine<Cp, Op> => {
   const undoStack: Op[] = [];
   const redoStack: Op[] = [];
+  // biome-ignore lint/correctness/noEmptyPattern: <explanation>
   const {} = documentEngine;
   const { update, ...observable } = mutable(initialCp ?? initial());
   const apply_ = (updater: (cp: Cp) => Op): void => {
     update((cp) => {
       const op = updater(cp);
       const mCp = compose(op)(cp);
-      if (mCp.$ === "Nothing") return cp;
+      if (mCp.$ === 'Nothing') return cp;
       return mCp.v;
     });
   };

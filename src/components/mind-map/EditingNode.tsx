@@ -112,7 +112,7 @@ export const EditingNode: FC<{
       }}
     >
       <div className={SToolbar}>
-        {data.children?.length && (
+        {data.children?.length ? (
           <button
             onClick={() => {
               toggleCollapseNode(id);
@@ -121,7 +121,7 @@ export const EditingNode: FC<{
           >
             {data.payload.collapsed ? <Expand /> : <Collapse />}
           </button>
-        )}
+        ) : null}
 
         <button
           onClick={() => {

@@ -2,7 +2,7 @@ import { css } from '@root/base/styled';
 import { PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { icons } from './icons';
-import { TreeNode, ViewModel } from './view-model';
+import { OutlineNode, ViewModel } from './view-model';
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -28,7 +28,8 @@ const SActionItem = css`
   width: 24px;
   height: 24px;
   transition: 100ms;
-  &.active, &:hover {
+  &.active,
+  &:hover {
     background: rgba(25, 31, 37, 0.08);
     border-radius: 4px;
   }
@@ -61,7 +62,7 @@ const SBUI = css`
 
 interface Props {
   view: ViewModel;
-  node: TreeNode;
+  node: OutlineNode;
 }
 interface State {
   visible?: [x: number, y: number];

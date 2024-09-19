@@ -2,8 +2,9 @@ import { uuid } from '@base/atom';
 import { css } from '@root/base/styled';
 import React, { memo, useState, useRef, CSSProperties, useEffect } from 'react';
 import { INDENT, focusTextArea, getTextAreaId } from './common';
+import { OutlineNode } from './common';
 import Toolbox from './tool-box';
-import { TreeNode, ViewModel } from './view-model';
+import { ViewModel } from './view-model';
 
 /**
  * ----------------------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ const SHead = css`
   display: flex;
   align-items: center;
   justify-content: end;
-  gap: ${INDENT - (DotSize * 1.5)}px;
+  gap: ${INDENT - DotSize * 1.5}px;
 `;
 const SDot = css`
   flex: 0 0 ${DotSize}px;
@@ -55,7 +56,7 @@ const SDot = css`
     transform: scale(1.3);
     box-shadow: rgb(151, 212, 240) 0px 0px 0px 5px;
   }
-  &[data-collapsed="true"] {
+  &[data-collapsed='true'] {
     background: rgba(0, 0, 0, 0.6);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 5px;
   }
@@ -90,17 +91,22 @@ const SDragItem = css`
 function handleKey(
   e: React.KeyboardEvent,
   view: ViewModel,
-  node: TreeNode,
+  node: OutlineNode,
   el: HTMLTextAreaElement,
   text: string,
   setText: (text: string) => void,
 ) {
-  const { id, collapsed, children } = node;
+  const {
+    id,
+    payload: { collapsed },
+    children,
+  } = node;
   switch (e.keyCode) {
     case 27: // Escape
       el.blur();
       break;
-    case 8: { // Backspace
+    case 8: {
+      // Backspace
       if (el.selectionStart !== 0) break;
       const prev = view.mergeToPrev(id, text);
       if (prev) {
@@ -109,7 +115,8 @@ function handleKey(
       }
       break;
     }
-    case 13: { // Enter
+    case 13: {
+      // Enter
       // if (e.shiftKey) break;
       e.preventDefault();
       const left = text.slice(0, el.selectionStart);
@@ -134,17 +141,20 @@ function handleKey(
         setTimeout(() => focusTextArea(id, at), 50);
       }
       break;
-    case 38: { // Arrow Up
-    const prev = view.findPrevIncludingEx(id);
+    case 38: {
+      // Arrow Up
+      const prev = view.findPrevIncludingEx(id);
       if (prev) focusTextArea(prev.id);
       break;
     }
-    case 40: { // Arrow Down
+    case 40: {
+      // Arrow Down
       const next = view.findNextIncludingEx(id);
       if (next) focusTextArea(next.id);
       break;
     }
-    default: break
+    default:
+      break;
   }
 }
 
@@ -152,7 +162,7 @@ function handleKey(
  * it's necessary to put textarea in an independent component
  * in this way, the parent component won't re-render when editing text
  */
-function Editor(props: { view: ViewModel; node: TreeNode }) {
+function Editor(props: { view: ViewModel; node: OutlineNode }) {
   const { view, node } = props;
   const { id, payload } = node;
   const [text, setText] = useState(payload.content);
@@ -173,7 +183,7 @@ function Editor(props: { view: ViewModel; node: TreeNode }) {
       className={SText}
       style={format}
       value={text}
-      onChange={e => setText(e.target.value)}
+      onChange={(e) => setText(e.target.value)}
       onBlur={() => {
         if (text === payload.content) return;
         view.update(id, { ...payload, content: text });
@@ -182,7 +192,7 @@ function Editor(props: { view: ViewModel; node: TreeNode }) {
         const el = e.target as HTMLTextAreaElement;
         handleKey(e, view, node, el, text, setText);
       }}
-      onDragOver={e => e.preventDefault()}
+      onDragOver={(e) => e.preventDefault()}
     />
   );
 }
@@ -191,9 +201,14 @@ const indicator = document.createElement('div');
 indicator.classList.add(SDragItem);
 document.body.appendChild(indicator);
 
-function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
+function TreeLine(props: {
+  view: ViewModel;
+  node: OutlineNode;
+  depth: number;
+}) {
   const { view, node, depth } = props;
-  const { id, collapsed, children, payload } = node;
+  const { id, children, payload } = node;
+  const { collapsed } = payload;
   const tbox = useRef<Toolbox>(null);
   const [dragIn, setDragIn] = useState(false);
 
@@ -212,14 +227,18 @@ function TreeLine(props: { view: ViewModel; node: TreeNode; depth: number }) {
       }}
     >
       {dragIn && (
-        <div className="drag-in" style={{ left: width, width: `calc(100% - ${width}px)` }} />
+        <div
+          className="drag-in"
+          style={{ left: width, width: `calc(100% - ${width}px)` }}
+        />
       )}
       <div className={SHead} style={{ width }}>
         {hasChildren && (
           <div
             className={SArrow}
             style={{ transform: collapsed ? 'rotate(-90deg)' : undefined }}
-            onClick={() => view.toggleCollapsed(id)}>
+            onClick={() => view.toggleCollapsed(id)}
+          >
             ▼
           </div>
         )}
