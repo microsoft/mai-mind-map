@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { listDocuments } from '@root/model/api';
 
 import {
   getExampleSourceData,
@@ -87,3 +88,5 @@ export function useMindMapState(): MindMapState {
     delNode,
   };
 }
+
+listDocuments().then(console.log);
