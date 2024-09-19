@@ -44,7 +44,7 @@ export class Node<T> implements NodeInterface<T> {
   public inSize: { width: number; height: number };
   public side?: 'left' | 'right';
   public parent?: Node<T>;
-
+  public inCollapsedItem = false;
   private preH: number;
   private preV: number;
 
@@ -252,6 +252,68 @@ function hierarchy<T>(
     }
   }
   return root;
+}
+
+function hierarchyCollapseItem<T>(
+  data: T,
+  options: HierarchyOptions<T>,
+  parent: Node<T>,
+  isolated?: boolean,
+) {
+  const root = new Node(data, options);
+  root.inCollapsedItem = true;
+  root.parent = parent;
+  root.depth = parent.depth + 1;
+  root.x = parent.x;
+  root.y = parent.y;
+  const nodes = [root];
+  let node: Node<T> | undefined;
+  if (!isolated && !root.collapsed) {
+    // Todo: optimize shift
+    // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+    while ((node = nodes.shift())) {
+      const children = options.getChildren(node.data);
+      const length = children ? children.length : 0;
+      // need to create an array with valid length here
+      node.children = new Array(length);
+      if (!children || children.length === 0) continue;
+      for (let i = 0; i < length; i++) {
+        const child = new Node(children[i], options);
+        child.inCollapsedItem = true;
+        node.children[i] = child;
+        nodes.push(child);
+        child.parent = node;
+        child.depth = node.depth + 1;
+        child.x = node.x;
+        child.y = node.y;
+      }
+    }
+  }
+  return root;
+}
+export function completeCollapseItems<T>(
+  root: Node<T>,
+  data: T,
+  options: HierarchyOptions<T>,
+) {
+  const nodeChildren = root.children || [];
+  const dataChildren = options.getChildren(data) || [];
+
+  if (nodeChildren.length && nodeChildren.length !== dataChildren.length) {
+    return root;
+  }
+
+  if (!nodeChildren.length && root.collapsed && dataChildren.length) {
+    root.children = [];
+
+    dataChildren.forEach((childData, i) => {
+      root.children.push(hierarchyCollapseItem(childData, options, root));
+    });
+  } else if (nodeChildren.length === dataChildren.length) {
+    for (let i = 0; i < nodeChildren.length; i++) {
+      completeCollapseItems(nodeChildren[i], dataChildren[i], options);
+    }
+  }
 }
 
 export default hierarchy;

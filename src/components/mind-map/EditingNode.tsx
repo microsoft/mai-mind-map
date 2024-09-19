@@ -57,27 +57,39 @@ export const EditingNode: FC<{
 
     // then set editing node
     setEditingNode(pendingNode);
+    if (pendingNode) {
+      setPos([pendingNode.node.x, pendingNode.node.y]);
+    }
   }, [pendingNode, modifyNode]);
 
   useEffect(() => {
     if (editingNode) {
-      setPos([editingNode.node.x, editingNode.node.y]);
-      const controller = new AbortController();
+      const controller1 = new AbortController();
+      const controller2 = new AbortController();
+
       window.addEventListener(
         `update-pos-${editingNode.node.data.id}`,
         (e) => {
-          console.log((e as CustomEvent<[number, number]>).detail);
           setPos((e as CustomEvent<[number, number]>).detail);
         },
-        { signal: controller.signal },
+        { signal: controller1.signal },
+      );
+
+      window.addEventListener(
+        `update-data-${editingNode.node.data.id}`,
+        (e) => {
+          const node = (e as CustomEvent<NodeInterface<SizedRawNode<Payload>>>)
+            .detail;
+          setEditingNode({ node, translate: editingNode!.translate });
+        },
+        { signal: controller2.signal },
       );
       return () => {
-        controller.abort();
+        controller1.abort();
+        controller2.abort();
       };
     }
   }, [editingNode]);
-
-  useEffect(() => {}, []);
 
   // const { node: editingNode } = props;
   if (!editingNode) return null;
@@ -104,7 +116,6 @@ export const EditingNode: FC<{
           <button
             onClick={() => {
               toggleCollapseNode(id);
-              setEditingNode(null);
             }}
             title={data.payload.collapsed ? 'Expand' : 'Collapse'}
           >
@@ -115,7 +126,6 @@ export const EditingNode: FC<{
         <button
           onClick={() => {
             addNode(id, ' ');
-            setEditingNode(null);
           }}
           title="Add Child"
         >

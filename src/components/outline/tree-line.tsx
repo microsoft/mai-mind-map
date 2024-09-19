@@ -135,7 +135,7 @@ function handleKey(
       }
       break;
     case 38: { // Arrow Up
-      const prev = view.findPrevIncludingEx(id);
+    const prev = view.findPrevIncludingEx(id);
       if (prev) focusTextArea(prev.id);
       break;
     }

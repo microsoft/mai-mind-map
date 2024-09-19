@@ -15,3 +15,7 @@ foreignObject.dragging-item-over {
   position: absolute;
   z-index: 10000;
 }
+
+.in-collapsed {
+  display: none;
+}

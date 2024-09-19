@@ -38,7 +38,10 @@ const SSection = css`
  */
 export function OutlineView() {
   const forceUpdate = useReducer((x) => x + 1, 0)[1];
-  const view = useMemo(() => new ViewModel(forceUpdate), [forceUpdate]);
+  const view = useMemo(() => {
+    console.log('create view model');
+    return new ViewModel(forceUpdate);
+  }, [forceUpdate]);
 
   // @ts-ignore leave this for debug
   window._vm_ = view;

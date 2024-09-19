@@ -1,12 +1,10 @@
 interface PresentationNode {
-    id: string;
-    text?: string;
-    note?: string;
-    images?: string[];
+  id: string;
+  text?: string;
+  note?: string;
+  images?: string[];
 
-    children?: PresentationNode[];
+  children?: PresentationNode[];
 }
 
-export type {
-    PresentationNode,
-};
+export type { PresentationNode };

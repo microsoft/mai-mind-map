@@ -88,7 +88,7 @@ export function MindMap(props: MFC<Payload>) {
           return (
             <Fragment key={data.id}>
               {createPortal(
-                <NodeContent id={data.id} data={data.payload} />,
+                <NodeContent id={data.id} data={data.payload} onToggleCollapse={toggleCollapseNode} />,
                 node,
               )}
             </Fragment>

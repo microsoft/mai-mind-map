@@ -1,24 +1,58 @@
-import { Fragment, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import './App.css';
-import { PresentationButton, mockFromSampleData } from './components/presentation';
+import { MindMap, MindMapList, Presenter } from './components/icons/icons';
+import { STreeViewController } from './components/mind-map/Controller';
+import {
+  PresentationButton,
+  presentationNodeFromSampleData,
+} from './components/presentation';
+import {
+  MindMapState,
+  TreeViewControllerPortal,
+  useMindMapState,
+  useTreeViewControl,
+} from './components/state/mindMapState';
 
 const App = () => {
+  const { treeViewControlRef, portal } = useTreeViewControl();
+  const treeState = useMindMapState();
+
+  const location = useLocation();
   return (
-    <Fragment>
-      <ul className="layout-sl">
-        <li>
-          <Link to="mindmap">MindMap</Link>
-        </li>
-        <li>
-          <Link to="outline">Outline</Link>
-        </li>
-        <li>
-          <PresentationButton rootNode={mockFromSampleData}>Presenter View</PresentationButton>
-        </li>
-      </ul>
-      <Outlet />
-    </Fragment>
+    <MindMapState.Provider value={treeState}>
+      <TreeViewControllerPortal.Provider value={portal}>
+        <div className="control-panel">
+          <ul className="layout-sl">
+            <li className={location.pathname == '/mindmap' ? 'active' : ''}>
+              <Link to="mindmap">
+                <MindMap />
+                &nbsp;MindMap
+              </Link>
+            </li>
+            <li className={location.pathname == '/outline' ? 'active' : ''}>
+              <Link to="outline">
+                <MindMapList />
+                &nbsp;Outline
+              </Link>
+            </li>
+            <li>
+              <PresentationButton
+                rootNode={presentationNodeFromSampleData(treeState.mindMapData)}
+                style={{
+                  padding: 10,
+                  display: 'flex',
+                }}
+              >
+                <Presenter />
+                &nbsp;Presenter
+              </PresentationButton>
+            </li>
+          </ul>
+          <div ref={treeViewControlRef} className={STreeViewController}></div>
+        </div>
+        <Outlet />
+      </TreeViewControllerPortal.Provider>
+    </MindMapState.Provider>
   );
 };
 
