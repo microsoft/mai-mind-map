@@ -1,11 +1,13 @@
 import { css } from '@base/styled';
 import { memo, useEffect, useRef } from 'react';
+import { Ellipsis } from '../icons/icons';
 import { Payload } from './render/model/interface';
 
 const SNodeItem = css`
   outline: 1px solid #1890ff;
   background-color: #f0f0f0;
   border-radius: 5px;
+  position: relative;
 `;
 
 const SNodeContentText = css`
@@ -23,6 +25,28 @@ const SNodeContentText = css`
   outline: none !important;
   line-height: 1.4;
 `;
+const SExpandChar = css`
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 10px;
+  border-radius: 10px;
+  border: 0;
+  background-color: #6298ca;
+  color: white;
+  transition-duration: 0.2s;
+  &:hover {
+    box-shadow: 0 0 0px 3px #a9d4fd;
+  }
+`;
 
 export const editingNodePreId = 'editing-node-pre';
 
@@ -33,6 +57,7 @@ export const NodeContent = memo<{
   idPrefix?: string;
   minWidth?: number;
   minHeight?: number;
+  onToggleCollapse?: (nodeId: string) => void;
   onBlur?: () => void;
   onEditorKeyDown?: (e: React.KeyboardEvent<HTMLPreElement>) => void;
 }>(
@@ -52,8 +77,20 @@ export const NodeContent = memo<{
       ref.current.textContent = content;
       ref.current.focus();
     }, [content]);
+    console.log('render node content', id, content, data.collapsed);
     return (
       <div className={SNodeItem} style={{ minWidth, minHeight }}>
+        {data.collapsed && !editAble && (
+          <button
+            title="Expand"
+            className={SExpandChar}
+            onClick={() => {
+              props.onToggleCollapse && props.onToggleCollapse(id);
+            }}
+          >
+            <Ellipsis />
+          </button>
+        )}
         {editAble ? (
           <pre
             ref={ref}
@@ -94,10 +131,11 @@ export const NodeContent = memo<{
 
 function isEqual(prev: Payload, next: Payload) {
   const keys: (keyof Payload)[] = Object.keys(prev);
+  const nextKeys: (keyof Payload)[] = Object.keys(next);
+  if (keys.length !== nextKeys.length) {
+    return false;
+  }
   for (let i = 0; i < keys.length; i++) {
-    if (keys[i] === 'collapsed') {
-      continue;
-    }
     if (prev[keys[i]] !== next[keys[i]]) {
       return false;
     }
