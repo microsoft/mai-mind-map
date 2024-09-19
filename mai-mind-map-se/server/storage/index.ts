@@ -3,7 +3,7 @@ import { join, sep } from 'path';
 import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
 const CONTAINER_NAME = 'docs'
-const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{"name": "new_blank_doc"}`, 'utf8');
+const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{"00000000":{"stringProps":{"content":{}}}}`, 'utf8');
 export const SUCCESS = 'success';
 let blobServiceClient: BlobServiceClient;
 try {
