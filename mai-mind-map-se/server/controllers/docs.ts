@@ -12,7 +12,7 @@ let docs = express.Router();
 
 type ListItem = {
   doc_id: string,
-  props: any,
+  content: any,
 };
 
 docs.get('/list', async function (req, res) {
@@ -27,10 +27,12 @@ docs.get('/list', async function (req, res) {
       const doc = await GetDocByID(doc_id);
       if (doc.msg === SUCCESS && doc.content) {
         const doc_obj = JSON.parse(doc.content);
-        if (doc_obj.hasOwnProperty('00000000')) {
+        if (doc_obj.hasOwnProperty('00000000') &&
+          doc_obj['00000000'].hasOwnProperty('stringProps') &&
+          doc_obj['00000000']['stringProps'].hasOwnProperty('content')) {
           docs.push({
             doc_id,
-            props: doc_obj['00000000'],
+            content: doc_obj['00000000']['stringProps']['content'],
           });
         }
       }
