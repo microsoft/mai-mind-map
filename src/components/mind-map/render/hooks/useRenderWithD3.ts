@@ -134,7 +134,7 @@ function drawTree<D>(
   const tempDrawingPath = drawing.pathGroup
     .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>('path.line')
     .data(tree.links(), (link) => {
-      const key = `${link.source.data.id}-${link.target.data.id}`;
+      const key = `l-${link.target.data.id}`;
       return key;
     })
     .call((update) => {
@@ -145,18 +145,22 @@ function drawTree<D>(
           d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
         )
         .attr('d', (d) => {
-          const sourceRect: [number, number, number, number] = [
+          const sourceRect: [number, number, number, number, number, number] = [
             d.source.x,
             d.source.y,
             d.source.data.content_size[0],
             d.source.data.content_size[1],
+            d.source.x,
+            d.source.y,
           ];
 
-          const targetRect: [number, number, number, number] = [
+          const targetRect: [number, number, number, number, number, number] = [
             d.target.x,
             d.target.y,
             d.target.data.content_size[0],
             d.target.data.content_size[1],
+            d.target.x,
+            d.target.y,
           ];
           const linkPointPair = getLinkPointPairForDirection(
             treeState,
@@ -178,18 +182,22 @@ function drawTree<D>(
       d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
     )
     .attr('d', (d) => {
-      const sourceRect: [number, number, number, number] = [
+      const sourceRect: [number, number, number, number, number, number] = [
         d.source.x,
         d.source.y,
         d.source.data.content_size[0],
         d.source.data.content_size[1],
+        d.source.x,
+        d.source.y,
       ];
 
-      const targetRect: [number, number, number, number] = [
+      const targetRect: [number, number, number, number, number, number] = [
         d.target.x,
         d.target.y,
         d.target.data.content_size[0],
         d.target.data.content_size[1],
+        d.target.x,
+        d.target.y,
       ];
       const linkPointPair = getLinkPointPairForDirection(
         treeState,

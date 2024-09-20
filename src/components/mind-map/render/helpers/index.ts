@@ -29,14 +29,16 @@ export function getPaddingForDirection(direction: Direction) {
 
 export function getLinkPointPairForDirection<D>(
   treeState: MutableRefObject<TreeState<D>>,
-  source: [number, number, number, number], // [x,y,w,h]
-  target: [number, number, number, number], // [x,y,w,h]
+  source: [number, number, number, number, number, number], // [x,y,w,h, originX, originY]
+  target: [number, number, number, number, number, number], // [x,y,w,h, originX, originY]
 ): {
   source: [number, number];
   target: [number, number];
 } {
-  const [sourceX, sourceY, sourceW, sourceH] = source;
-  const [targetX, targetY, targetW, targetH] = target;
+  const [sourceX, sourceY, sourceW, sourceH, sourceOriginX, sourceOriginY] =
+    source;
+  const [targetX, targetY, targetW, targetH, targetOriginX, targetOriginY] =
+    target;
   // const { v, h } = getPaddingForDirection(treeState.current.direction);
   switch (treeState.current.direction) {
     // Vertical layout
@@ -51,7 +53,7 @@ export function getLinkPointPairForDirection<D>(
         target: [targetX + targetW / 2, targetY + targetH],
       };
     case 'V':
-      if (sourceY < targetY) {
+      if (sourceOriginY < targetOriginY) {
         // TB
         return {
           source: [sourceX + sourceW / 2, sourceY + sourceH],
@@ -76,7 +78,7 @@ export function getLinkPointPairForDirection<D>(
         target: [targetX + targetW, targetY + targetH / 2],
       };
     case 'H':
-      if (sourceX < targetX) {
+      if (sourceOriginX < targetOriginX) {
         // LR
         return {
           source: [sourceX + sourceW, sourceY + sourceH / 2],
