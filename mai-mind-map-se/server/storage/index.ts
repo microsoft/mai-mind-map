@@ -3,8 +3,7 @@ import { join, sep } from 'path';
 import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
 const CONTAINER_NAME = 'docs'
-const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{"00000000":{"stringProps":{"content":{}}}}`, 'utf8');
-export const SUCCESS = 'success';
+const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{"00000000":{"stringProps":{"content":{"v":null}}}}`, 'utf8');
 let blobServiceClient: BlobServiceClient;
 try {
   blobServiceClient = BlobServiceClient.fromConnectionString(readConfig());
@@ -36,7 +35,7 @@ export async function GetDocList(): Promise<Response> {
     for await (const blob of blobs) {
       list.push(blob.name);
     }
-    return { msg: SUCCESS, list };
+    return { list };
   } catch (err: unknown) {
     return { msg: handleError(err), list };
   }
@@ -69,7 +68,7 @@ export async function GetDocByID(blobName: string): Promise<Response> {
     const content = (
       await streamToBuffer(downloadBlockBlobResponse.readableStreamBody) as Blob
     ).toString();
-    return { msg: SUCCESS, content };
+    return { content };
   } catch (err: unknown) {
     return { msg: handleError(err) };
   }
@@ -87,7 +86,7 @@ export async function UpdateDocByID(blobName: string, content: Buffer): Promise<
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     let uploadBlobResponse: BlockBlobUploadResponse;
     uploadBlobResponse = await blockBlobClient.upload(content, content.length);
-    return { doc_id: blobName, msg: SUCCESS };
+    return { doc_id: blobName };
   } catch (err: unknown) {
     return { doc_id: blobName, msg: handleError(err) };
   }
@@ -101,7 +100,7 @@ export async function NewDoc(): Promise<Response> {
     let uploadBlobResponse: BlockBlobUploadResponse;
     uploadBlobResponse = await blockBlobClient.upload(DEFAULT_BLANK_DOC_BUFFER,
       DEFAULT_BLANK_DOC_BUFFER.length);
-    return { doc_id: newDocID, msg: SUCCESS };
+    return { doc_id: newDocID };
   } catch (err: unknown) {
     return { doc_id: undefined, msg: handleError(err) };
   }

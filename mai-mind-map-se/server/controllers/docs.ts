@@ -4,7 +4,6 @@ import {
   GetDocList,
   handleError,
   NewDoc,
-  SUCCESS,
   UpdateDocByID,
 } from '../storage/index';
 
@@ -12,12 +11,12 @@ let docs = express.Router();
 
 type ListItem = {
   doc_id: string,
-  content: any,
+  v: any,
 };
 
 docs.get('/list', async function (req, res) {
   const list = await GetDocList();
-  if (list.msg !== SUCCESS || list.list === undefined) {
+  if (list.msg || list.list === undefined) {
     res.send(list);
     return;
   }
@@ -25,19 +24,20 @@ docs.get('/list', async function (req, res) {
   try {
     for (const doc_id of list.list) {
       const doc = await GetDocByID(doc_id);
-      if (doc.msg === SUCCESS && doc.content) {
+      if (!doc.msg && doc.content) {
         const doc_obj = JSON.parse(doc.content);
         if (doc_obj.hasOwnProperty('00000000') &&
           doc_obj['00000000'].hasOwnProperty('stringProps') &&
-          doc_obj['00000000']['stringProps'].hasOwnProperty('content')) {
+          doc_obj['00000000']['stringProps'].hasOwnProperty('content') &&
+          doc_obj['00000000']['stringProps']['content'].hasOwnProperty('v')) {
           docs.push({
             doc_id,
-            content: doc_obj['00000000']['stringProps']['content'],
+            v: doc_obj['00000000']['stringProps']['content']['v'],
           });
         }
       }
     }
-    res.send({ msg: SUCCESS, list: docs });
+    res.send({ list: docs });
   } catch (err: unknown) {
     res.send({ msg: handleError(err), list: docs });
   }
