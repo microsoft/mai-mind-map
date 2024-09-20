@@ -10,31 +10,35 @@ import {
 let docs = express.Router();
 
 type ListItem = {
-  doc_id: string,
-  v: any,
+  id: string,
+  created?: Date,
+  updated: Date,
+  title: string,
 };
 
 docs.get('/list', async function (req, res) {
   const list = await GetDocList();
-  if (list.msg || list.list === undefined) {
+  if (list.message || list.list === undefined) {
     res.send(list);
     return;
   }
   const docs: ListItem[] = [];
   try {
-    for (const doc_id of list.list) {
-      const doc = await GetDocByID(doc_id);
-      if (!doc.msg && doc.content) {
+    for (const blob of list.list) {
+      const doc = await GetDocByID(blob.name);
+      if (!doc.message && doc.content) {
         const doc_obj = JSON.parse(doc.content);
-        if (doc_obj.hasOwnProperty('00000000') &&
-          doc_obj['00000000'].hasOwnProperty('stringProps') &&
-          doc_obj['00000000']['stringProps'].hasOwnProperty('content') &&
-          doc_obj['00000000']['stringProps']['content'].hasOwnProperty('v')) {
-          docs.push({
-            doc_id,
-            v: doc_obj['00000000']['stringProps']['content']['v'],
-          });
-        }
+        docs.push({
+          id: blob.name,
+          created: blob.createdOn ? blob.createdOn : blob.lastModified,
+          updated: blob.lastModified,
+          title: doc_obj && doc_obj['00000000'] &&
+            doc_obj['00000000'].stringProps &&
+            doc_obj['00000000'].stringProps.content &&
+            doc_obj['00000000'].stringProps.content.v
+            ? doc_obj['00000000'].stringProps.content.v
+            : undefined,
+        });
       }
     }
     res.send({ list: docs });
