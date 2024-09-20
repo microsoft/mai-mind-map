@@ -2,6 +2,7 @@ import fs from 'fs';
 import { join, sep } from 'path';
 import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
+import { handleError } from '../utils';
 const CONTAINER_NAME = 'docs'
 const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{}`, 'utf8');
 let blobServiceClient: BlobServiceClient;
@@ -11,6 +12,12 @@ try {
   console.error(handleError(err));
 }
 
+/**
+ * Reads the configuration from a file and returns the first line.
+ *
+ * @returns {string} The first line of the configuration file, or an empty
+ * string if the file is empty or cannot be read.
+ */
 function readConfig(): string {
   const contents = fs.readFileSync(join(__dirname, `..${sep}..${sep}config.txt`), 'utf-8');
   const lines = contents.split(/\r?\n/);
@@ -33,6 +40,22 @@ type Response = {
   content?: string
 };
 
+/**
+ * Retrieves a list of documents from the specified blob storage container.
+ *
+ * @returns {Promise<Response>} A promise that resolves to a Response object
+ * containing the list of documents.
+ *
+ * The Response object has the following structure:
+ * - `list`: An array of Blob objects, each containing:
+ * - `name`: The name of the blob.
+ * - `createdOn`: The creation date of the blob.
+ * - `lastModified`: The last modified date of the blob.
+ * - `message` (optional): An error message if an error occurs during the
+ *    retrieval process.
+ *
+ * @throws {Error} If an error occurs while accessing the blob storage container.
+ */
 export async function GetDocList(): Promise<Response> {
   const list: Blob[] = [];
   try {
@@ -51,6 +74,13 @@ export async function GetDocList(): Promise<Response> {
   }
 }
 
+/**
+ * Converts a readable stream into a buffer.
+ *
+ * @param readableStream - The readable stream to be converted.
+ * @returns A promise that resolves to a buffer containing the data from the
+ * stream.
+ */
 async function streamToBuffer(readableStream: unknown) {
   return new Promise((resolve, reject) => {
     const chunks: Uint8Array[] = [];
@@ -64,6 +94,14 @@ async function streamToBuffer(readableStream: unknown) {
   });
 }
 
+/**
+ * Retrieves a document by its ID from the storage.
+ *
+ * @param blobName - The ID of the document to retrieve. Must be a non-empty
+ * string of length 36.
+ * @returns A promise that resolves to a Response object containing the document
+ * content or an error message.
+ */
 export async function GetDocByID(blobName: string): Promise<Response> {
   if (blobName === undefined || blobName === null || blobName === '') {
     return { message: 'must specify a doc ID' };
@@ -84,6 +122,18 @@ export async function GetDocByID(blobName: string): Promise<Response> {
   }
 }
 
+/**
+ * Updates a document in the storage by its ID.
+ *
+ * @param blobName - The unique identifier of the document to be updated.
+ * Must be a non-empty string of length 36.
+ * @param content - The content to be uploaded as a Buffer.
+ * @returns A promise that resolves to a Response object containing the document
+ * ID and an optional message.
+ *
+ * @throws Will return an error message if the blobName is invalid or if an
+ * error occurs during the upload process.
+ */
 export async function UpdateDocByID(blobName: string, content: Buffer): Promise<Response> {
   if (blobName === undefined || blobName === null || blobName === '') {
     return { message: 'must specify a doc ID' };
@@ -102,25 +152,29 @@ export async function UpdateDocByID(blobName: string, content: Buffer): Promise<
   }
 }
 
-export async function NewDoc(): Promise<Response> {
+/**
+ * Creates a new document in the storage container with optional default content.
+ *
+ * @param {Buffer} [default_content] - Optional buffer containing the default
+ * content for the new document.
+ * @returns {Promise<Response>} - A promise that resolves to an object
+ * containing the new document ID or an error message.
+ *
+ * @throws {Error} - Throws an error if the document creation fails.
+ */
+export async function NewDoc(default_content?: Buffer): Promise<Response> {
   try {
     const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
     const newDocID = uuidv4();
     const blockBlobClient = containerClient.getBlockBlobClient(newDocID);
     let uploadBlobResponse: BlockBlobUploadResponse;
-    uploadBlobResponse = await blockBlobClient.upload(DEFAULT_BLANK_DOC_BUFFER,
-      DEFAULT_BLANK_DOC_BUFFER.length);
+    let buffer: Buffer = DEFAULT_BLANK_DOC_BUFFER;
+    if (default_content) {
+      buffer = default_content;
+    }
+    uploadBlobResponse = await blockBlobClient.upload(buffer, buffer.length);
     return { id: newDocID };
   } catch (err: unknown) {
     return { id: undefined, message: handleError(err) };
   }
-}
-
-export function handleError(error: unknown): string {
-  if (typeof error === 'string') {
-    return error;
-  } else if (error instanceof Error) {
-    return error.message.toString();
-  }
-  return 'Unknown error';
 }
