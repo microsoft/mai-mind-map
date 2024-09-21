@@ -1,14 +1,8 @@
 import { D3DragEvent, drag } from 'd3-drag';
 import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
-import e from 'express';
 import { MutableRefObject } from 'react';
-import {
-  getDraggingX,
-  getDraggingY,
-  getLinkForDirection,
-  getLinkPointPairForDirection,
-} from '../helpers';
+import { getLinkForDirection, getLinkPointPairForDirection } from '../helpers';
 import { preventDrag } from '../helpers/d3Helper';
 import { NodeInterface, NodeLink } from '../layout';
 import { SizedRawNode } from '../node/interface';
@@ -125,13 +119,6 @@ export function dragAction<D>(
         if (node.isRoot() || !node.parent) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
-        if (
-          !(event.sourceEvent.target as HTMLElement).classList.contains(
-            'drag-btn',
-          )
-        ) {
-          return;
-        }
 
         // update shadow node position
         drawing.nodeGroup
@@ -181,13 +168,6 @@ export function dragAction<D>(
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
         treeState.current.dragging = false;
-        if (
-          !(event.sourceEvent.target as HTMLElement).classList.contains(
-            'drag-btn',
-          )
-        ) {
-          return;
-        }
 
         const shadowNode = drawing.nodeGroup.select('rect.shadow-dragging');
         const shadowLink = drawing.pathGroup.select('path.shadow-dragging');
