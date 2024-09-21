@@ -21,7 +21,7 @@ export function getLinkForDirectionV2<D>(
 }
 
 const firstMoveVal = 20;
-const cornerVal = 16;
+const cornerVal = 10;
 
 export function getLinkForDirection<D>(
   treeState: MutableRefObject<TreeState<D>>,
