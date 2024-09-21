@@ -1,22 +1,16 @@
-import { isArray, isString } from "lodash";
-import { MindMapCp } from "./mind-map-model";
+import { readArray, readString, readStruct } from "./read";
 
 export type ListItem = {
   title: string;
   id: string;
 };
 
-export async function listDocuments(): Promise<ListItem[]> {
-  const res = await fetch('/api/list');
-  const data = await res.json();
+const readListItems = readArray<ListItem>(readStruct({
+  title: readString,
+  id: readString,
+}));
 
-  if (isArray(data.list)) {
-    return data.list.reduce((m: ListItem[], item: any) => {
-      if (isString(item.doc_id)) {
-        m.push({ title: item.content?.v ?? "", id: item.doc_id });
-      }
-      return m;
-    }, [] as ListItem[]);
-  }
-  return [];
-}
+export const listDocuments = () =>
+  fetch("/api/list")
+    .then((res) => res.json())
+    .then(readListItems);
