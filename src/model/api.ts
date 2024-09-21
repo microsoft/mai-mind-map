@@ -5,15 +5,15 @@ import { Read, readArray, readBoolean, readNumber, readRecord, readString, readS
 const API_RESPONSE_TYPE_ERROR = "API response type error";
 
 export const listDocuments = () =>
-  fetch("/api/list")
+  fetch('/api/list')
     .then((res) => res.json())
     .then(
       readArray(
         readStruct({
           title: readString,
           id: readString,
-        })
-      )
+        }),
+      ),
     );
 
 export const createDocument = () =>

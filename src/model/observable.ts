@@ -84,12 +84,10 @@ export function pure<T>(value: T): Observable<T> {
   });
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type Observables<T extends any[]> = {
   [K in keyof T]: Observable<T[K]>;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function apply<F extends (...any: any[]) => any>(
   f: F,
   ...args: Observables<Parameters<F>>
@@ -97,7 +95,6 @@ export function apply<F extends (...any: any[]) => any>(
   if (args.length === 0) return pure(f());
   const [argHead, ...argsTail] = args;
   return argHead.bind((value) =>
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     apply((...argsN: any[]) => f(value, ...argsN), ...argsTail),
   );
 }

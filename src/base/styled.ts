@@ -33,7 +33,6 @@ function apply(cssStr: string) {
   }
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function css(list: any, ...templates: Array<string | number>) {
   const id = uuid();
   const body = compose(list, templates);
@@ -41,7 +40,6 @@ export function css(list: any, ...templates: Array<string | number>) {
   return id;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function keyframes(list: any, ...templates: Array<string | number>) {
   const id = uuid();
   insert(`@keyframes ${id}`, compose(list, templates));
@@ -49,7 +47,6 @@ export function keyframes(list: any, ...templates: Array<string | number>) {
 }
 
 export function istyled(cls: string) {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return (list: any, ...templates: Array<string | number>) => {
     insert(cls, compose(list, templates));
   };

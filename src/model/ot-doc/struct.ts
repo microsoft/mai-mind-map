@@ -8,7 +8,6 @@ export type Stt$Eq<T extends Record<string, unknown>> = {
 
 export type Stt$BaseDoc<
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 > = {
   [K in keyof Cp]: $BaseDoc<Cp[K], Op[K]>;
@@ -16,7 +15,6 @@ export type Stt$BaseDoc<
 
 export type Stt$InvDoc<
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 > = {
   [K in keyof Cp]: $InvDoc<Cp[K], Op[K]>;
@@ -24,7 +22,6 @@ export type Stt$InvDoc<
 
 export type Stt$FullDoc<
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 > = {
   [K in keyof Cp]: $FullDoc<Cp[K], Op[K]>;
@@ -146,7 +143,6 @@ export const $eqOp = <
 
 export const $baseDocStruct = <
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 >(
   stt$baseDoc: Stt$BaseDoc<Cp, Op>,
@@ -182,7 +178,6 @@ export const $baseDocStruct = <
 
 export const $invDocStruct = <
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 >(
   stt$invDoc: Stt$InvDoc<Cp, Op>,
@@ -201,7 +196,6 @@ export const $invDocStruct = <
 
 export const $fullDocStruct = <
   Cp extends Record<string, unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Op extends Record<keyof Cp, any>,
 >(
   stt$fullDoc: Stt$FullDoc<Cp, Op>,
