@@ -49,6 +49,7 @@ export function SizeMeasurer<D>(props: {
       {nodeList.map((node) => {
         return (
           <NodeContent
+            isRoot={node.id === root.id}
             key={`m_${node.id}`}
             id={node.id}
             data={node.payload as Payload}

@@ -65,4 +65,3 @@ export const readArray =
           return m;
         }, [] as T[])
       : [];
-

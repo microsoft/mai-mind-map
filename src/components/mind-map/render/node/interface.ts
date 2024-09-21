@@ -2,6 +2,7 @@ export interface RawNode<Mdata> {
   id: string;
   payload: Mdata;
   children?: RawNode<Mdata>[];
+  isRoot?: boolean;
 }
 export interface SizedRawNode<Mdata> extends RawNode<Mdata> {
   content_size: [number, number];

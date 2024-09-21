@@ -208,7 +208,7 @@ function drawTree<D>(
       return re;
     })
     .attr('fill', 'transparent')
-    .attr('stroke', '#1890ff');
+    .attr('stroke', '#0172DC');
 
   tempDrawingPath.exit().remove();
 

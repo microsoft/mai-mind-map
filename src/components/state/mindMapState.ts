@@ -60,15 +60,12 @@ export function useMindMapState(): MindMapStateType {
     () => documentEngine($invDocMindMap, treeToCp(initialTree)),
     [initialTree],
   );
-  useEffect(
-    () => {
-      (window as any).model = engine.model;
-      return engine.model.observe((data) => {
-        console.log(data);
-      });
-    },
-    [engine, engine.model]
-  );
+  useEffect(() => {
+    (window as any).model = engine.model;
+    return engine.model.observe((data) => {
+      console.log(data);
+    });
+  }, [engine, engine.model]);
   const obTree = useMemo(() => engine.model.map(cpToTree), [engine.model]);
   const mindMapData = useObservable(obTree);
 

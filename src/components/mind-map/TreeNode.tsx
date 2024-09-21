@@ -22,7 +22,7 @@ const SDragBtn = css`
   z-index: 1;
   border-radius: 5px;
   &:hover {
-    outline: 2px solid #1890ff;
+    outline: 2px solid #0172dc;
     & > .fold {
       display: flex;
     }
@@ -39,7 +39,7 @@ const SFold = css`
   font-size: 10px;
   border-radius: 10px;
   border: 0;
-  background-color: #1890ff;
+  background-color: #0172dc;
   color: white;
   transition-duration: 0.2s;
   width: 16px;
@@ -62,7 +62,7 @@ const SExpandChar = css`
   font-size: 10px;
   border-radius: 10px;
   border: 0;
-  background-color: #1890ff;
+  background-color: #0172dc;
   color: white;
   transition-duration: 0.2s;
   width: fit-content;
@@ -85,18 +85,18 @@ export const TreeNode: FC<{
   const { bgColor, textColor } = useMemo(() => {
     if (node.depth === 0) {
       return {
-        bgColor: '#1890ff',
+        bgColor: '#0172DC',
         textColor: '#fff',
       };
     } else if (node.depth === 1) {
       return {
-        bgColor: '#f0f0f0',
-        textColor: '#000',
+        bgColor: '#ecf2fb',
+        textColor: '#212429',
       };
     } else {
       return {
         bgColor: '#fff',
-        textColor: '#000',
+        textColor: '#212429',
       };
     }
   }, [node]);
@@ -112,6 +112,7 @@ export const TreeNode: FC<{
       </div>
       <div className={STreeNodeBox1} style={{ backgroundColor: bgColor }}>
         <NodeContent
+          isRoot={node.isRoot()}
           style={{
             width,
             height,

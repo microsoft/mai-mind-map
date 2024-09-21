@@ -2,6 +2,7 @@ foreignObject.node-content {
   overflow: visible;
   border-radius: 5px;
   position: relative;
+  outline: none;
 }
 
 /* foreignObject.dragging-item-over {

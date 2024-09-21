@@ -28,6 +28,7 @@ export const editingNodePreId = 'editing-node-pre';
 export const NodeContent = memo<{
   id: string;
   data: Payload;
+  isRoot: boolean;
   style?: React.CSSProperties;
   editAble?: boolean;
   idPrefix?: string;
@@ -36,7 +37,14 @@ export const NodeContent = memo<{
   onEditorKeyDown?: (e: React.KeyboardEvent<HTMLPreElement>) => void;
 }>(
   (props) => {
-    const { id, data, style, editAble = false, idPrefix = 'nc' } = props;
+    const {
+      id,
+      data,
+      style,
+      editAble = false,
+      idPrefix = 'nc',
+      isRoot,
+    } = props;
     const { content } = data;
     const ref = useRef<HTMLPreElement>(null);
     useEffect(() => {
@@ -56,10 +64,15 @@ export const NodeContent = memo<{
             onBlur={(e) => {
               props.onBlur && props.onBlur();
             }}
+            style={isRoot ? { fontSize: '1.5em', lineHeight: 1.5 } : {}}
             onKeyDown={props.onEditorKeyDown}
           ></pre>
         ) : (
-          <pre id={`${idPrefix}-${id}`} className={SNodeContentText}>
+          <pre
+            id={`${idPrefix}-${id}`}
+            className={SNodeContentText}
+            style={isRoot ? { fontSize: '1.5em', lineHeight: 1.5 } : {}}
+          >
             {content}
           </pre>
         )}
@@ -67,19 +80,21 @@ export const NodeContent = memo<{
     );
   },
   (prev, next) => {
-    const { id, data, editAble, idPrefix } = prev;
+    const { id, data, editAble, idPrefix, isRoot } = prev;
     const {
       id: nextId,
       data: nextData,
       editAble: nextEditAble,
       idPrefix: nextIdPrefix,
+      isRoot: nextIsRoot,
     } = next;
 
     const equal =
       id === nextId &&
       isEqual(data, nextData) &&
       editAble === nextEditAble &&
-      idPrefix === nextIdPrefix;
+      idPrefix === nextIdPrefix &&
+      isRoot === nextIsRoot;
     return equal;
   },
 );

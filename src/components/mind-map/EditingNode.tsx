@@ -109,7 +109,7 @@ export const EditingNode: FC<{
         transform: `scale(${scale})`,
         zIndex: 1000,
         borderRadius: 5,
-        outline: '2px solid #1890ff',
+        outline: '2px solid #0172DC',
       }}
     >
       <div className={SToolbar}>
@@ -147,6 +147,7 @@ export const EditingNode: FC<{
       <NodeContent
         id={id}
         data={data.payload}
+        isRoot={node.isRoot()}
         editAble={true}
         idPrefix="enc"
         style={{
