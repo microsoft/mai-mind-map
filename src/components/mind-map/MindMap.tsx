@@ -1,8 +1,8 @@
 import { CSSProperties, Fragment, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { EditingNode, EditingNodeType } from './EditingNode';
-import { NodeContent } from './NodeContent';
 import { SizeMeasurer } from './SizeMeasurer';
+import { TreeNode } from './TreeNode';
 import {
   Direction,
   FLEX_TREE,
@@ -84,12 +84,15 @@ export function MindMap(props: MFC<Payload>) {
           role="presentation"
           style={{ height: '100%', width: '100%', display: 'block' }}
         ></svg>
-        {pendingRenderNodes.map(([node, data]) => {
+        {pendingRenderNodes.map(([nodePortal, node]) => {
           return (
-            <Fragment key={data.id}>
+            <Fragment key={node.data.id}>
               {createPortal(
-                <NodeContent id={data.id} data={data.payload} onToggleCollapse={toggleCollapseNode} />,
-                node,
+                <TreeNode
+                  node={node}
+                  toggleCollapseNode={toggleCollapseNode}
+                />,
+                nodePortal,
               )}
             </Fragment>
           );

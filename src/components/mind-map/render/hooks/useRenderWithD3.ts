@@ -39,7 +39,7 @@ export function useRenderWithD3<D>(
   });
 
   const [pendingRenderNodes, setPendingRenderNodes] = useState<
-    [SVGForeignObjectElement, SizedRawNode<D>][]
+    [SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>][]
   >([]);
 
   const [drawing, setDrawing] = useState<Drawing | null>(null);
@@ -208,7 +208,7 @@ function drawTree<D>(
       return re;
     })
     .attr('fill', 'transparent')
-    .attr('stroke', 'cadetblue');
+    .attr('stroke', '#1890ff');
 
   tempDrawingPath.exit().remove();
 
@@ -283,7 +283,7 @@ function drawTree<D>(
               detail: d,
             }),
           );
-          return 0;
+          return '5';
         })
         .attrTween('rx', function (d) {
           const oldX = this.x.baseVal.value;
@@ -297,7 +297,7 @@ function drawTree<D>(
                 detail: [newX, newY],
               }),
             );
-            return '0';
+            return '5';
           };
         });
     });
@@ -330,12 +330,15 @@ function drawTree<D>(
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
     .call(dragAction<D>(drawing, treeState));
 
-  const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
+  const nodeDataPairs: [
+    SVGForeignObjectElement,
+    NodeInterface<SizedRawNode<D>>,
+  ][] = [];
 
   drawing.nodeGroup
     .selectAll<SVGGElement, NodeInterface<SizedRawNode<D>>>('g.node')
     .each(function (d) {
-      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d.data]);
+      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d]);
     });
 
   return nodeDataPairs;

@@ -1,11 +1,8 @@
 import { css } from '@base/styled';
 import { memo, useEffect, useRef } from 'react';
-import { Ellipsis } from '../icons/icons';
 import { Payload } from './render/model/interface';
 
 const SNodeItem = css`
-  outline: 1px solid #1890ff;
-  background-color: #fff;
   border-radius: 5px;
   position: relative;
 `;
@@ -25,51 +22,21 @@ const SNodeContentText = css`
   outline: none !important;
   line-height: 1.4;
 `;
-const SExpandChar = css`
-  position: absolute;
-  top: 0;
-  right: -20px;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  font-size: 10px;
-  border-radius: 10px;
-  border: 0;
-  background-color: #6298ca;
-  color: white;
-  transition-duration: 0.2s;
-  &:hover {
-    box-shadow: 0 0 0px 3px #a9d4fd;
-  }
-`;
 
 export const editingNodePreId = 'editing-node-pre';
 
 export const NodeContent = memo<{
   id: string;
   data: Payload;
+  style?: React.CSSProperties;
   editAble?: boolean;
   idPrefix?: string;
-  minWidth?: number;
-  minHeight?: number;
   onToggleCollapse?: (nodeId: string) => void;
   onBlur?: () => void;
   onEditorKeyDown?: (e: React.KeyboardEvent<HTMLPreElement>) => void;
 }>(
   (props) => {
-    const {
-      id,
-      data,
-      editAble = false,
-      minWidth,
-      minHeight,
-      idPrefix = 'nc',
-    } = props;
+    const { id, data, style, editAble = false, idPrefix = 'nc' } = props;
     const { content } = data;
     const ref = useRef<HTMLPreElement>(null);
     useEffect(() => {
@@ -78,18 +45,7 @@ export const NodeContent = memo<{
       ref.current.focus();
     }, [content]);
     return (
-      <div className={SNodeItem} style={{ minWidth, minHeight }}>
-        {data.collapsed && !editAble && (
-          <button
-            title="Expand"
-            className={SExpandChar}
-            onClick={() => {
-              props.onToggleCollapse && props.onToggleCollapse(id);
-            }}
-          >
-            <Ellipsis />
-          </button>
-        )}
+      <div className={SNodeItem} style={{ ...(style || {}) }}>
         {editAble ? (
           <pre
             ref={ref}

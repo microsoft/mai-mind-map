@@ -1,12 +1,12 @@
 import express from 'express';
+import { Gen } from '../ai';
 import {
   GetDocByID,
   GetDocList,
   NewDoc,
   UpdateDocByID,
 } from '../storage/index';
-import { Gen } from '../ai';
-import { handleError, ROOT_ID } from '../utils';
+import { ROOT_ID, handleError } from '../utils';
 
 let docs = express.Router();
 

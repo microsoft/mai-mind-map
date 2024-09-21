@@ -1,7 +1,7 @@
 import axios from 'axios';
 import marked from 'marked';
-import { handleError, ROOT_ID, genId } from '../utils';
 import { NewDoc } from '../storage';
+import { ROOT_ID, genId, handleError } from '../utils';
 
 type GenRequest = {
   from: string;
