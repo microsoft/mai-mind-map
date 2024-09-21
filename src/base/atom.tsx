@@ -29,7 +29,7 @@ export interface AtomX<T, A> extends Atom<T> {
   creator: Creator<T, A>;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 export type Creature<M> = M extends AtomX<any, infer A> ? A : unknown;
 
 export interface QueryOtherAtom {
@@ -46,10 +46,10 @@ interface AtomState<T, A> {
 
 interface Query {
   <T, A>(a: Atom<T> | AtomX<T, A>, init?: T): AtomState<T, A>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
   cache: { [k: string]: any };
 }
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 const Context = createContext<Query>({} as any);
 
 function buildAtomState<T, A>(
@@ -77,16 +77,15 @@ function buildAtomState<T, A>(
       listener.add(call);
       return () => listener.delete(call);
     },
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
     actions: (atom as any).creator?.(() => state.data, change, query),
   };
   return state;
 }
 
 function buildQuery() {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const map: { [k: string]: AtomState<any, any> } = {};
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
   const cache: { [k: string]: any } = {};
   function query<T, A>(atom: AtomX<T, A> | Atom<T>, init?: T): AtomState<T, A> {
     const { key } = atom;
@@ -104,14 +103,14 @@ function buildQuery() {
 
 export function atom<T>(initial: T): Atom<T>;
 export function atom<T, A>(initial: T, creator: Creator<T, A>): AtomX<T, A>;
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 export function atom(initial: any, creator?: any): any {
   return { key: uuid(), [UNIQ]: initial, creator };
 }
 
 export function useChange<T, A>(atom: AtomX<T, A>): [Change<T>, A];
 export function useChange<T>(atom: Atom<T>): Change<T>;
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 export function useChange(atom: any): any {
   const { change, actions } = useContext(Context)(atom);
   if (atom.creator) return [change, actions];
@@ -153,7 +152,7 @@ export class LinkStore<P = {}, S = {}> extends PureComponent<P, S> {
 
   protected useChange<T, A>(atom: AtomX<T, A>): [Change<T>, A];
   protected useChange<T>(atom: Atom<T>): Change<T>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
   protected useChange(atom: AtomX<any, any>): any {
     // @ts-ignore
     const { change, actions } = this.context(atom);

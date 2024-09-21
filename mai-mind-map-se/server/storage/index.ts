@@ -178,3 +178,30 @@ export async function NewDoc(default_content?: Buffer): Promise<Response> {
     return { id: undefined, message: handleError(err) };
   }
 }
+
+/**
+ * Deletes a document by its ID from the storage.
+ *
+ * @param {string} blobName - The ID of the document to delete. Must be a
+ * non-empty string of length 36.
+ * @returns {Promise<Response>} - A promise that resolves to a response object
+ * containing the ID of the deleted document or an error message.
+ *
+ * @throws {Error} - Throws an error if the deletion fails.
+ */
+export async function DeleteDocByID(blobName: string): Promise<Response> {
+  if (blobName === undefined || blobName === null || blobName === '') {
+    return { message: 'must specify a doc ID' };
+  }
+  if (blobName.length !== 36) {
+    return { message: 'invalid doc ID' };
+  }
+  try {
+    const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+    const blobClient = containerClient.getBlobClient(blobName);
+    await blobClient.delete();
+    return { id: blobName };
+  } catch (err: unknown) {
+    return { id: blobName, message: handleError(err) };
+  }
+}

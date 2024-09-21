@@ -89,6 +89,7 @@ export function MindMap(props: MFC<Payload>) {
             <Fragment key={node.data.id}>
               {createPortal(
                 <TreeNode
+                  treeDirection={treeDirection}
                   node={node}
                   toggleCollapseNode={toggleCollapseNode}
                 />,

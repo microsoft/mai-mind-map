@@ -4,7 +4,6 @@ import separateTree from './separate-root';
 const VALID_DIRECTIONS = ['LR', 'RL', 'TB', 'BT', 'H', 'V'] as const;
 const HORIZONTAL_DIRECTIONS = ['LR', 'RL', 'H'] as const;
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const isHorizontal = (d: Direction) => HORIZONTAL_DIRECTIONS.includes(d as any);
 const DEFAULT_DIRECTION = VALID_DIRECTIONS[0];
 

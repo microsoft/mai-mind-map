@@ -139,7 +139,7 @@ function drawTree<D>(
     })
     .call((update) => {
       update
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
         .transition(drawTran as any)
         .style('opacity', (d) =>
           d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
@@ -222,7 +222,7 @@ function drawTree<D>(
     })
     .call((update) => {
       const gNode = update
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
         .transition(drawTran as any)
         .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
         .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
@@ -284,83 +284,12 @@ function drawTree<D>(
       });
     });
 
-  // Determine the space size of the node
-
-  foreignObject.append('xhtml:div').attr('class', 'drag-btn');
-
   handleDragItemHoverOnAction<D, SVGForeignObjectElement>(
     foreignObject,
     treeState,
   );
 
   tempDrawingNode.exit().remove();
-
-  // for drag button
-  // const tempDragNode = drawing.dragGroup
-  //   .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
-  //   .data(tree.nodes(), (d) => {
-  //     return d.data.id;
-  //   })
-  //   .call((update) => {
-  //     update
-  //       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  //       .transition(drawTran as any)
-  //       .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
-  //       .attr('width', (d) => d.data.content_size[0])
-  //       .attr('height', (d) => d.data.content_size[1])
-  //       .attr('x', (d) => d.x)
-  //       .attr('y', (d) => d.y)
-  //       .attr('ry', (d) => {
-  //         // notify editing box's content data via event
-  //         window.dispatchEvent(
-  //           new CustomEvent(`update-data-${d.data.id}`, {
-  //             detail: d,
-  //           }),
-  //         );
-  //         return '5';
-  //       })
-  //       .attrTween('rx', function (d) {
-  //         const oldX = this.x.baseVal.value;
-  //         const oldY = this.y.baseVal.value;
-  //         return (t) => {
-  //           const newX = d.x * t + oldX * (1 - t);
-  //           const newY = d.y * t + oldY * (1 - t);
-  //           // notify editing box's position via event
-  //           window.dispatchEvent(
-  //             new CustomEvent(`update-pos-${d.data.id}`, {
-  //               detail: [newX, newY],
-  //             }),
-  //           );
-  //           return '5';
-  //         };
-  //       });
-  //   });
-
-  // tempDragNode
-  //   .enter()
-  //   .append('rect')
-  //   .attr('class', (d) => {
-  //     return `drag-btn _${d.data.id}`;
-  //   })
-  //   .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
-  //   .attr('fill', 'transparent')
-  //   .attr('x', (d) => d.x)
-  //   .attr('y', (d) => d.y)
-  //   .attr('rx', 5)
-  //   .attr('ry', 5)
-  //   .attr('width', (d) => d.data.content_size[0])
-  //   .attr('height', (d) => d.data.content_size[1])
-  //   .on('click', (event, d) => {
-  //     const drawingEl = <SVGGElement>drawing.drawingGroup.node();
-  //     const tx = +(drawingEl.dataset.tx || 0);
-  //     const ty = +(drawingEl.dataset.ty || 0);
-  //     treeState.current.setEditingNode({
-  //       node: d,
-  //       translate: [tx, ty],
-  //     });
-  //   });
-
-  // tempDragNode.exit().remove();
 
   drawing.nodeGroup
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>(

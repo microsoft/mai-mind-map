@@ -12,14 +12,16 @@ const log = <T>(value: T) => {
 export const listDocuments = () =>
   fetch("/api/list")
     .then((res) => res.json())
-    .then(readPartial({
-      list: readArray(
-        readStruct({
-          title: readString,
-          id: readString,
-        })
-      )
-    }))
+    .then(
+      readPartial({
+        list: readArray(
+          readStruct({
+            title: readString,
+            id: readString,
+          })
+        ),
+      })
+    )
     .then(({ list }) => list ?? []);
 
 export const createDocument = () =>

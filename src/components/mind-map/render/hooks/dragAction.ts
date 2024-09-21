@@ -1,6 +1,7 @@
 import { D3DragEvent, drag } from 'd3-drag';
 import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
+import e from 'express';
 import { MutableRefObject } from 'react';
 import {
   getDraggingX,
@@ -57,6 +58,13 @@ export function dragAction<D>(
         if (node.isRoot() || !node.parent) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
+        if (
+          !(event.sourceEvent.target as HTMLElement).classList.contains(
+            'drag-btn',
+          )
+        ) {
+          return;
+        }
         treeState.current.dragging = true;
 
         // add shadow Node
@@ -117,6 +125,13 @@ export function dragAction<D>(
         if (node.isRoot() || !node.parent) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
+        if (
+          !(event.sourceEvent.target as HTMLElement).classList.contains(
+            'drag-btn',
+          )
+        ) {
+          return;
+        }
 
         // update shadow node position
         drawing.nodeGroup
@@ -166,6 +181,13 @@ export function dragAction<D>(
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
         treeState.current.dragging = false;
+        if (
+          !(event.sourceEvent.target as HTMLElement).classList.contains(
+            'drag-btn',
+          )
+        ) {
+          return;
+        }
 
         const shadowNode = drawing.nodeGroup.select('rect.shadow-dragging');
         const shadowLink = drawing.pathGroup.select('path.shadow-dragging');
@@ -601,7 +623,7 @@ export function dragAction<D>(
         // animate drag btn and nodes to original position
 
         shadowNode
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
           .transition(dragTran as any)
           .attr('opacity', 0)
           .attr('x', node.x)
@@ -631,7 +653,7 @@ export function dragAction<D>(
         );
         const pathD = getLinkForDirection(treeState)(linkPointPair) || '';
         shadowLink
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+
           .transition(dragTran as any)
           .attr('d', pathD)
           .remove();

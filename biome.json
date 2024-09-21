@@ -48,6 +48,9 @@
       "style": {
         "useImportType": "off",
         "noUselessElse": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
       }
     }
   }
