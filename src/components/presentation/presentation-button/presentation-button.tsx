@@ -85,9 +85,7 @@ class PresentationButton extends Component<
       <div
         id={id}
         onClick={this.enterFullscreen}
-        style={{
-          ...style,
-        }}
+        style={style}
         className={className}
       >
         {this.props.children}
