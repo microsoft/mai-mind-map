@@ -312,6 +312,8 @@ function drawTree<D>(
     .attr('fill', 'transparent')
     .attr('x', (d) => d.x)
     .attr('y', (d) => d.y)
+    .attr('rx', 5)
+    .attr('ry', 5)
     .attr('width', (d) => d.data.content_size[0])
     .attr('height', (d) => d.data.content_size[1])
     .on('click', (event, d) => {
