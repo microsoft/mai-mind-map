@@ -214,7 +214,9 @@ function drawTree<D>(
 
   // for node
   const tempDrawingNode = drawing.nodeGroup
-    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('g.node')
+    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>(
+      'foreignObject.node',
+    )
     .data(tree.nodes(), (d) => {
       return d.data.id;
     })
@@ -224,54 +226,6 @@ function drawTree<D>(
         .transition(drawTran as any)
         .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
         .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
-        .attr('transform', (d) => {
-          return `translate(${d.x}, ${d.y})`;
-        });
-      gNode
-        .select('foreignObject.node-content')
-        .attr('width', (d) => d.data.content_size[0])
-        .attr('height', (d) => d.data.content_size[1]);
-    });
-
-  const gNode = tempDrawingNode
-    .enter()
-    .append('g')
-    .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
-    .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
-    .attr('class', (d) => {
-      return `node _${d.data.id}`;
-    })
-    .attr('transform', (d) => {
-      return `translate(${d.x}, ${d.y})`;
-    });
-
-  // Determine the space size of the node
-  const foreignObject = gNode
-    .append('foreignObject')
-    .classed('node-content', true)
-    .attr('rx', 5)
-    .attr('ry', 5)
-    .attr('width', (d) => d.data.content_size[0])
-    .attr('height', (d) => d.data.content_size[1]);
-
-  handleDragItemHoverOnAction<D, SVGForeignObjectElement>(
-    foreignObject,
-    treeState,
-  );
-
-  tempDrawingNode.exit().remove();
-
-  // for drag button
-  const tempDragNode = drawing.dragGroup
-    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
-    .data(tree.nodes(), (d) => {
-      return d.data.id;
-    })
-    .call((update) => {
-      update
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        .transition(drawTran as any)
-        .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
         .attr('width', (d) => d.data.content_size[0])
         .attr('height', (d) => d.data.content_size[1])
         .attr('x', (d) => d.x)
@@ -302,21 +256,25 @@ function drawTree<D>(
         });
     });
 
-  tempDragNode
+  const foreignObject = tempDrawingNode
     .enter()
-    .append('rect')
+    .append('foreignObject')
+    .style('opacity', (d) => (d.inCollapsedItem ? '0' : '1'))
+    .style('pointer-events', (d) => (d.inCollapsedItem ? 'none' : ''))
+
     .attr('class', (d) => {
-      return `drag-btn _${d.data.id}`;
+      return `node node-content _${d.data.id}`;
     })
-    .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
-    .attr('fill', 'transparent')
-    .attr('x', (d) => d.x)
-    .attr('y', (d) => d.y)
     .attr('rx', 5)
     .attr('ry', 5)
     .attr('width', (d) => d.data.content_size[0])
     .attr('height', (d) => d.data.content_size[1])
-    .on('click', (event, d) => {
+    .attr('x', (d) => d.x)
+    .attr('y', (d) => d.y)
+    .on('click', (event: PointerEvent, d) => {
+      if (!(event.target as HTMLElement).classList.contains('drag-btn')) {
+        return;
+      }
       const drawingEl = <SVGGElement>drawing.drawingGroup.node();
       const tx = +(drawingEl.dataset.tx || 0);
       const ty = +(drawingEl.dataset.ty || 0);
@@ -326,10 +284,88 @@ function drawTree<D>(
       });
     });
 
-  tempDragNode.exit().remove();
+  // Determine the space size of the node
 
-  drawing.dragGroup
-    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
+  foreignObject.append('xhtml:div').attr('class', 'drag-btn');
+
+  handleDragItemHoverOnAction<D, SVGForeignObjectElement>(
+    foreignObject,
+    treeState,
+  );
+
+  tempDrawingNode.exit().remove();
+
+  // for drag button
+  // const tempDragNode = drawing.dragGroup
+  //   .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
+  //   .data(tree.nodes(), (d) => {
+  //     return d.data.id;
+  //   })
+  //   .call((update) => {
+  //     update
+  //       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  //       .transition(drawTran as any)
+  //       .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
+  //       .attr('width', (d) => d.data.content_size[0])
+  //       .attr('height', (d) => d.data.content_size[1])
+  //       .attr('x', (d) => d.x)
+  //       .attr('y', (d) => d.y)
+  //       .attr('ry', (d) => {
+  //         // notify editing box's content data via event
+  //         window.dispatchEvent(
+  //           new CustomEvent(`update-data-${d.data.id}`, {
+  //             detail: d,
+  //           }),
+  //         );
+  //         return '5';
+  //       })
+  //       .attrTween('rx', function (d) {
+  //         const oldX = this.x.baseVal.value;
+  //         const oldY = this.y.baseVal.value;
+  //         return (t) => {
+  //           const newX = d.x * t + oldX * (1 - t);
+  //           const newY = d.y * t + oldY * (1 - t);
+  //           // notify editing box's position via event
+  //           window.dispatchEvent(
+  //             new CustomEvent(`update-pos-${d.data.id}`, {
+  //               detail: [newX, newY],
+  //             }),
+  //           );
+  //           return '5';
+  //         };
+  //       });
+  //   });
+
+  // tempDragNode
+  //   .enter()
+  //   .append('rect')
+  //   .attr('class', (d) => {
+  //     return `drag-btn _${d.data.id}`;
+  //   })
+  //   .style('display', (d) => (d.inCollapsedItem ? 'none' : ''))
+  //   .attr('fill', 'transparent')
+  //   .attr('x', (d) => d.x)
+  //   .attr('y', (d) => d.y)
+  //   .attr('rx', 5)
+  //   .attr('ry', 5)
+  //   .attr('width', (d) => d.data.content_size[0])
+  //   .attr('height', (d) => d.data.content_size[1])
+  //   .on('click', (event, d) => {
+  //     const drawingEl = <SVGGElement>drawing.drawingGroup.node();
+  //     const tx = +(drawingEl.dataset.tx || 0);
+  //     const ty = +(drawingEl.dataset.ty || 0);
+  //     treeState.current.setEditingNode({
+  //       node: d,
+  //       translate: [tx, ty],
+  //     });
+  //   });
+
+  // tempDragNode.exit().remove();
+
+  drawing.nodeGroup
+    .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>(
+      'foreignObject.node',
+    )
     .call(dragAction<D>(drawing, treeState));
 
   const nodeDataPairs: [
@@ -338,9 +374,11 @@ function drawTree<D>(
   ][] = [];
 
   drawing.nodeGroup
-    .selectAll<SVGGElement, NodeInterface<SizedRawNode<D>>>('g.node')
+    .selectAll<SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>>(
+      'foreignObject.node',
+    )
     .each(function (d) {
-      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d]);
+      nodeDataPairs.push([this, d]);
     });
 
   return nodeDataPairs;
