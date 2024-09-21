@@ -54,30 +54,54 @@ export function dragAction<D>(
         >,
         node,
       ) {
-        // treeState.current.setEditingNode(null);
-        if (node.isRoot()) return;
+        if (node.isRoot() || !node.parent) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
         treeState.current.dragging = true;
 
-        // drag btn
-        const btn = select(<SVGRectElement>this);
-        btn.classed('dragging-btn', true);
-        drawing.dragGroup
-          .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
-            'rect.drag-btn:not(.dragging-btn)',
-          )
-          .style('pointer-events', 'none');
+        // add shadow Node
+        drawing.nodeGroup
+          .append('rect')
+          .attr('class', 'shadow-dragging')
+          .attr('opacity', 1)
 
-        // node
-        const contentNode = drawing.nodeGroup
-          .select<SVGGElement>(`g.node._${node.data.id}`)
-          .style('pointer-events', 'none');
-        cachedAnchorPoint = contentNode.node()?.nextSibling as SVGGElement;
-        // move the node to the top
-        if (cachedAnchorPoint) {
-          contentNode.raise();
-        }
+          .attr('x', node.x)
+          .attr('y', node.y)
+          .attr('rx', 5)
+          .attr('ry', 5)
+          .attr('width', node.data.content_size[0])
+          .attr('height', node.data.content_size[1])
+          .attr('fill', 'rgba(24, 144, 255, 0.6)');
+
+        // add shadow Link
+        const sourceRect: [number, number, number, number, number, number] = [
+          node.parent.x,
+          node.parent.y,
+          node.parent.data.content_size[0],
+          node.parent.data.content_size[1],
+          node.parent.x,
+          node.parent.y,
+        ];
+        const targetRect: [number, number, number, number, number, number] = [
+          node.x,
+          node.y,
+          node.data.content_size[0],
+          node.data.content_size[1],
+          node.x,
+          node.y,
+        ];
+        const linkPointPair = getLinkPointPairForDirection(
+          treeState,
+          sourceRect,
+          targetRect,
+        );
+        const pathD = getLinkForDirection(treeState)(linkPointPair) || '';
+        drawing.pathGroup
+          .append('path')
+          .attr('class', 'shadow-dragging')
+          .attr('fill', 'none')
+          .attr('stroke', '#1890ff')
+          .attr('d', pathD);
       },
     )
     .on(
@@ -90,70 +114,42 @@ export function dragAction<D>(
         >,
         node,
       ) {
-        if (node.isRoot()) return;
+        if (node.isRoot() || !node.parent) return;
         event.sourceEvent.preventDefault();
         event.sourceEvent.stopPropagation();
 
-        // update node position
+        // update shadow node position
         drawing.nodeGroup
-          .select(`g.node._${node.data.id}`)
-          .style('opacity', 0.3)
-          .attr('transform', `translate(${event.x}, ${event.y})`);
-        node.draggingX = event.x;
-        node.draggingY = event.y;
+          .select('rect.shadow-dragging')
+          .attr('x', event.x)
+          .attr('y', event.y);
+
         // update link position
+        const sourceRect: [number, number, number, number, number, number] = [
+          node.parent.x,
+          node.parent.y,
+          node.parent.data.content_size[0],
+          node.parent.data.content_size[1],
+          node.parent.x,
+          node.parent.y,
+        ];
+        const targetRect: [number, number, number, number, number, number] = [
+          event.x,
+          event.y,
+          node.data.content_size[0],
+          node.data.content_size[1],
+          node.x,
+          node.y,
+        ];
+        const linkPointPair = getLinkPointPairForDirection(
+          treeState,
+          sourceRect,
+          targetRect,
+        );
+        const pathD = getLinkForDirection(treeState)(linkPointPair) || '';
         drawing.pathGroup
-          .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>(
-            `path.line._${node.data.id}`,
-          )
-          .style('opacity', (d) =>
-            d.target.inCollapsedItem || d.source.inCollapsedItem ? 0 : 0.2,
-          )
-          .data(node.touchedLinks(), (link) => {
-            const key = `l-${link.target.data.id}`;
-            return key;
-          })
-          .call((update) => {
-            update.attr('d', (d) => {
-              const sourceRect: [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number,
-              ] = [
-                getDraggingX(d.source),
-                getDraggingY(d.source),
-                d.source.data.content_size[0],
-                d.source.data.content_size[1],
-                d.source.x,
-                d.source.y,
-              ];
-              const targetRect: [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number,
-              ] = [
-                getDraggingX(d.target),
-                getDraggingY(d.target),
-                d.target.data.content_size[0],
-                d.target.data.content_size[1],
-                d.target.x,
-                d.target.y,
-              ];
-              const linkPointPair = getLinkPointPairForDirection(
-                treeState,
-                sourceRect,
-                targetRect,
-              );
-              const re = getLinkForDirection(treeState)(linkPointPair) || '';
-              return re;
-            });
-          });
+          .select<SVGPathElement>('path.shadow-dragging')
+          .attr('d', pathD);
       },
     )
     .on(
@@ -171,35 +167,8 @@ export function dragAction<D>(
         event.sourceEvent.stopPropagation();
         treeState.current.dragging = false;
 
-        // restore other drag btn pointer events
-        drawing.dragGroup
-          .selectAll<SVGRectElement, NodeLink<SizedRawNode<D>>>(
-            'rect.drag-btn:not(.dragging-btn)',
-          )
-          .style('pointer-events', '');
-
-        // update drag btn position to the end position, remove dragging class
-        const dragBtn = select(<SVGRectElement>this).classed(
-          'dragging-btn',
-          false,
-        );
-
-        dragBtn.attr('x', event.x).attr('y', event.y);
-
-        // restore node opacity and other styles
-        const nodeItem = drawing.nodeGroup
-          .select<SVGGElement>(`g.node._${node.data.id}`)
-          .style('pointer-events', '')
-          .style('opacity', 1);
-        // restore node z-index
-        const nodeItemEl = nodeItem.node();
-        if (cachedAnchorPoint && nodeItemEl) {
-          nodeItemEl.parentNode?.insertBefore(nodeItemEl, cachedAnchorPoint);
-        }
-
-        // clear dragging state
-        node.draggingX = undefined;
-        node.draggingY = undefined;
+        const shadowNode = drawing.nodeGroup.select('rect.shadow-dragging');
+        const shadowLink = drawing.pathGroup.select('path.shadow-dragging');
 
         // restore link opacity
 
@@ -220,19 +189,19 @@ export function dragAction<D>(
           overNodes.classed(draggingItemOverClass, false);
           const from = node;
           // the g tag is the parent of the foreignObject, it has the data of the node
-          const g: SVGGElement = <SVGGElement>overNodes.node()?.parentNode;
-          const to = select<SVGGElement, NodeInterface<SizedRawNode<D>>>(
-            g,
-          ).data()[0];
+          const to = overNodes.data()[0];
           console.log(from, to);
           if (to.id !== from.parent?.id && !to.hasAncestor(node)) {
             const oldPath = drawing.pathGroup.select<SVGPathElement>(
               `path.line._${node.data.id}._${node.parent?.data.id}`,
             );
             oldPath.attr('class', `line _${node.data.id} _${to.data.id}`);
-            drawing.pathGroup;
-            treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
-            return;
+            if (from.data.id !== to.data.id) {
+              treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
+              shadowNode.remove();
+              shadowLink.remove();
+              return;
+            }
           }
         }
 
@@ -298,6 +267,8 @@ export function dragAction<D>(
           return false;
         }
         if (!node.parent) {
+          shadowNode.remove();
+          shadowLink.remove();
           return;
         } else if (!node.parent.isRoot()) {
           switch (treeState.current.direction) {
@@ -311,6 +282,8 @@ export function dragAction<D>(
                   continue;
                 }
                 if (moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)) {
+                  shadowNode.remove();
+                  shadowLink.remove();
                   return;
                 }
               }
@@ -326,6 +299,8 @@ export function dragAction<D>(
                   continue;
                 }
                 if (moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)) {
+                  shadowNode.remove();
+                  shadowLink.remove();
                   return;
                 }
               }
@@ -344,6 +319,8 @@ export function dragAction<D>(
                   continue;
                 }
                 if (moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)) {
+                  shadowNode.remove();
+                  shadowLink.remove();
                   return;
                 }
               }
@@ -358,6 +335,8 @@ export function dragAction<D>(
                   continue;
                 }
                 if (moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)) {
+                  shadowNode.remove();
+                  shadowLink.remove();
                   return;
                 }
               }
@@ -378,6 +357,8 @@ export function dragAction<D>(
                     if (
                       moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)
                     ) {
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -396,6 +377,8 @@ export function dragAction<D>(
                         node.parent.id,
                         i + 1,
                       );
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -405,6 +388,8 @@ export function dragAction<D>(
                       node.parent.id,
                       leftFirstIndex,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   } else if (curY > siblings[siblings.length - 1].y) {
                     treeState.current.moveNodeTo(
@@ -412,6 +397,8 @@ export function dragAction<D>(
                       node.parent.id,
                       siblings.length,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   }
                 }
@@ -429,6 +416,8 @@ export function dragAction<D>(
                     if (
                       moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)
                     ) {
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -447,6 +436,8 @@ export function dragAction<D>(
                         node.parent.id,
                         i + 1,
                       );
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -456,6 +447,8 @@ export function dragAction<D>(
                       node.parent.id,
                       0,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   } else if (curY > siblings[leftFirstIndex - 1].y) {
                     treeState.current.moveNodeTo(
@@ -463,6 +456,8 @@ export function dragAction<D>(
                       node.parent.id,
                       leftFirstIndex - 1,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   }
                 }
@@ -486,6 +481,8 @@ export function dragAction<D>(
                     if (
                       moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)
                     ) {
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -504,6 +501,8 @@ export function dragAction<D>(
                         node.parent.id,
                         i + 1,
                       );
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -513,6 +512,8 @@ export function dragAction<D>(
                       node.parent.id,
                       topFirstIndex,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   } else if (curX > siblings[siblings.length - 1].x) {
                     treeState.current.moveNodeTo(
@@ -520,6 +521,8 @@ export function dragAction<D>(
                       node.parent.id,
                       siblings.length,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   }
                 }
@@ -537,6 +540,8 @@ export function dragAction<D>(
                     if (
                       moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)
                     ) {
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -555,6 +560,8 @@ export function dragAction<D>(
                         node.parent.id,
                         i + 1,
                       );
+                      shadowNode.remove();
+                      shadowLink.remove();
                       return;
                     }
                   }
@@ -564,6 +571,8 @@ export function dragAction<D>(
                       node.parent.id,
                       0,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   } else if (curX > siblings[topFirstIndex - 1].x) {
                     treeState.current.moveNodeTo(
@@ -571,6 +580,8 @@ export function dragAction<D>(
                       node.parent.id,
                       topFirstIndex - 1,
                     );
+                    shadowNode.remove();
+                    shadowLink.remove();
                     return;
                   }
                 }
@@ -588,65 +599,42 @@ export function dragAction<D>(
         const dragTran = transition().duration(300);
 
         // animate drag btn and nodes to original position
-        dragBtn
+
+        shadowNode
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)
+          .attr('opacity', 0)
           .attr('x', node.x)
-          .attr('y', node.y);
-        nodeItem
+          .attr('y', node.y)
+          .remove();
+
+        const sourceRect: [number, number, number, number, number, number] = [
+          node.parent.x,
+          node.parent.y,
+          node.parent.data.content_size[0],
+          node.parent.data.content_size[1],
+          node.parent.x,
+          node.parent.y,
+        ];
+        const targetRect: [number, number, number, number, number, number] = [
+          node.x,
+          node.y,
+          node.data.content_size[0],
+          node.data.content_size[1],
+          node.x,
+          node.y,
+        ];
+        const linkPointPair = getLinkPointPairForDirection(
+          treeState,
+          sourceRect,
+          targetRect,
+        );
+        const pathD = getLinkForDirection(treeState)(linkPointPair) || '';
+        shadowLink
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
           .transition(dragTran as any)
-          .attr('transform', `translate(${node.x}, ${node.y})`);
-
-        // update link to original position
-        linkLine
-          .data(node.touchedLinks(), (link) => {
-            const key = `${link.source.data.id}-${link.target.data.id}`;
-            return key;
-          })
-          .call((update) => {
-            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-            update.transition(dragTran as any).attr('d', (d) => {
-              const sourceRect: [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number,
-              ] = [
-                d.source.x,
-                d.source.y,
-                d.source.data.content_size[0],
-                d.source.data.content_size[1],
-                d.source.x,
-                d.source.y,
-              ];
-
-              const targetRect: [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number,
-              ] = [
-                d.target.x,
-                d.target.y,
-                d.target.data.content_size[0],
-                d.target.data.content_size[1],
-                d.target.x,
-                d.target.y,
-              ];
-              const linkPointPair = getLinkPointPairForDirection(
-                treeState,
-                sourceRect,
-                targetRect,
-              );
-              const re = getLinkForDirection(treeState)(linkPointPair) || '';
-              return re;
-            });
-          });
+          .attr('d', pathD)
+          .remove();
       },
     );
 }

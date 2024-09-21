@@ -1,23 +1,29 @@
 foreignObject.node-content {
   overflow: visible;
   border-radius: 5px;
+  position: relative;
 }
 
-foreignObject.dragging-item-over {
+/* foreignObject.dragging-item-over {
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
-}
-rect.drag-btn:hover {
-  stroke: #1890ff;
-  stroke-width: 2px;
-}
-.drag-btn.root {
-  pointer-events: none;
-  display: none;
-}
-.dragging-node {
+} */
+.drag-btn {
   position: absolute;
-  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 5px;
 }
+.drag-btn:hover {
+  outline: 2px solid #1890ff;
+}
+
+.shadow-dragging {
+  pointer-events: none;
+}
+
 
 .in-collapsed {
   display: none;
