@@ -1,4 +1,4 @@
-import { Maybe } from "./maybe";
+import { Maybe } from './maybe';
 
 export type Constant<T> = () => T;
 export type UnaryOperator<T> = (a: T) => T;
@@ -14,7 +14,7 @@ export type $Eq<T> = {
 };
 
 export const $eqPrime = <T>(): $Eq<T> => ({
-  equals: (a) => (b) => a === b
+  equals: (a) => (b) => a === b,
 });
 
 export type $Ord<T> = {
@@ -23,4 +23,4 @@ export type $Ord<T> = {
 
 export const $ordPrime = <T>(): $Ord<T> => ({
   lessThan: (a) => (b) => a < b,
-})
+});

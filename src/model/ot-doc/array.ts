@@ -1,12 +1,12 @@
-import { $Eq, $eqPrime } from "./algebra";
-import { $BaseDoc, $InvDoc, $idn, $init } from "./document";
-import { just, nothing } from "./maybe";
-import { $eqPartialStt, $eqStt } from "./struct";
+import { $Eq, $eqPrime } from './algebra';
+import { $BaseDoc, $InvDoc, $idn, $init } from './document';
+import { just, nothing } from './maybe';
+import { $eqPartialStt, $eqStt } from './struct';
 
-export type ArrayOplet<T> = { idx: number; arr: T[] }
+export type ArrayOplet<T> = { idx: number; arr: T[] };
 export type ArrayOp<T> = Partial<{
-  del: ArrayOplet<T>[],
-  ins: ArrayOplet<T>[],
+  del: ArrayOplet<T>[];
+  ins: ArrayOplet<T>[];
 }>;
 
 export const $eqArr = <T>({ equals }: $Eq<T>): $Eq<T[]> => ({
@@ -22,7 +22,7 @@ export const $eqArr = <T>({ equals }: $Eq<T>): $Eq<T[]> => ({
 export const $baseDocArr = <T>(cls: $Eq<T>): $BaseDoc<T[], ArrayOp<T>> => {
   const cpEquals = $eqArr(cls).equals;
   const $eqOplet = $eqArr(
-    $eqStt({ idx: $eqPrime<number>(), arr: $eqArr(cls) })
+    $eqStt({ idx: $eqPrime<number>(), arr: $eqArr(cls) }),
   );
   return {
     ...$init([]),

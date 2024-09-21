@@ -5,7 +5,7 @@ import { Payload } from './render/model/interface';
 
 const SNodeItem = css`
   outline: 1px solid #1890ff;
-  background-color: #f0f0f0;
+  background-color: #fff;
   border-radius: 5px;
   position: relative;
 `;

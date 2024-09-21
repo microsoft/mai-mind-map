@@ -14,3 +14,4 @@ dist/
 
 # Server
 mai-mind-map-se/**/*.js
+mai-mind-map-se/config.txt

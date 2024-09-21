@@ -1,32 +1,29 @@
-import { MindMapCp } from "@root/model/mind-map-model";
-import { Payload, RawNode } from "../mind-map/render";
-import { Rec } from "@root/model/ot-doc/record";
-import { Timestamped } from "@root/model/ot-doc/timestamped";
+import { MindMapCp, MindMapNodeProps } from '@root/model/mind-map-model';
+import { Rec, mapRec } from '@root/model/ot-doc/record';
+import { Timestamped } from '@root/model/ot-doc/timestamped';
+import { Payload, RawNode } from '../mind-map/render';
 
-const ROOT_ID = "00000000";
+const ROOT_ID = '00000000';
 
 const node = (
   id: string,
-  content = "",
-  collapsed = false
-): RawNode<Payload> => ({ id, payload: { content, collapsed } });
+  payload: Payload = { content: '', collapsed: false },
+): RawNode<Payload> => ({ id, payload });
 
 export function cpToTree(cp: MindMapCp): RawNode<Payload> {
   const nodes: Rec<RawNode<Payload>> = {};
   const parents: Rec<Timestamped<string>> = {
-    [ROOT_ID]: { t: Infinity, v: ROOT_ID },
+    [ROOT_ID]: { t: Number.POSITIVE_INFINITY, v: ROOT_ID },
   };
-  const childrenIds: Rec<string[]> = {}; 
+  const childrenIds: Rec<string[]> = {};
   const dfs = (id: string) => {
-    const {
-      children = [],
-      stringProps,
-      booleanProps,
-    } = cp[id] ?? {};
+    const { children = [], stringProps, booleanProps } = cp[id] ?? {};
     nodes[id] ??= node(
       id,
-      stringProps?.content?.v ?? "",
-      booleanProps?.collapsed?.v ?? false
+      propsToPayload({
+        stringProps: mapRec(stringProps ?? {}, ({ v }) => v),
+        booleanProps: mapRec(booleanProps ?? {}, ({ v }) => v),
+      }),
     );
     childrenIds[id] = [];
     for (const { t, v: idC } of children) {
@@ -60,16 +57,16 @@ export function treeToCp(tree: RawNode<Payload>): MindMapCp {
   const dfs = (node: RawNode<Payload>) => {
     const id = node === tree ? ROOT_ID : node.id;
     visited.add(id);
+    const { stringProps = {}, booleanProps = {} } = payloadToProps(
+      node.payload,
+    );
     cp[id] = {
       children: [],
-      stringProps: {
-        content: { t, v: node.payload.content },
-      },
-      booleanProps: {
-        collapsed: { t, v: node.payload.collapsed ?? false },
-      },
+      stringProps: mapRec(stringProps, (v) => ({ t, v })),
+      booleanProps: mapRec(booleanProps, (v) => ({ t, v })),
     };
-    node.children?.forEach(nodeC => {
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    node.children?.forEach((nodeC) => {
       if (!visited.has(nodeC.id)) {
         cp[id].children?.push({ t, v: nodeC.id });
         dfs(nodeC);
@@ -80,3 +77,27 @@ export function treeToCp(tree: RawNode<Payload>): MindMapCp {
   dfs(tree);
   return cp;
 }
+
+export const payloadToProps = (payload: Payload): MindMapNodeProps => ({
+  stringProps: {
+    content: payload.content,
+    link: payload.link ?? '',
+    hilight: payload.hilight ?? '',
+  },
+  booleanProps: {
+    collapsed: payload.collapsed ?? false,
+    bold: payload.bold ?? false,
+    italic: payload.italic ?? false,
+    underline: payload.underline ?? false,
+  },
+});
+
+export const propsToPayload = (props: MindMapNodeProps): Payload => ({
+  content: props.stringProps?.content ?? '',
+  link: props.stringProps?.link,
+  hilight: props.stringProps?.hilight,
+  collapsed: props.booleanProps?.collapsed,
+  bold: props.booleanProps?.bold,
+  italic: props.booleanProps?.italic,
+  underline: props.booleanProps?.underline,
+});

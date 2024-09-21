@@ -1,16 +1,16 @@
-import { $eqPrime } from "./ot-doc/algebra";
-import { $invDocArr, ArrayOp, ArrayOplet } from "./ot-doc/array";
-import { $InvDoc } from "./ot-doc/document";
-import { $fullDocRecord, $invDocRecord, Rec, mapRec } from "./ot-doc/record";
-import { Update } from "./ot-doc/singleton";
-import { $invDocStruct } from "./ot-doc/struct";
+import { $eqPrime } from './ot-doc/algebra';
+import { $invDocArr, ArrayOp, ArrayOplet } from './ot-doc/array';
+import { $InvDoc } from './ot-doc/document';
+import { $fullDocRecord, $invDocRecord, Rec, mapRec } from './ot-doc/record';
+import { Update } from './ot-doc/singleton';
+import { $invDocStruct } from './ot-doc/struct';
 import {
   $eqTimestamped,
   $fullDocLwwBoolean,
   $fullDocLwwNumber,
   $fullDocLwwString,
   Timestamped,
-} from "./ot-doc/timestamped";
+} from './ot-doc/timestamped';
 
 export type MindMapNodeProps = Partial<{
   stringProps: Rec<string>;
@@ -36,28 +36,34 @@ export type MindMapNodeOp = Partial<{
 
 export type MindMapOp = Rec<MindMapNodeOp>;
 
-export const $invDocMindMap: $InvDoc<MindMapCp, MindMapOp> = $invDocRecord($invDocStruct({
-  children: $invDocArr<Timestamped<string>>($eqTimestamped($eqPrime<string>())),
-  stringProps: $fullDocRecord($fullDocLwwString),
-  numberProps: $fullDocRecord($fullDocLwwNumber),
-  booleanProps: $fullDocRecord($fullDocLwwBoolean),
-}));
+export const $invDocMindMap: $InvDoc<MindMapCp, MindMapOp> = $invDocRecord(
+  $invDocStruct({
+    children: $invDocArr<Timestamped<string>>(
+      $eqTimestamped($eqPrime<string>()),
+    ),
+    stringProps: $fullDocRecord($fullDocLwwString),
+    numberProps: $fullDocRecord($fullDocLwwNumber),
+    booleanProps: $fullDocRecord($fullDocLwwBoolean),
+  }),
+);
 
-const iterateUntil = <T>(gen: () => T) => (predict: (t: T) => boolean): T => {
-  let val: T;
-  do {
-    val = gen();
-  } while (!predict(val));
-  return val;
-};
+const iterateUntil =
+  <T>(gen: () => T) =>
+  (predict: (t: T) => boolean): T => {
+    let val: T;
+    do {
+      val = gen();
+    } while (!predict(val));
+    return val;
+  };
 
-const genId = () => Math.random().toString(36).padEnd(10, "0").slice(2, 10);
+const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 10);
 
 export const add =
   (
     parentId: string,
     idx: number,
-    { stringProps, numberProps, booleanProps }: MindMapNodeProps
+    { stringProps, numberProps, booleanProps }: MindMapNodeProps,
   ) =>
   (cur: MindMapCp): MindMapOp | undefined => {
     const t = Date.now();
@@ -115,12 +121,16 @@ export const remove =
 
     const op: MindMapOp = { [nodeId]: nodeOp };
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     Object.keys(cur).forEach((key) => {
       const { children = [] } = cur[key];
-      const del = children.reduce((m, { t, v }, idx) => {
-        if (v === nodeId) m.unshift({ idx, arr: [{ t, v }] });
-        return m;
-      }, [] as ArrayOplet<Timestamped<string>>[]);
+      const del = children.reduce(
+        (m, { t, v }, idx) => {
+          if (v === nodeId) m.unshift({ idx, arr: [{ t, v }] });
+          return m;
+        },
+        [] as ArrayOplet<Timestamped<string>>[],
+      );
       if (del.length > 0) {
         op[key] ??= {};
         op[key].children = { del };
@@ -131,10 +141,7 @@ export const remove =
   };
 
 export const modify =
-  (
-    nodeId: string,
-    updater: (props: MindMapNodeProps) => MindMapNodeProps,
-  ) =>
+  (nodeId: string, updater: (props: MindMapNodeProps) => MindMapNodeProps) =>
   (cur: MindMapCp): MindMapOp | undefined => {
     const t = Date.now();
     const {
@@ -175,15 +182,20 @@ export const move =
 
     const op: MindMapOp = {};
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     Object.keys(cur).forEach((key) => {
       const { children = [] } = cur[key];
-      const del = children.reduce((m, { t, v }, i) => {
-        if (v === nodeId) {
-          m.unshift({ idx: i, arr: [{ t, v }] });
-          if (parentId === key && i < idx) idx -= 1;
-        }
-        return m;
-      }, [] as ArrayOplet<Timestamped<string>>[]);
+      const del = children.reduce(
+        (m, { t, v }, i) => {
+          if (v === nodeId) {
+            m.unshift({ idx: i, arr: [{ t, v }] });
+            // biome-ignore lint/style/noParameterAssign: <explanation>
+            if (parentId === key && i < idx) idx -= 1;
+          }
+          return m;
+        },
+        [] as ArrayOplet<Timestamped<string>>[],
+      );
       if (del.length > 0) {
         op[key] ??= {};
         op[key].children = { del };

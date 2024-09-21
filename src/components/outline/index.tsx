@@ -1,5 +1,6 @@
 import { css } from '@root/base/styled';
-import React, { useMemo, useReducer, Fragment } from 'react';
+import { MindMapState } from '@root/components/state/mindMapState';
+import React, { useMemo, useReducer, Fragment, useContext } from 'react';
 import { INDENT } from './common';
 import Treeline from './tree-line';
 import { ViewModel } from './view-model';
@@ -22,7 +23,7 @@ const SDocTitle = css`
 `;
 const SSection = css`
   position: relative;
-  &>.vline {
+  & > .vline {
     position: absolute;
     top: 0;
     height: 100%;
@@ -37,11 +38,12 @@ const SSection = css`
  * ------------------------------------------------------------------------------------------
  */
 export function OutlineView() {
-  const forceUpdate = useReducer((x) => x + 1, 0)[1];
+  const mindMapState = useContext(MindMapState);
+  // const forceUpdate = useReducer((x) => x + 1, 0)[1];
   const view = useMemo(() => {
     console.log('create view model');
-    return new ViewModel(forceUpdate);
-  }, [forceUpdate]);
+    return new ViewModel(mindMapState);
+  }, [mindMapState]);
 
   // @ts-ignore leave this for debug
   window._vm_ = view;
@@ -57,13 +59,15 @@ export function OutlineView() {
       return (
         <Fragment key={id}>
           <Treeline depth={depth} node={node} view={view} />
-          {!node.collapsed && makeTree(depth + 1, node.children)}
+          {!node.payload.collapsed && makeTree(depth + 1, node.children)}
         </Fragment>
       );
     });
     return (
       <section className={SSection}>
-        {depth > 0 && <div className="vline" style={{ left: depth * INDENT + 5.5 }} />}
+        {depth > 0 && (
+          <div className="vline" style={{ left: depth * INDENT + 5.5 }} />
+        )}
         {children}
       </section>
     );

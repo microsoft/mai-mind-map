@@ -185,6 +185,21 @@ export function modifyNodeContent(
   return exampleSourceData;
 }
 
+export function modifyNodePayload(nodeId: string, payload: Payload) {
+  let node = findNodeById(exampleSourceData, nodeId);
+
+  if (!node || node.payload === payload) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+  node = findNodeById(exampleSourceData, nodeId);
+  if (node) {
+    node.payload = Object.assign({}, payload);
+  }
+  return exampleSourceData;
+}
+
 export function toggleCollapseNode(nodeId: string): RawNode<Payload> {
   const node = findNodeById(exampleSourceData, nodeId);
 
@@ -220,6 +235,34 @@ export function addNode(parentId: string, content: string): RawNode<Payload> {
     parent.children = [];
   }
   parent.children.push(newNode);
+
+  return exampleSourceData;
+}
+
+export function addNodeWithPayLoad(
+  parentId: string,
+  payload: Payload,
+  index: number,
+): RawNode<Payload> {
+  let parent = findNodeById(exampleSourceData, parentId);
+
+  if (!parent) {
+    return exampleSourceData;
+  }
+
+  exampleSourceData = JSON.parse(JSON.stringify(exampleSourceData));
+
+  const newNode: RawNode<Payload> = {
+    id: uuid(),
+    payload: Object.assign({}, payload),
+  };
+
+  // biome-ignore lint/style/noNonNullAssertion: <explanation>
+  parent = findNodeById(exampleSourceData, parentId)!;
+  if (!parent.children) {
+    parent.children = [];
+  }
+  parent.children.splice(index, 0, newNode);
 
   return exampleSourceData;
 }

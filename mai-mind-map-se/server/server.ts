@@ -1,4 +1,5 @@
 import path from 'node:path';
+import cors from 'cors';
 import express, {
   type Request,
   type Response,
@@ -24,6 +25,7 @@ function normalizePort(val: string): number {
 export function run() {
   const app: Application = express();
   const port = normalizePort(process.env.PORT || '3000');
+  app.use(cors());
 
   app.get('/', (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
