@@ -61,10 +61,12 @@ export function useMindMapState(): MindMapStateType {
     [initialTree]
   );
   useEffect(
-    () =>
-      engine.model.observe((data) => {
+    () => {
+      (window as any).model = engine.model;
+      return engine.model.observe((data) => {
         console.log(data);
-      }),
+      });
+    },
     [engine, engine.model]
   );
   const obTree = useMemo(() => engine.model.map(cpToTree), [engine.model]);
@@ -127,5 +129,3 @@ export function useMindMapState(): MindMapStateType {
     delNode,
   };
 }
-
-listDocuments().then(console.log);
