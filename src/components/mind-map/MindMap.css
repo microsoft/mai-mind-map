@@ -1,4 +1,4 @@
-foreignObject.node-content{
+foreignObject.node-content {
   overflow: visible;
   border-radius: 5px;
 }
@@ -6,7 +6,10 @@ foreignObject.node-content{
 foreignObject.dragging-item-over {
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
 }
-
+rect.drag-btn:hover {
+  stroke: #1890ff;
+  stroke-width: 2px;
+}
 .drag-btn.root {
   pointer-events: none;
   display: none;

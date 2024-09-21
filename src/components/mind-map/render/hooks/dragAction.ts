@@ -110,22 +110,40 @@ export function dragAction<D>(
             d.target.inCollapsedItem || d.source.inCollapsedItem ? 0 : 0.2,
           )
           .data(node.touchedLinks(), (link) => {
-            const key = `${link.source.data.id}-${link.target.data.id}`;
+            const key = `l-${link.target.data.id}`;
             return key;
           })
           .call((update) => {
             update.attr('d', (d) => {
-              const sourceRect: [number, number, number, number] = [
+              const sourceRect: [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number,
+              ] = [
                 getDraggingX(d.source),
                 getDraggingY(d.source),
                 d.source.data.content_size[0],
                 d.source.data.content_size[1],
+                d.source.x,
+                d.source.y,
               ];
-              const targetRect: [number, number, number, number] = [
+              const targetRect: [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number,
+              ] = [
                 getDraggingX(d.target),
                 getDraggingY(d.target),
                 d.target.data.content_size[0],
                 d.target.data.content_size[1],
+                d.target.x,
+                d.target.y,
               ];
               const linkPointPair = getLinkPointPairForDirection(
                 treeState,
@@ -208,6 +226,11 @@ export function dragAction<D>(
           ).data()[0];
           console.log(from, to);
           if (to.id !== from.parent?.id && !to.hasAncestor(node)) {
+            const oldPath = drawing.pathGroup.select<SVGPathElement>(
+              `path.line._${node.data.id}._${node.parent?.data.id}`,
+            );
+            oldPath.attr('class', `line _${node.data.id} _${to.data.id}`);
+            drawing.pathGroup;
             treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
             return;
           }
@@ -584,18 +607,36 @@ export function dragAction<D>(
           .call((update) => {
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             update.transition(dragTran as any).attr('d', (d) => {
-              const sourceRect: [number, number, number, number] = [
+              const sourceRect: [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number,
+              ] = [
                 d.source.x,
                 d.source.y,
                 d.source.data.content_size[0],
                 d.source.data.content_size[1],
+                d.source.x,
+                d.source.y,
               ];
 
-              const targetRect: [number, number, number, number] = [
+              const targetRect: [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number,
+              ] = [
                 d.target.x,
                 d.target.y,
                 d.target.data.content_size[0],
                 d.target.data.content_size[1],
+                d.target.x,
+                d.target.y,
               ];
               const linkPointPair = getLinkPointPairForDirection(
                 treeState,

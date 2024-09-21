@@ -108,7 +108,8 @@ export const EditingNode: FC<{
         top: y * scale + ty,
         transform: `scale(${scale})`,
         zIndex: 1000,
-        boxShadow: '0 0 10px 0 #1890ff',
+        borderRadius: 5,
+        outline: '2px solid #1890ff',
       }}
     >
       <div className={SToolbar}>
@@ -148,8 +149,11 @@ export const EditingNode: FC<{
         data={data.payload}
         editAble={true}
         idPrefix="enc"
-        minWidth={node.data.content_size[0]}
-        minHeight={node.data.content_size[1]}
+        style={{
+          backgroundColor: '#fff',
+          minWidth: data.content_size[0],
+          minHeight: data.content_size[1],
+        }}
         onEditorKeyDown={(e) => {
           if (e.key === 'Escape') {
             setPendingEditNode(null);

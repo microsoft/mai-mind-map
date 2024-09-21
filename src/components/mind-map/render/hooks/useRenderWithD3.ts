@@ -39,7 +39,7 @@ export function useRenderWithD3<D>(
   });
 
   const [pendingRenderNodes, setPendingRenderNodes] = useState<
-    [SVGForeignObjectElement, SizedRawNode<D>][]
+    [SVGForeignObjectElement, NodeInterface<SizedRawNode<D>>][]
   >([]);
 
   const [drawing, setDrawing] = useState<Drawing | null>(null);
@@ -134,7 +134,7 @@ function drawTree<D>(
   const tempDrawingPath = drawing.pathGroup
     .selectAll<SVGPathElement, NodeLink<SizedRawNode<D>>>('path.line')
     .data(tree.links(), (link) => {
-      const key = `${link.source.data.id}-${link.target.data.id}`;
+      const key = `l-${link.target.data.id}`;
       return key;
     })
     .call((update) => {
@@ -145,18 +145,22 @@ function drawTree<D>(
           d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
         )
         .attr('d', (d) => {
-          const sourceRect: [number, number, number, number] = [
+          const sourceRect: [number, number, number, number, number, number] = [
             d.source.x,
             d.source.y,
             d.source.data.content_size[0],
             d.source.data.content_size[1],
+            d.source.x,
+            d.source.y,
           ];
 
-          const targetRect: [number, number, number, number] = [
+          const targetRect: [number, number, number, number, number, number] = [
             d.target.x,
             d.target.y,
             d.target.data.content_size[0],
             d.target.data.content_size[1],
+            d.target.x,
+            d.target.y,
           ];
           const linkPointPair = getLinkPointPairForDirection(
             treeState,
@@ -178,18 +182,22 @@ function drawTree<D>(
       d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
     )
     .attr('d', (d) => {
-      const sourceRect: [number, number, number, number] = [
+      const sourceRect: [number, number, number, number, number, number] = [
         d.source.x,
         d.source.y,
         d.source.data.content_size[0],
         d.source.data.content_size[1],
+        d.source.x,
+        d.source.y,
       ];
 
-      const targetRect: [number, number, number, number] = [
+      const targetRect: [number, number, number, number, number, number] = [
         d.target.x,
         d.target.y,
         d.target.data.content_size[0],
         d.target.data.content_size[1],
+        d.target.x,
+        d.target.y,
       ];
       const linkPointPair = getLinkPointPairForDirection(
         treeState,
@@ -200,7 +208,7 @@ function drawTree<D>(
       return re;
     })
     .attr('fill', 'transparent')
-    .attr('stroke', 'cadetblue');
+    .attr('stroke', '#1890ff');
 
   tempDrawingPath.exit().remove();
 
@@ -275,7 +283,7 @@ function drawTree<D>(
               detail: d,
             }),
           );
-          return 0;
+          return '5';
         })
         .attrTween('rx', function (d) {
           const oldX = this.x.baseVal.value;
@@ -289,7 +297,7 @@ function drawTree<D>(
                 detail: [newX, newY],
               }),
             );
-            return '0';
+            return '5';
           };
         });
     });
@@ -304,6 +312,8 @@ function drawTree<D>(
     .attr('fill', 'transparent')
     .attr('x', (d) => d.x)
     .attr('y', (d) => d.y)
+    .attr('rx', 5)
+    .attr('ry', 5)
     .attr('width', (d) => d.data.content_size[0])
     .attr('height', (d) => d.data.content_size[1])
     .on('click', (event, d) => {
@@ -322,12 +332,15 @@ function drawTree<D>(
     .selectAll<SVGRectElement, NodeInterface<SizedRawNode<D>>>('rect.drag-btn')
     .call(dragAction<D>(drawing, treeState));
 
-  const nodeDataPairs: [SVGForeignObjectElement, SizedRawNode<D>][] = [];
+  const nodeDataPairs: [
+    SVGForeignObjectElement,
+    NodeInterface<SizedRawNode<D>>,
+  ][] = [];
 
   drawing.nodeGroup
     .selectAll<SVGGElement, NodeInterface<SizedRawNode<D>>>('g.node')
     .each(function (d) {
-      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d.data]);
+      nodeDataPairs.push([<SVGForeignObjectElement>this.children[0], d]);
     });
 
   return nodeDataPairs;
