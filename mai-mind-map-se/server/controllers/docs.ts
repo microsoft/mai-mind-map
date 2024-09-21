@@ -1,6 +1,7 @@
 import express from 'express';
 import { Gen } from '../ai';
 import {
+  DeleteDocByID,
   GetDocByID,
   GetDocList,
   NewDoc,
@@ -75,6 +76,18 @@ docs.patch('/update/:id', async function (req, res) {
    * @returns A promise that resolves to the result of the update operation.
    */
   const result = await UpdateDocByID(req.params.id, req.body);
+  res.send(result);
+});
+
+docs.delete('/delete/:id', async function (req, res) {
+  /**
+   * Deletes a document by its ID.
+   *
+   * @param {Request} req - The request object containing the document ID in the parameters.
+   * @param {Response} res - The response object to send the result of the deletion.
+   * @returns {Promise<void>} - A promise that resolves when the document is deleted.
+   */
+  const result = await DeleteDocByID(req.params.id)
   res.send(result);
 });
 
