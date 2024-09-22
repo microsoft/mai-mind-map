@@ -4,9 +4,11 @@ import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { NodeInterface } from '../layout';
 import { Payload } from '../model/interface';
 import { SizedRawNode } from '../node/interface';
+import { ColorMode } from './constants';
 
 export function useNodeColor(
   node: NodeInterface<SizedRawNode<Payload>> | null,
+  colorMode: ColorMode,
 ) {
   const { bgColor, textColor } = useMemo(() => {
     if (!node) {
@@ -25,7 +27,12 @@ export function useNodeColor(
     if (node.depth === 0) {
       let textColor = '#fff';
       let bgColor = '#0172DC';
-      if (color && cHSL && !Number.isNaN(cHSL.l)) {
+      if (
+        colorMode === ColorMode.CUSTOM &&
+        color &&
+        cHSL &&
+        !Number.isNaN(cHSL.l)
+      ) {
         bgColor = color;
         const l = cHSL.l;
         if (l > 0.75) {
@@ -33,13 +40,18 @@ export function useNodeColor(
         }
       }
       return {
-        bgColor: color || '#0172DC',
-        textColor: '#fff',
+        bgColor,
+        textColor,
       };
     } else if (node.depth === 1) {
       let textColor = '#212429';
       let bgColor = '#ecf2fb';
-      if (color && cHSL && !Number.isNaN(cHSL.l)) {
+      if (
+        colorMode === ColorMode.CUSTOM &&
+        color &&
+        cHSL &&
+        !Number.isNaN(cHSL.l)
+      ) {
         bgColor = color;
         const l = cHSL.l;
         if (l < 0.75) {
@@ -53,7 +65,12 @@ export function useNodeColor(
       };
     } else {
       let textColor = '#212429';
-      if (color && cHSL && !Number.isNaN(cHSL.l)) {
+      if (
+        colorMode === ColorMode.CUSTOM &&
+        color &&
+        cHSL &&
+        !Number.isNaN(cHSL.l)
+      ) {
         let newL = cHSL.l - 0.3;
         if (newL < 0) {
           newL = 0;
@@ -67,7 +84,7 @@ export function useNodeColor(
         textColor,
       };
     }
-  }, [node]);
+  }, [node, colorMode]);
   const cssVarStyle = useMemo(() => {
     return {
       '--bg-color': bgColor,

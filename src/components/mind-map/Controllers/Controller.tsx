@@ -3,7 +3,8 @@ import { atom, useAtom, useChange } from '@root/base/atom';
 import { FC, Fragment, useContext, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Direction } from '../render';
-import { LinkMode } from '../render/hooks/constants';
+import { ColorMode, LinkMode } from '../render/hooks/constants';
+import { ColorModeControl } from './ColorControl';
 import { LayoutControl } from './LayoutControl';
 import { LinkModeControl } from './LinkModeControl';
 import { ScaleControl } from './ScaleControl';
@@ -15,6 +16,8 @@ interface ControllerProps {
   setScale: (scale: number) => void;
   linkMode: LinkMode;
   setLinkMode: (linkMode: LinkMode) => void;
+  colorMode: ColorMode;
+  setColorMode: (colorMode: ColorMode) => void;
 }
 
 export const STreeViewController = css``;
@@ -42,6 +45,10 @@ export const Controller: FC<ControllerProps> = (props) => {
           <LinkModeControl
             linkMode={props.linkMode}
             setLinkMode={props.setLinkMode}
+          />
+          <ColorModeControl
+            colorMode={props.colorMode}
+            setColorMode={props.setColorMode}
           />
           <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
         </Fragment>,

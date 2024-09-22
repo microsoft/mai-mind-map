@@ -10,7 +10,8 @@ const SDirections = css`
   gap: 10px;
   margin: 5px 0 15px;
   & > .label {
-    width: 70px;
+    width: 80px;
+    text-align: right;
   }
   & > .dir-item {
     background-color: aliceblue;

@@ -18,7 +18,7 @@ import {
   prepareNodeSize,
   useRenderWithD3,
 } from './render';
-import { LinkMode } from './render/hooks/constants';
+import { ColorMode, LinkMode } from './render/hooks/constants';
 import { Payload } from './render/model/interface';
 export * from './render';
 import './MindMap.css';
@@ -30,6 +30,7 @@ type MFC<D> = {
   treeDirection: Direction;
   scale: number;
   linkMode: LinkMode;
+  colorMode: ColorMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
   toggleCollapseNode(nodeId: string): void;
@@ -44,6 +45,7 @@ export function MindMap(props: MFC<Payload>) {
     treeDirection,
     scale,
     linkMode,
+    colorMode,
     isNodeCollapsed,
     moveNodeTo,
     modifyNode,
@@ -76,6 +78,7 @@ export function MindMap(props: MFC<Payload>) {
       direction: treeDirection,
       scale,
       linkMode,
+      colorMode,
     },
     moveNodeTo,
     setEditingNode,
@@ -96,6 +99,7 @@ export function MindMap(props: MFC<Payload>) {
               {createPortal(
                 <TreeNode
                   treeDirection={treeDirection}
+                  colorMode={colorMode}
                   node={node}
                   toggleCollapseNode={toggleCollapseNode}
                 />,
@@ -107,6 +111,7 @@ export function MindMap(props: MFC<Payload>) {
         <EditingNode
           scale={scale}
           node={editingNode}
+          colorMode={colorMode}
           modifyNode={modifyNode}
           setPendingEditNode={setEditingNode}
           toggleCollapseNode={toggleCollapseNode}

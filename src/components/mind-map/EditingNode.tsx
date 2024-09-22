@@ -2,6 +2,7 @@ import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState } from 'react';
 import { AddChild, Collapse, Delete, Expand } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
+import { ColorMode } from './render/hooks/constants';
 import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
@@ -21,6 +22,7 @@ const SToolbar = css`
 export const EditingNode: FC<{
   scale: number;
   node: EditingNodeType<Payload> | null;
+  colorMode: ColorMode;
   modifyNode: (nodeId: string, content: string) => void;
   setPendingEditNode: (node: EditingNodeType<Payload> | null) => void;
   toggleCollapseNode(nodeId: string): void;
@@ -92,7 +94,10 @@ export const EditingNode: FC<{
     }
   }, [editingNode]);
 
-  const { cssVarStyle, bgColor } = useNodeColor(editingNode?.node ?? null);
+  const { cssVarStyle } = useNodeColor(
+    editingNode?.node ?? null,
+    props.colorMode,
+  );
 
   // const { node: editingNode } = props;
   if (!editingNode) return null;

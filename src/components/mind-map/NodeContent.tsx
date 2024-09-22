@@ -6,6 +6,7 @@ const SNodeItem = css`
   background-color: var(--bg-color);
   border-radius: 5px;
   position: relative;
+  transition: background-color 0.2s;
 `;
 
 const SNodeContentText = css`

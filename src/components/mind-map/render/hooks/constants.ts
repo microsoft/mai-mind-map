@@ -10,10 +10,16 @@ export enum LinkMode {
   HYBRID = 3,
 }
 
+export enum ColorMode {
+  DEFAULT = 1,
+  CUSTOM = 2,
+}
+
 export interface RenderOptions {
   direction: Direction;
   scale: number;
   linkMode: LinkMode;
+  colorMode: ColorMode;
 }
 
 export interface TreeState<D> {
@@ -21,6 +27,7 @@ export interface TreeState<D> {
   direction: Direction;
   scale: number;
   linkMode: LinkMode;
+  colorMode: ColorMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   setEditingNode: (node: EditingNodeType<D> | null) => void;
 }

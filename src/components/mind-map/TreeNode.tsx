@@ -4,6 +4,7 @@ import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { Ellipsis, Fold } from '../icons/icons';
 import { NodeContent } from './NodeContent';
 import { Direction } from './render';
+import { ColorMode } from './render/hooks/constants';
 
 import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
@@ -77,13 +78,14 @@ const SExpandChar = css`
 
 export const TreeNode: FC<{
   node: NodeInterface<SizedRawNode<Payload>>;
+  colorMode: ColorMode;
   toggleCollapseNode(nodeId: string): void;
   treeDirection: Direction;
 }> = (props) => {
-  const { node, toggleCollapseNode, treeDirection } = props;
+  const { node, toggleCollapseNode, treeDirection, colorMode } = props;
   const { id, data } = node;
   const [width, height] = data.content_size;
-  const { cssVarStyle } = useNodeColor(node);
+  const { cssVarStyle } = useNodeColor(node, colorMode);
 
   return (
     <Fragment>

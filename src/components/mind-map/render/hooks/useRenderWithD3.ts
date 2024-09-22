@@ -18,7 +18,12 @@ import {
 import { Direction, NodeInterface, NodeLink } from '../layout';
 import { getHiLightColor } from '../model/interface';
 import { SizedRawNode } from '../node/interface';
-import { type Drawing, RenderOptions, type TreeState } from './constants';
+import {
+  ColorMode,
+  type Drawing,
+  RenderOptions,
+  type TreeState,
+} from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
 
 export function useRenderWithD3<D>(
@@ -27,13 +32,14 @@ export function useRenderWithD3<D>(
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void,
   setEditingNode: (node: EditingNodeType<D> | null) => void,
 ) {
-  const { direction, scale, linkMode } = option;
+  const { direction, scale, linkMode, colorMode } = option;
   const svg = useRef<SVGSVGElement>(null);
   const treeStateRef = useRef<TreeState<D>>({
     dragging: false,
     scale,
     direction,
     linkMode,
+    colorMode,
     moveNodeTo: () => {
       throw new Error('moveNodeTo not implemented');
     },
@@ -113,13 +119,22 @@ export function useRenderWithD3<D>(
   useEffect(() => {
     treeStateRef.current.direction = direction;
     treeStateRef.current.linkMode = linkMode;
+    treeStateRef.current.colorMode = colorMode;
     treeStateRef.current.moveNodeTo = moveNodeTo;
     treeStateRef.current.setEditingNode = setEditingNode;
     if (drawing && root) {
       const nodeDataPairs = drawTree(drawing, root, treeStateRef);
       setPendingRenderNodes(nodeDataPairs);
     }
-  }, [drawing, direction, linkMode, root, moveNodeTo, setEditingNode]);
+  }, [
+    drawing,
+    direction,
+    linkMode,
+    colorMode,
+    root,
+    moveNodeTo,
+    setEditingNode,
+  ]);
 
   return { svg, pendingRenderNodes };
 }
@@ -147,26 +162,14 @@ function drawTree<D>(
           d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
         )
         .attr('d', (d) => {
-          const sourceRect: [number, number, number, number, number, number] = [
-            d.source.x,
-            d.source.y,
-            d.source.data.content_size[0],
-            d.source.data.content_size[1],
-            d.source.x,
-            d.source.y,
-          ];
-
-          const targetRect: [number, number, number, number, number, number] = [
-            d.target.x,
-            d.target.y,
-            d.target.data.content_size[0],
-            d.target.data.content_size[1],
-            d.target.x,
-            d.target.y,
-          ];
           const linkPointPair = getLinkPointPair(treeState, d);
           const re = getLinkFun(treeState, d)(linkPointPair) || '';
           return re;
+        })
+        .attr('stroke', (d) => {
+          return treeState.current.colorMode === ColorMode.CUSTOM
+            ? getHiLightColor(d.target.data.payload)
+            : '#0172DC';
         });
     });
 
@@ -203,7 +206,9 @@ function drawTree<D>(
     })
     .attr('fill', 'transparent')
     .attr('stroke', (d) => {
-      return getHiLightColor(d.target.data.payload);
+      return treeState.current.colorMode === ColorMode.CUSTOM
+        ? getHiLightColor(d.target.data.payload)
+        : '#0172DC';
     });
 
   tempDrawingPath.exit().remove();

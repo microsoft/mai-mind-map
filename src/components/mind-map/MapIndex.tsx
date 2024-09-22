@@ -24,8 +24,16 @@ function isNodeCollapsed(data: Payload): boolean {
 }
 
 export function MindMapView() {
-  const { dir, setDir, scale, setScale, linkMode, setLinkMode } =
-    useRenderOption();
+  const {
+    dir,
+    setDir,
+    scale,
+    setScale,
+    linkMode,
+    setLinkMode,
+    colorMode,
+    setColorMode,
+  } = useRenderOption();
   const treeState = useContext(MindMapState);
 
   return treeState ? (
@@ -37,6 +45,8 @@ export function MindMapView() {
         setScale={setScale}
         linkMode={linkMode}
         setLinkMode={setLinkMode}
+        colorMode={colorMode}
+        setColorMode={setColorMode}
       />
       <MindMap
         style={{
@@ -50,6 +60,7 @@ export function MindMapView() {
         treeDirection={dir}
         scale={scale}
         linkMode={linkMode}
+        colorMode={colorMode}
         modifyNode={treeState.modifyNode}
         moveNodeTo={treeState.moveNodeTo}
         toggleCollapseNode={treeState.toggleCollapseNode}

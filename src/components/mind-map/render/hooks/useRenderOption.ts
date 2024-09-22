@@ -1,15 +1,17 @@
 import { useCallback, useState } from 'react';
 import { Direction } from '../layout/flex-tree/hierarchy';
-import { LinkMode } from './constants';
+import { ColorMode, LinkMode } from './constants';
 
 let direction: Direction = 'H';
 let scaleValue = 1;
 let linkModeValue: LinkMode = LinkMode.HYBRID;
+let colorModeValue: ColorMode = ColorMode.DEFAULT;
 
 export function useRenderOption() {
   const [dir, setDirFun] = useState<Direction>(direction);
   const [scale, setScaleFun] = useState(scaleValue);
   const [linkMode, setLinkModeFun] = useState(linkModeValue);
+  const [colorMode, setColorModeFun] = useState(colorModeValue);
   const setDir = useCallback((dir: Direction) => {
     setDirFun(dir);
     direction = dir;
@@ -22,6 +24,10 @@ export function useRenderOption() {
     setLinkModeFun(linkMode);
     linkModeValue = linkMode;
   }, []);
+  const setColorMode = useCallback((colorMode: ColorMode) => {
+    setColorModeFun(colorMode);
+    colorModeValue = colorMode;
+  }, []);
 
   return {
     dir,
@@ -30,5 +36,7 @@ export function useRenderOption() {
     setScale,
     linkMode,
     setLinkMode,
+    colorMode,
+    setColorMode,
   };
 }
