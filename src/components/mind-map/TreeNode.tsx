@@ -282,6 +282,7 @@ function FoldIndicator(props: {
     <button
       style={posStyleF}
       className={`fold ${SFold}`}
+      title="Collapse"
       onClick={() => {
         toggleCollapseNode(id);
       }}
