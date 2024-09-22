@@ -15,7 +15,7 @@ export class WordHelper {
       const properties = context.document.properties;
       properties.load("title");
       await context.sync();
-      return properties.title ?? defaultTitle;
+      return properties.title || defaultTitle;
     });
   }
 

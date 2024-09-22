@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
+
 /* global URL, Headers, fetch */
 export type MindMapUUID = string;
 export enum DocumentType {
@@ -42,11 +47,12 @@ export class MindMapGenerator {
     const response = await fetch(MindMapGenerator.GENERATOR_URL, {
       headers,
       body: JSON.stringify(parameters),
+      method: "POST",
     });
 
     const responseBody = await response.json();
 
-    if (response.ok) {
+    if (response.ok && responseBody.id) {
       return responseBody;
     } else {
       throw new Error(`API call failed. HTTP status: ${response.status}. Response from server: ${responseBody}`);

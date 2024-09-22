@@ -3,10 +3,11 @@
  * See LICENSE in the project root for license information.
  */
 
+import { MessageHelper } from "./helpers/MessageHelper";
 import { WordHelper } from "./helpers/WordHelper";
 import { MindMapGenerator, DocumentType } from "./models/MindMapGenerator";
 
-/* global document, Office */
+/* global document, Office, console */
 
 const submitAllButton = document.getElementById("btn-submit-all");
 const submitSelectedButton = document.getElementById("btn-submit-selected");
@@ -19,28 +20,38 @@ Office.onReady((info) => {
 });
 
 async function onSubmitAllButtonClick() {
-  const [title, content] = await Promise.all([WordHelper.getDocumentTitle(), WordHelper.getDocumentContent()]);
+  try {
+    const [title, content] = await Promise.all([WordHelper.getDocumentTitle(), WordHelper.getDocumentContent()]);
 
-  const mindMapUuid = await MindMapGenerator.fromDocument({
-    type: DocumentType.DOCX,
-    title,
-    content,
-  });
+    const mindMapUuid = await MindMapGenerator.fromDocument({
+      type: DocumentType.DOCX,
+      title,
+      content,
+    });
 
-  await WordHelper.showMindMapDialog(mindMapUuid);
+    await WordHelper.showMindMapDialog(mindMapUuid);
+  } catch (e) {
+    MessageHelper.showMessage(e.message);
+    console.error(e);
+  }
 }
 
 async function onSubmitSelectedButtonClick() {
-  const [title, selectedContent] = await Promise.all([
-    WordHelper.getDocumentTitle(),
-    WordHelper.getDocumentSelectedContent(),
-  ]);
+  try {
+    const [title, selectedContent] = await Promise.all([
+      WordHelper.getDocumentTitle(),
+      WordHelper.getDocumentSelectedContent(),
+    ]);
 
-  const mindMapUuid = await MindMapGenerator.fromDocument({
-    type: DocumentType.DOCX,
-    title,
-    content: selectedContent,
-  });
+    const mindMapUuid = await MindMapGenerator.fromDocument({
+      type: DocumentType.DOCX,
+      title,
+      content: selectedContent,
+    });
 
-  await WordHelper.showMindMapDialog(mindMapUuid);
+    await WordHelper.showMindMapDialog(mindMapUuid);
+  } catch (e) {
+    MessageHelper.showMessage(e.message);
+    console.error(e);
+  }
 }
