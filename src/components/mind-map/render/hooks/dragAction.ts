@@ -170,7 +170,6 @@ export function dragAction<D>(
         treeState.current.dragging = false;
 
         const shadowNode = drawing.nodeGroup.select('rect.shadow-dragging');
-        const shadowLink = drawing.pathGroup.select('path.shadow-dragging');
 
         // restore link opacity
 
@@ -193,7 +192,7 @@ export function dragAction<D>(
           // the g tag is the parent of the foreignObject, it has the data of the node
           const to = overNodes.data()[0];
           console.log(from, to);
-          if (to.id !== from.parent?.id && !to.hasAncestor(node)) {
+          if (!to.hasAncestor(from) && !to.hasAncestor(node)) {
             const oldPath = drawing.pathGroup.select<SVGPathElement>(
               `path.line._${node.data.id}._${node.parent?.data.id}`,
             );
@@ -201,7 +200,7 @@ export function dragAction<D>(
             if (from.data.id !== to.data.id) {
               treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
               shadowNode.remove();
-              shadowLink.remove();
+
               return;
             }
           }
@@ -270,7 +269,7 @@ export function dragAction<D>(
         }
         if (!node.parent) {
           shadowNode.remove();
-          shadowLink.remove();
+
           return;
         } else if (!node.parent.isRoot()) {
           switch (treeState.current.direction) {
@@ -285,7 +284,7 @@ export function dragAction<D>(
                 }
                 if (moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)) {
                   shadowNode.remove();
-                  shadowLink.remove();
+
                   return;
                 }
               }
@@ -302,7 +301,7 @@ export function dragAction<D>(
                 }
                 if (moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)) {
                   shadowNode.remove();
-                  shadowLink.remove();
+
                   return;
                 }
               }
@@ -322,7 +321,7 @@ export function dragAction<D>(
                 }
                 if (moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)) {
                   shadowNode.remove();
-                  shadowLink.remove();
+
                   return;
                 }
               }
@@ -338,7 +337,7 @@ export function dragAction<D>(
                 }
                 if (moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)) {
                   shadowNode.remove();
-                  shadowLink.remove();
+
                   return;
                 }
               }
@@ -360,7 +359,7 @@ export function dragAction<D>(
                       moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)
                     ) {
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -380,7 +379,7 @@ export function dragAction<D>(
                         i + 1,
                       );
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -391,7 +390,7 @@ export function dragAction<D>(
                       leftFirstIndex,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   } else if (curY > siblings[siblings.length - 1].y) {
                     treeState.current.moveNodeTo(
@@ -400,7 +399,7 @@ export function dragAction<D>(
                       siblings.length,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   }
                 }
@@ -419,7 +418,7 @@ export function dragAction<D>(
                       moveNodeOrderOnYJudge(curY, node, sNode, sNodeNext, i)
                     ) {
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -439,7 +438,7 @@ export function dragAction<D>(
                         i + 1,
                       );
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -450,7 +449,7 @@ export function dragAction<D>(
                       0,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   } else if (curY > siblings[leftFirstIndex - 1].y) {
                     treeState.current.moveNodeTo(
@@ -459,7 +458,7 @@ export function dragAction<D>(
                       leftFirstIndex - 1,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   }
                 }
@@ -484,7 +483,7 @@ export function dragAction<D>(
                       moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)
                     ) {
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -504,7 +503,7 @@ export function dragAction<D>(
                         i + 1,
                       );
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -515,7 +514,7 @@ export function dragAction<D>(
                       topFirstIndex,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   } else if (curX > siblings[siblings.length - 1].x) {
                     treeState.current.moveNodeTo(
@@ -524,7 +523,7 @@ export function dragAction<D>(
                       siblings.length,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   }
                 }
@@ -543,7 +542,7 @@ export function dragAction<D>(
                       moveNodeOrderOnXJudge(curX, node, sNode, sNodeNext, i)
                     ) {
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -563,7 +562,7 @@ export function dragAction<D>(
                         i + 1,
                       );
                       shadowNode.remove();
-                      shadowLink.remove();
+
                       return;
                     }
                   }
@@ -574,7 +573,7 @@ export function dragAction<D>(
                       0,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   } else if (curX > siblings[topFirstIndex - 1].x) {
                     treeState.current.moveNodeTo(
@@ -583,7 +582,7 @@ export function dragAction<D>(
                       topFirstIndex - 1,
                     );
                     shadowNode.remove();
-                    shadowLink.remove();
+
                     return;
                   }
                 }
