@@ -1,4 +1,4 @@
-import { listDocuments } from '@root/model/api';
+import { getDocument, listDocuments, updateDocument } from '@root/model/api';
 
 import {
   createContext,
@@ -40,12 +40,26 @@ export interface MindMapStateType {
   ) => void;
 }
 
-export function useMindMapState(): MindMapStateType {
-  const initialTree = useMemo(getExampleSourceData, []);
-  const engine = useMemo(
-    () => documentEngine($invDocMindMap, treeToCp(initialTree)),
-    [initialTree],
-  );
+export function useMindMapState(id: string): MindMapStateType {
+  const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
+  useEffect(() => {
+    if (id) {
+      engine.load({});
+      console.log("Loading", id);
+      getDocument(id).then((cp) => {
+        console.log("Loaded", id, cp);
+        engine.load(cp);
+      });
+    }
+    return () => {
+      if (id) {
+        const content = engine.model.peek();
+        console.log("Saving", id, content);
+        updateDocument(id, content).then(console.log);
+      }
+    };
+
+  }, [id, engine]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {

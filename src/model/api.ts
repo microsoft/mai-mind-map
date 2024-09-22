@@ -86,6 +86,7 @@ export const updateDocument = (id: string, doc: MindMapCp) =>
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log(data);
       if (!data?.id) throw new Error(API_RESPONSE_TYPE_ERROR);
       return data.id;
     });

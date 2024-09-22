@@ -3,6 +3,7 @@ import { $InvDoc } from './ot-doc/document';
 
 export type DocumentEngine<Cp, Op> = {
   model: Observable<Cp>;
+  load: (cp: Cp) => void;
   apply: (updater: (cp: Cp) => Op | undefined) => void;
   undo: () => void;
   redo: () => void;
@@ -30,6 +31,11 @@ export const documentEngine = <Cp, Op>(
 
   return {
     model: observable,
+    load: (cp) => {
+      update(() => cp);
+      undoStack.splice(0, undoStack.length);
+      redoStack.splice(0, redoStack.length);
+    },
     apply: (updater) =>
       apply_((cp) => {
         const op = updater(cp);

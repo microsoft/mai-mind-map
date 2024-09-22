@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import './App.css';
 import { useAtom } from './base/atom';
 import { FloatingTools } from './biz/floating';
@@ -11,9 +12,15 @@ import {
   MindMapState,
   useMindMapState,
 } from './components/state/mindMapState';
+import { useLocation } from 'react-router-dom';
 
 const App = () => {
-  const treeState = useMindMapState();
+  const location = useLocation();
+  const id = useMemo(() => {
+    const m = (location.pathname).match(/edit\/([0-9a-z\-]+)/);
+    return m?.[1] ?? "";
+  }, [location]);
+  const treeState = useMindMapState(id);
   const [view] = useAtom(viewModeAtom);
 
   return (
