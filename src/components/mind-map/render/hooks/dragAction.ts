@@ -2,11 +2,6 @@ import { D3DragEvent, drag } from 'd3-drag';
 import { Selection, select } from 'd3-selection';
 import { transition } from 'd3-transition';
 import { MutableRefObject } from 'react';
-import {
-  getLinkForDirection,
-  getLinkForDirectionV2,
-  getLinkPointPairForDirection,
-} from '../helpers';
 import { preventDrag } from '../helpers/d3Helper';
 import { NodeInterface, NodeLink } from '../layout';
 import { SizedRawNode } from '../node/interface';
@@ -608,41 +603,40 @@ export function dragAction<D>(
         // animate drag btn and nodes to original position
 
         shadowNode
-
           .transition(dragTran as any)
           .attr('opacity', 0)
           .attr('x', node.x)
           .attr('y', node.y)
           .remove();
 
-        const sourceRect: [number, number, number, number, number, number] = [
-          node.parent.x,
-          node.parent.y,
-          node.parent.data.content_size[0],
-          node.parent.data.content_size[1],
-          node.parent.x,
-          node.parent.y,
-        ];
-        const targetRect: [number, number, number, number, number, number] = [
-          node.x,
-          node.y,
-          node.data.content_size[0],
-          node.data.content_size[1],
-          node.x,
-          node.y,
-        ];
-        const linkPointPair = getLinkPointPairForDirection(
-          treeState,
-          sourceRect,
-          targetRect,
-        );
-        const pathD = getLinkForDirectionV2(treeState)(linkPointPair) || '';
-        shadowLink
+        // const sourceRect: [number, number, number, number, number, number] = [
+        //   node.parent.x,
+        //   node.parent.y,
+        //   node.parent.data.content_size[0],
+        //   node.parent.data.content_size[1],
+        //   node.parent.x,
+        //   node.parent.y,
+        // ];
+        // const targetRect: [number, number, number, number, number, number] = [
+        //   node.x,
+        //   node.y,
+        //   node.data.content_size[0],
+        //   node.data.content_size[1],
+        //   node.x,
+        //   node.y,
+        // ];
+        // const linkPointPair = getLinkPointPairForDirection(
+        //   treeState,
+        //   sourceRect,
+        //   targetRect,
+        // );
+        // const pathD = getLinkForDirectionV2(treeState)(linkPointPair) || '';
+        // shadowLink
 
-          .transition(dragTran as any)
-          .attr('opacity', 0)
-          .attr('d', pathD)
-          .remove();
+        //   .transition(dragTran as any)
+        //   .attr('opacity', 0)
+        //   .attr('d', pathD)
+        //   .remove();
       },
     );
 }

@@ -3,10 +3,24 @@ import { type EditingNodeType } from '../../EditingNode';
 import { Direction } from '../layout/flex-tree/hierarchy';
 import { NodeInterface } from '../layout/interface';
 import { SizedRawNode } from '../node/interface';
+
+export enum LinkMode {
+  CURVE = 1,
+  LINE = 2,
+  HYBRID = 3,
+}
+
+export interface RenderOptions {
+  direction: Direction;
+  scale: number;
+  linkMode: LinkMode;
+}
+
 export interface TreeState<D> {
   dragging: boolean;
   direction: Direction;
   scale: number;
+  linkMode: LinkMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   setEditingNode: (node: EditingNodeType<D> | null) => void;
 }

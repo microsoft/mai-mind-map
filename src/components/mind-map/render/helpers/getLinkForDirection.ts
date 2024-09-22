@@ -1,9 +1,12 @@
 import { path } from 'd3-path';
 import { DefaultLinkObject, linkHorizontal, linkVertical } from 'd3-shape';
 import { MutableRefObject } from 'react';
+import { LinkMode } from '../hooks/constants';
 import { type TreeState } from '../hooks/constants';
+import { NodeLink } from '../layout/interface';
+import { SizedRawNode } from '../node/interface';
 
-export function getLinkForDirectionV2<D>(
+export function getCurveLinkForDirection<D>(
   treeState: MutableRefObject<TreeState<D>>,
 ) {
   switch (treeState.current.direction) {
@@ -23,19 +26,44 @@ export function getLinkForDirectionV2<D>(
 const firstMoveVal = 20;
 const cornerVal = 10;
 
-export function getLinkForDirection<D>(
+export function getLinkFun<D>(
   treeState: MutableRefObject<TreeState<D>>,
+  link: NodeLink<SizedRawNode<D>>,
 ) {
-  switch (treeState.current.direction) {
-    case 'LR':
-    case 'RL':
-    case 'H':
-    case 'TB':
-    case 'BT':
-    case 'V':
+  switch (treeState.current.linkMode) {
+    case LinkMode.CURVE:
+      return getCurveLinkForDirection(treeState);
+    case LinkMode.LINE:
       return linkRoundedCorners;
-    default:
-      return linkVertical();
+    case LinkMode.HYBRID: {
+      if (link.source.isRoot()) {
+        return bezierCurve;
+      } else {
+        return linkRoundedCorners;
+      }
+    }
+  }
+
+  function bezierCurve(link: DefaultLinkObject) {
+    const { source, target } = link;
+    const [sx, sy] = source;
+    const [tx, ty] = target;
+    const pathData = path();
+    pathData.moveTo(sx, sy);
+    switch (treeState.current.direction) {
+      case 'LR':
+      case 'RL':
+      case 'H':
+        pathData.quadraticCurveTo(sx, ty, tx, ty);
+        break;
+      case 'BT':
+      case 'TB':
+      case 'V':
+        pathData.quadraticCurveTo(tx, sy, tx, ty);
+        break;
+    }
+
+    return pathData.toString();
   }
 
   function linkRoundedCorners(link: DefaultLinkObject) {

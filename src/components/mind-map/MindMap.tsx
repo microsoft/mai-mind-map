@@ -18,6 +18,7 @@ import {
   prepareNodeSize,
   useRenderWithD3,
 } from './render';
+import { LinkMode } from './render/hooks/constants';
 import { Payload } from './render/model/interface';
 export * from './render';
 import './MindMap.css';
@@ -28,6 +29,7 @@ type MFC<D> = {
   isNodeCollapsed: IsNodeCollapsed<D>;
   treeDirection: Direction;
   scale: number;
+  linkMode: LinkMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
   toggleCollapseNode(nodeId: string): void;
@@ -41,6 +43,7 @@ export function MindMap(props: MFC<Payload>) {
     tree,
     treeDirection,
     scale,
+    linkMode,
     isNodeCollapsed,
     moveNodeTo,
     modifyNode,
@@ -69,8 +72,11 @@ export function MindMap(props: MFC<Payload>) {
   }, [treeDirection, sizedData, isNodeCollapsed]);
   const { svg, pendingRenderNodes } = useRenderWithD3(
     root,
-    treeDirection,
-    scale,
+    {
+      direction: treeDirection,
+      scale,
+      linkMode,
+    },
     moveNodeTo,
     setEditingNode,
   );

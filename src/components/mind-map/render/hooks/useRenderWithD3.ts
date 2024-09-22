@@ -10,28 +10,29 @@ import {
 } from 'react';
 import { type EditingNodeType } from '../../EditingNode';
 import {
-  getLinkForDirection,
-  getLinkPointPairForDirection,
+  getLinkFun,
+  getLinkPointPair,
   getPaddingForDirection,
 } from '../helpers';
 
 import { Direction, NodeInterface, NodeLink } from '../layout';
 import { SizedRawNode } from '../node/interface';
-import { type Drawing, type TreeState } from './constants';
+import { type Drawing, RenderOptions, type TreeState } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
 
 export function useRenderWithD3<D>(
   root: NodeInterface<SizedRawNode<D>> | null,
-  direction: Direction,
-  scale: number,
+  option: RenderOptions,
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void,
   setEditingNode: (node: EditingNodeType<D> | null) => void,
 ) {
+  const { direction, scale, linkMode } = option;
   const svg = useRef<SVGSVGElement>(null);
   const treeStateRef = useRef<TreeState<D>>({
-    direction,
     dragging: false,
-    scale: scale,
+    scale,
+    direction,
+    linkMode,
     moveNodeTo: () => {
       throw new Error('moveNodeTo not implemented');
     },
@@ -89,7 +90,6 @@ export function useRenderWithD3<D>(
 
   useEffect(() => {
     treeStateRef.current.scale = scale;
-
     if (drawing) {
       const g = drawing.drawingGroup.node();
       if (g && svg.current) {
@@ -111,13 +111,14 @@ export function useRenderWithD3<D>(
 
   useEffect(() => {
     treeStateRef.current.direction = direction;
+    treeStateRef.current.linkMode = linkMode;
     treeStateRef.current.moveNodeTo = moveNodeTo;
     treeStateRef.current.setEditingNode = setEditingNode;
     if (drawing && root) {
       const nodeDataPairs = drawTree(drawing, root, treeStateRef);
       setPendingRenderNodes(nodeDataPairs);
     }
-  }, [drawing, direction, root, moveNodeTo, setEditingNode]);
+  }, [drawing, direction, linkMode, root, moveNodeTo, setEditingNode]);
 
   return { svg, pendingRenderNodes };
 }
@@ -162,12 +163,8 @@ function drawTree<D>(
             d.target.x,
             d.target.y,
           ];
-          const linkPointPair = getLinkPointPairForDirection(
-            treeState,
-            sourceRect,
-            targetRect,
-          );
-          const re = getLinkForDirection(treeState)(linkPointPair) || '';
+          const linkPointPair = getLinkPointPair(treeState, d);
+          const re = getLinkFun(treeState, d)(linkPointPair) || '';
           return re;
         });
     });
@@ -199,12 +196,8 @@ function drawTree<D>(
         d.target.x,
         d.target.y,
       ];
-      const linkPointPair = getLinkPointPairForDirection(
-        treeState,
-        sourceRect,
-        targetRect,
-      );
-      const re = getLinkForDirection(treeState)(linkPointPair) || '';
+      const linkPointPair = getLinkPointPair(treeState, d);
+      const re = getLinkFun(treeState, d)(linkPointPair) || '';
       return re;
     })
     .attr('fill', 'transparent')

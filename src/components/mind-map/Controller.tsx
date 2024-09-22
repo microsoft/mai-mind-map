@@ -5,12 +5,15 @@ import { createPortal } from 'react-dom';
 import { LayoutControl } from './LayoutControl';
 import { ScaleControl } from './ScaleControl';
 import { Direction } from './render';
+import { LinkMode } from './render/hooks/constants';
 
 interface ControllerProps {
   dir: Direction;
   serDir: (dir: Direction) => void;
   scale: number;
   setScale: (scale: number) => void;
+  linkMode: LinkMode;
+  setLinkMode: (linkMode: LinkMode) => void;
 }
 
 export const STreeViewController = css``;
