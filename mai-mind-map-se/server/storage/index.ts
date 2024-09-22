@@ -1,30 +1,13 @@
-import fs from 'fs';
-import { join, sep } from 'path';
 import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
-import { handleError } from '../utils';
+import { handleError, readConfig } from '../utils';
 const CONTAINER_NAME = 'docs'
 const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{}`, 'utf8');
 let blobServiceClient: BlobServiceClient;
 try {
-  blobServiceClient = BlobServiceClient.fromConnectionString(readConfig());
+  blobServiceClient = BlobServiceClient.fromConnectionString(readConfig().STORAGE_CONN_STRING);
 } catch (err: unknown) {
   console.error(handleError(err));
-}
-
-/**
- * Reads the configuration from a file and returns the first line.
- *
- * @returns {string} The first line of the configuration file, or an empty
- * string if the file is empty or cannot be read.
- */
-function readConfig(): string {
-  const contents = fs.readFileSync(join(__dirname, `..${sep}..${sep}config.txt`), 'utf-8');
-  const lines = contents.split(/\r?\n/);
-  if (lines && lines.length > 0) {
-    return lines[0];
-  }
-  return '';
 }
 
 type Blob = {

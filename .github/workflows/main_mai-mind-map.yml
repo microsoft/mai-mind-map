@@ -66,7 +66,7 @@ jobs:
       - name: Unzip artifact for deployment
         run: |
           unzip release.zip
-          echo "${{ secrets.AZURE_BLOB_STORAGE_CONNECTION_STRING }}" > config.txt
+          echo "${{ secrets.APP_CONFIG }}" > config.json
 
       - name: Login to Azure
         uses: azure/login@v2

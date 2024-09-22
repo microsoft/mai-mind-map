@@ -1,7 +1,7 @@
 import axios from 'axios';
 import marked from 'marked';
 import { NewDoc } from '../storage';
-import { ROOT_ID, genId, handleError } from '../utils';
+import { ROOT_ID, genId, handleError, readConfig } from '../utils';
 
 type GenRequest = {
   from: string;
@@ -27,6 +27,8 @@ type MindMapCp = Record<NodeId, Partial<{
   children: Timestamped<NodeId>[];
 }>>;
 
+const conf = readConfig();
+
 /**
  * Generates a new document based on the provided input.
  *
@@ -46,7 +48,7 @@ type MindMapCp = Record<NodeId, Partial<{
  */
 export async function Gen(body: Buffer): Promise<GenResponse> {
   try {
-    const req: GenRequest = JSON.parse(Buffer.from(body).toString('utf-8'));
+    const req: GenRequest = body as unknown as GenRequest;
     if (req.from === '') {
       return { message: 'must specify a input doc type' };
     }
@@ -73,7 +75,7 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://edgecontextualchat.edgebrowser.microsoft-testing-falcon.io/api/mindmap/generation?features=udsmindtoken5',
+      url: `${conf.NONE_STREAMING_AI_ENDPOINT}?features=udsmindtoken5`,
       headers: {
         'Content-Type': 'application/json',
       },
