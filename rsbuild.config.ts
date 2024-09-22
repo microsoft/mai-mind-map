@@ -1,6 +1,6 @@
+import path from 'node:path';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
-import path from 'node:path';
 
 function normalizePort(val) {
   const port = Number.parseInt(val, 10);
@@ -29,9 +29,16 @@ export default defineConfig({
   plugins: [pluginReact()],
   html: {
     favicon: path.resolve(__dirname, './src/assets/favicon.ico'),
-    title: 'MSAI mind map',
+    title: 'MAI mind map',
   },
   server: {
     port: normalizePort(process.env.PORT || '3000'),
+    proxy: {
+      '/api': {
+        target: 'https://mai-mind-map.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
+    }
   },
 });

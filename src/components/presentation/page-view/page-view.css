@@ -1,0 +1,74 @@
+.presentation-view-component {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+
+.presentation-view-main-area {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.presentation-view-main-content {
+    display: grid;
+
+    gap: 20px;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.presentation-view-main-title {
+    color: white;
+
+    text-align: center;
+}
+
+.presentation-view-main-description {
+    color: #646a73;
+
+    text-align: center;
+}
+
+.presentation-view-main-img {
+    object-fit: contain;
+}
+
+.presentation-view-tree-skeleton {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+
+.presentation-view-tree-content {
+    display: grid;
+    overflow: hidden;
+}
+
+.presentation-view-tree-item-line {
+    width: 5px;
+    border-radius: 2.5px;
+    height: 20px;
+    min-height: 5px;
+}
+
+.presentation-view-tree-item-title {
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -3,10 +3,11 @@ import { compile, stringify } from 'stylis';
 
 const container = document.createElement('style');
 document.head.append(container);
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
 const sheet = container.sheet!;
 
 function uuid() {
-  return 's-' + Math.round((Math.random() + 1) * Date.now()).toString(36);
+  return `s-${Math.round((Math.random() + 1) * Date.now()).toString(36)}`;
 }
 
 function insert(head: string, body: string) {
@@ -41,7 +42,7 @@ export function css(list: any, ...templates: Array<string | number>) {
 
 export function keyframes(list: any, ...templates: Array<string | number>) {
   const id = uuid();
-  insert('@keyframes ' + id, compose(list, templates));
+  insert(`@keyframes ${id}`, compose(list, templates));
   return id;
 }
 

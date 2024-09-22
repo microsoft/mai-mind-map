@@ -1,0 +1,20 @@
+foreignObject.node-content {
+  overflow: visible;
+  border-radius: 5px;
+  position: relative;
+  outline: none;
+}
+
+/* foreignObject.dragging-item-over {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+} */
+
+
+.shadow-dragging {
+  pointer-events: none;
+}
+
+
+.in-collapsed {
+  display: none;
+}

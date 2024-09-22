@@ -1,4 +1,6 @@
-# MSAI-MIND-MAP
+# MAI-MIND-MAP
+Turn every thing into mind map.
+Preview: https://mai-mind-map.azurewebsites.net/
 
 ## Setup
 
@@ -7,6 +9,8 @@ Install the dependencies:
 ```bash
 pnpm install
 ```
+Please install VS-code Extension:`Biome` for better code lint
+
 
 ## Get Started
 
@@ -26,4 +30,18 @@ Preview the production build locally:
 
 ```bash
 pnpm preview
+```
+
+## Service Server
+
+Install the dependencies:
+
+```bash
+cd mai-mind-map-se && pnpm install
+```
+
+Start the server:
+
+```bash
+pnpm build:server && pnpm start
 ```

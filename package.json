@@ -1,18 +1,23 @@
 {
-  "name": "msai-mind-map",
+  "name": "mai-mind-map",
   "private": true,
   "version": "1.0.0",
   "scripts": {
     "build": "rsbuild build && npm run cp",
-    "check": "biome check --write",
+    "check": "biome check",
+    "check:write": "biome check --write && npm run format",
     "dev": "rsbuild dev --open",
     "format": "biome format --write",
     "preview": "rsbuild preview",
-    "cp": "cpx \"dist/**/*.*\" msai-mind-map-se/dist"
+    "cp": "cpx \"dist/**/*.*\" mai-mind-map-se/dist",
+    "prepare": "husky"
   },
   "dependencies": {
     "d3-drag": "^2.0.0",
+    "d3-ease": "^3.0.1",
+    "d3-hierarchy": "^3.1.2",
     "d3-interpolate": "^2.0.1",
+    "d3-path": "^3.1.0",
     "d3-scale": "^3.3.0",
     "d3-scale-chromatic": "^2.0.0",
     "d3-selection": "^2.0.0",
@@ -20,8 +25,10 @@
     "d3-transition": "^2.0.0",
     "d3-zoom": "^2.0.0",
     "express": "^4.19.2",
+    "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
     "stylis": "^4.3.4"
   },
   "devDependencies": {
@@ -30,6 +37,8 @@
     "@rsbuild/plugin-react": "1.0.1-rc.4",
     "@types/d3-drag": "^2.0.0",
     "@types/d3-ease": "^2.0.0",
+    "@types/d3-hierarchy": "^3.1.7",
+    "@types/d3-path": "^3.1.0",
     "@types/d3-scale": "^3.2.2",
     "@types/d3-scale-chromatic": "^2.0.0",
     "@types/d3-selection": "^2.0.0",
@@ -37,10 +46,13 @@
     "@types/d3-transition": "^2.0.0",
     "@types/d3-zoom": "^2.0.0",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.13",
+    "@types/lodash": "^4.17.7",
     "@types/node": "^22.5.4",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "cpx": "^1.5.0",
+    "husky": "^9.1.5",
     "typescript": "^5.5.2"
   },
   "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
