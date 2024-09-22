@@ -1,6 +1,14 @@
 import { uuid } from '@base/atom';
 import { css } from '@root/base/styled';
-import React, { memo, useState, useRef, CSSProperties, useEffect } from 'react';
+import { rgb } from 'd3-color';
+import React, {
+  memo,
+  useState,
+  useRef,
+  CSSProperties,
+  useEffect,
+  useMemo,
+} from 'react';
 import { INDENT, focusTextArea, getTextAreaId } from './common';
 import { OutlineNode } from './common';
 import Toolbox from './tool-box';
@@ -166,12 +174,23 @@ function Editor(props: { view: ViewModel; node: OutlineNode }) {
   const { view, node } = props;
   const { id, payload } = node;
   const [text, setText] = useState(payload.content);
-
+  const hilight = payload.hilight;
   // update text if changes happened from props
   useEffect(() => setText(payload.content), [payload.content]);
 
+  const backgroundColor = useMemo(() => {
+    if (hilight) {
+      const color = rgb(hilight);
+      if (!Number.isNaN(color.r)) {
+        color.opacity = 0.2;
+        return color.toString();
+      }
+    }
+    return undefined;
+  }, [hilight]);
+
   const format: CSSProperties = {
-    backgroundColor: payload.hilight,
+    backgroundColor,
     fontWeight: payload.bold ? 'bold' : undefined,
     fontStyle: payload.italic ? 'italic' : undefined,
     textDecoration: payload.underline ? 'underline' : undefined,
