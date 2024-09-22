@@ -10,4 +10,9 @@ export class MessageHelper {
     const container = document.getElementById("test-content");
     container.innerText = message;
   }
+
+  static clearMessage() {
+    const container = document.getElementById("test-content");
+    container.innerHTML = "";
+  }
 }

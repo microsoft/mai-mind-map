@@ -21,6 +21,7 @@ Office.onReady((info) => {
 
 async function onSubmitAllButtonClick() {
   try {
+    MessageHelper.showMessage("Generating mind map for document...");
     const [title, content] = await Promise.all([WordHelper.getDocumentTitle(), WordHelper.getDocumentContent()]);
 
     const mindMapUuid = await MindMapGenerator.fromDocument({
@@ -30,6 +31,7 @@ async function onSubmitAllButtonClick() {
     });
 
     await WordHelper.showMindMapDialog(mindMapUuid);
+    MessageHelper.clearMessage();
   } catch (e) {
     MessageHelper.showMessage(e.message);
     console.error(e);
@@ -38,6 +40,7 @@ async function onSubmitAllButtonClick() {
 
 async function onSubmitSelectedButtonClick() {
   try {
+    MessageHelper.showMessage("Generating mind map for selected text...");
     const [title, selectedContent] = await Promise.all([
       WordHelper.getDocumentTitle(),
       WordHelper.getDocumentSelectedContent(),
@@ -50,6 +53,7 @@ async function onSubmitSelectedButtonClick() {
     });
 
     await WordHelper.showMindMapDialog(mindMapUuid);
+    MessageHelper.clearMessage();
   } catch (e) {
     MessageHelper.showMessage(e.message);
     console.error(e);
