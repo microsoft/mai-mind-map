@@ -1,7 +1,7 @@
 import { css } from '@base/styled';
 import { FC } from 'react';
-import { MindMap, MindMapH } from '../icons/icons';
-import { Direction } from './render';
+import { MindMap, MindMapH } from '../../icons/icons';
+import { Direction } from '../render';
 
 const SDirections = css`
   display: flex;
@@ -10,7 +10,7 @@ const SDirections = css`
   gap: 10px;
   margin: 5px 0 15px;
   & > .label {
-    width: 55px;
+    width: 70px;
   }
   & > .dir-item {
     background-color: aliceblue;

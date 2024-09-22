@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useContext, useState } from 'react';
 
-import { Controller } from './Controller';
+import { Controller } from './Controllers/Controller';
 
 import { Direction, Payload } from './render';
 

@@ -4,7 +4,7 @@ import { Header } from './biz/head';
 import { LayoutStyle } from './biz/layout';
 import { SidePane } from './biz/side-pane';
 import { MindMap, MindMapList } from './components/icons/icons';
-import { STreeViewController } from './components/mind-map/Controller';
+import { STreeViewController } from './components/mind-map/Controllers/Controller';
 import {
   MindMapState,
   TreeViewControllerPortal,

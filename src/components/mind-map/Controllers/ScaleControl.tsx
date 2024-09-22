@@ -6,7 +6,7 @@ const SScaleControl = css`
   align-items: center;
   gap: 10px;
   & > .label {
-    width: 55px;
+    width: 70px;
   }
 `;
 

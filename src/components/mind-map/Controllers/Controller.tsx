@@ -2,10 +2,11 @@ import { css } from '@base/styled';
 import { TreeViewControllerPortal } from '@root/components/state/mindMapState';
 import { FC, Fragment, useContext } from 'react';
 import { createPortal } from 'react-dom';
+import { Direction } from '../render';
+import { LinkMode } from '../render/hooks/constants';
 import { LayoutControl } from './LayoutControl';
+import { LinkModeControl } from './LinkModeControl';
 import { ScaleControl } from './ScaleControl';
-import { Direction } from './render';
-import { LinkMode } from './render/hooks/constants';
 
 interface ControllerProps {
   dir: Direction;
@@ -25,6 +26,10 @@ export const Controller: FC<ControllerProps> = (props) => {
     ? createPortal(
         <Fragment>
           <LayoutControl direction={dir} setDirection={serDir} />
+          <LinkModeControl
+            linkMode={props.linkMode}
+            setLinkMode={props.setLinkMode}
+          />
           <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
         </Fragment>,
         portal,
