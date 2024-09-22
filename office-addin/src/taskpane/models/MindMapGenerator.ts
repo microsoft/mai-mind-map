@@ -55,7 +55,9 @@ export class MindMapGenerator {
     if (response.ok && responseBody.id) {
       return responseBody;
     } else {
-      throw new Error(`API call failed. HTTP status: ${response.status}. Response from server: ${responseBody}`);
+      throw new Error(
+        `API call failed. HTTP status: ${response.status}. Response from server: ${JSON.stringify(responseBody)}`
+      );
     }
   }
 }
