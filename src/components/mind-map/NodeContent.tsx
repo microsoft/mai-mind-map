@@ -3,13 +3,14 @@ import { memo, useEffect, useRef } from 'react';
 import { Payload } from './render/model/interface';
 
 const SNodeItem = css`
+  background-color: var(--bg-color);
   border-radius: 5px;
   position: relative;
 `;
 
 const SNodeContentText = css`
   display: block;
-  display: block;
+  color: var(--text-color);
   width: fit-content;
   max-width: 500px;
   box-sizing: border-box;

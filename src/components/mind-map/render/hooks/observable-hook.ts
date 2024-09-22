@@ -1,5 +1,6 @@
 import { Mutable, Observable } from '@root/model/observable';
-import { useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useMutable<T>(
   mut: Mutable<T>,
@@ -14,9 +15,11 @@ export function useMutable<T>(
 
 export function useObservable<T>(ob: Observable<T>): T {
   const [value, setValue] = useState<T>(ob.peek());
+  const debouncedSetValue: React.Dispatch<React.SetStateAction<T>> =
+    useCallback(debounce(setValue, 1), []);
   useEffect(() => {
     setValue(ob.peek());
-    return ob.observe(setValue);
-  }, [ob]);
+    return ob.observe(debouncedSetValue);
+  }, [ob, debouncedSetValue]);
   return value;
 }

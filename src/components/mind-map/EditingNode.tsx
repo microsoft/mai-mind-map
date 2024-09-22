@@ -2,6 +2,7 @@ import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState } from 'react';
 import { AddChild, Collapse, Delete, Expand } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
+import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
@@ -91,6 +92,8 @@ export const EditingNode: FC<{
     }
   }, [editingNode]);
 
+  const { cssVarStyle, bgColor } = useNodeColor(editingNode?.node ?? null);
+
   // const { node: editingNode } = props;
   if (!editingNode) return null;
   const { node, translate } = editingNode;
@@ -100,7 +103,7 @@ export const EditingNode: FC<{
   const y = pos[1] || node.y;
   return (
     <div
-      style={{
+      style={Object.assign({}, cssVarStyle, {
         transformOrigin: '0 0',
         position: 'absolute',
         width: 'fit-content',
@@ -110,7 +113,7 @@ export const EditingNode: FC<{
         zIndex: 1000,
         borderRadius: 5,
         outline: '2px solid #0172DC',
-      }}
+      })}
     >
       <div className={SToolbar}>
         {data.children?.length ? (
@@ -151,7 +154,6 @@ export const EditingNode: FC<{
         editAble={true}
         idPrefix="enc"
         style={{
-          backgroundColor: '#fff',
           minWidth: data.content_size[0],
           minHeight: data.content_size[1],
         }}

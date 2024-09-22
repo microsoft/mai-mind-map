@@ -1,9 +1,11 @@
 import { css } from '@base/styled';
+import { HSLColor, hsl } from 'd3-color';
 import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { Ellipsis, Fold } from '../icons/icons';
 import { NodeContent } from './NodeContent';
 import { Direction } from './render';
 
+import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
@@ -39,8 +41,8 @@ const SFold = css`
   font-size: 10px;
   border-radius: 10px;
   border: 0;
-  background-color: #0172dc;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   transition-duration: 0.2s;
   width: 16px;
   height: 16px;
@@ -62,8 +64,8 @@ const SExpandChar = css`
   font-size: 10px;
   border-radius: 10px;
   border: 0;
-  background-color: #0172dc;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   transition-duration: 0.2s;
   width: fit-content;
   padding: 0 5px;
@@ -81,36 +83,18 @@ export const TreeNode: FC<{
   const { node, toggleCollapseNode, treeDirection } = props;
   const { id, data } = node;
   const [width, height] = data.content_size;
-
-  const { bgColor, textColor } = useMemo(() => {
-    if (node.depth === 0) {
-      return {
-        bgColor: '#0172DC',
-        textColor: '#fff',
-      };
-    } else if (node.depth === 1) {
-      return {
-        bgColor: '#ecf2fb',
-        textColor: '#212429',
-      };
-    } else {
-      return {
-        bgColor: '#fff',
-        textColor: '#212429',
-      };
-    }
-  }, [node]);
+  const { cssVarStyle } = useNodeColor(node);
 
   return (
     <Fragment>
-      <div className={`drag-btn ${SDragBtn}`}>
+      <div className={`drag-btn ${SDragBtn}`} style={cssVarStyle}>
         <FoldIndicator
           node={node}
           toggleCollapseNode={toggleCollapseNode}
           treeDirection={treeDirection}
         />
       </div>
-      <div className={STreeNodeBox1} style={{ backgroundColor: bgColor }}>
+      <div className={STreeNodeBox1} style={cssVarStyle}>
         <NodeContent
           isRoot={node.isRoot()}
           style={{
@@ -118,7 +102,6 @@ export const TreeNode: FC<{
             height,
             minWidth: width,
             minHeight: height,
-            color: textColor,
           }}
           id={id}
           data={data.payload}

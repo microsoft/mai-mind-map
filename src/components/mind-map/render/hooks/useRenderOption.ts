@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Direction } from '../layout/flex-tree/hierarchy';
 import { LinkMode } from './constants';
 
-let direction: Direction = 'V';
+let direction: Direction = 'H';
 let scaleValue = 1;
 let linkModeValue: LinkMode = LinkMode.HYBRID;
 

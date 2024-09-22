@@ -6,12 +6,12 @@ const uuid = () => (i++).toString();
 
 let exampleSourceData: RawNode<Payload> = {
   id: uuid(),
-  payload: { content: 'Scott' },
+  payload: { content: 'Scott', hilight: '#212429' },
   children: [
-    { id: uuid(), payload: { content: 'Jian Lin' } },
+    { id: uuid(), payload: { content: 'Jian Lin', hilight: '#1A7F7C' } },
     {
       id: uuid(),
-      payload: { content: 'Yang Huangfu', collapsed: true },
+      payload: { content: 'Yang Huangfu', collapsed: true, hilight: '#7B7BFF' },
       children: [
         { id: uuid(), payload: { content: 'Jianhui Zeng' } },
         { id: uuid(), payload: { content: 'Jiaming Mao' } },
@@ -25,9 +25,9 @@ let exampleSourceData: RawNode<Payload> = {
     },
     {
       id: uuid(),
-      payload: { content: 'Jianjun Chen' },
+      payload: { content: 'Jianjun Chen', hilight: '#EB4824' },
       children: [
-        { id: uuid(), payload: { content: 'Yu He' } },
+        { id: uuid(), payload: { content: 'Yu He', hilight: '#EB4824' } },
         { id: uuid(), payload: { content: 'Zhuoyu Qian' } },
         { id: uuid(), payload: { content: 'Ying Wu' } },
         { id: uuid(), payload: { content: 'Pengyuan Wang' } },

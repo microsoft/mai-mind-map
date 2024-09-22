@@ -8,3 +8,7 @@ export interface Payload
   underline?: boolean;
   link?: string;
 }
+
+export function getHiLightColor<D>(payload: D): string {
+  return (payload as any as Payload)?.hilight || '#0172DC';
+}

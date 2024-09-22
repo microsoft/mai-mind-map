@@ -16,6 +16,7 @@ import {
 } from '../helpers';
 
 import { Direction, NodeInterface, NodeLink } from '../layout';
+import { getHiLightColor } from '../model/interface';
 import { SizedRawNode } from '../node/interface';
 import { type Drawing, RenderOptions, type TreeState } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
@@ -201,7 +202,9 @@ function drawTree<D>(
       return re;
     })
     .attr('fill', 'transparent')
-    .attr('stroke', '#0172DC');
+    .attr('stroke', (d) => {
+      return getHiLightColor(d.target.data.payload);
+    });
 
   tempDrawingPath.exit().remove();
 
