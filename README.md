@@ -31,3 +31,17 @@ Preview the production build locally:
 ```bash
 pnpm preview
 ```
+
+## Service Server
+
+Install the dependencies:
+
+```bash
+cd mai-mind-map-se && pnpm install
+```
+
+Start the server:
+
+```bash
+pnpm build:server && pnpm start
+```

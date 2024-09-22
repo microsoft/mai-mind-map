@@ -12,6 +12,7 @@ type GenRequest = {
 
 type GenResponse = {
   id?: string;
+  content?: string;
   message?: string;
 };
 
@@ -52,7 +53,7 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     if (req.from === '') {
       return { message: 'must specify a input doc type' };
     }
-    if (req.from !== 'docx' && req.from !== 'pptx') {
+    if (req.from !== 'docx' && req.from !== 'pptx' && req.from !== 'mind') {
       return { message: 'invalid input doc type' };
     }
     if (req.to === '') {
@@ -66,6 +67,9 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     }
     if (req.content === '') {
       return { message: 'must specify a input doc content' };
+    }
+    if (req.from === 'mind') {
+      return ToMarkdown(req);
     }
     let data = JSON.stringify({
       "Url": req.title,
@@ -150,4 +154,50 @@ export function tokensToMindMapCp(tokens: marked.TokensList): MindMapCp {
   }
 
   return mindMap;
+}
+
+/**
+ * Converts a MindMapCp object to a Markdown string representation.
+ *
+ * @param mindMap - The MindMapCp object to convert.
+ * @returns The Markdown string representation of the mind map.
+ */
+function mindMapCpToMarkdown(mindMap: MindMapCp): string {
+  let markdownContent = '';
+
+  function traverse(nodeId: NodeId, level: number): void {
+    const node = mindMap[nodeId];
+    if (!node) return;
+
+    if (node.stringProps?.content) {
+      const headingPrefix = '#'.repeat(level);
+      markdownContent += `${headingPrefix} ${node.stringProps.content.v}\n\n`;
+    }
+
+    if (node.children) {
+      for (const child of node.children) {
+        traverse(child.v, level + 1);
+      }
+    }
+  }
+
+  traverse(ROOT_ID, 1);
+  return markdownContent;
+}
+
+/**
+ * Converts the content of a GenRequest to a Markdown format.
+ *
+ * @param body - The GenRequest object containing the content to be converted.
+ * @returns A promise that resolves to a GenResponse object containing the
+ * converted Markdown content. If an error occurs during conversion, the promise
+ * resolves to a GenResponse object containing an error message.
+ */
+function ToMarkdown(body: GenRequest): Promise<GenResponse> {
+  try {
+    const cp = JSON.parse(body.content) as MindMapCp;
+    return Promise.resolve({ content: mindMapCpToMarkdown(cp) });
+  } catch (err: unknown) {
+    return Promise.resolve({ message: handleError(err) });
+  }
 }
