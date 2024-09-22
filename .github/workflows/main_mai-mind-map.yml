@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - msai-mind-map
+name: Build and deploy Node.js app to Azure Web App - mai-mind-map
 
 on:
   push:
@@ -17,23 +17,28 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: 20
 
       - name: npm install, build, and test
         run: |
-          npm install
-          npm run build --if-present
+          npm install -g pnpm
+          pnpm install
+          pnpm run build --if-present
           npm run test --if-present
-          cd msai-mind-map-se
-          npm install
-          npm run build:server
+          cd mai-mind-map-se
+          pnpm install
+          pnpm run build:server
+          cd ..
+          cd office-addin
+          pnpm install
+          pnpm run build
           cd ..
 
       - name: Zip artifact for deployment
         run: |
-          cd msai-mind-map-se
+          cd mai-mind-map-se
           zip release.zip ./* -r
           cd ..
 
@@ -41,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ./msai-mind-map-se/release.zip
+          path: ./mai-mind-map-se/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,7 +54,9 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+    permissions:
+      id-token: write #This is required for requesting the JWT
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -57,13 +64,24 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
+        env:
+          APP_CONFIG: ${{ secrets.APP_CONFIG }}
+        shell: bash
+        run: |
+          unzip release.zip
+          echo "$APP_CONFIG" > config.json
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_61F9B8B7CA6745E290DC921D21EDAAFA }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6D0DF6CC7437476FBB33533634A99E0B }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_56F7BDBFFDB245B797A79A1F92E77DA5 }}
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'msai-mind-map'
+          app-name: 'mai-mind-map'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6252F32C0A634046A8C7707E0271842B }}
