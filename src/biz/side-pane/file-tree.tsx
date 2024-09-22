@@ -1,11 +1,20 @@
 import { css } from "@root/base/styled";
-import { useEffect, useState } from "react";
+import { FileInfo } from "@root/model/api";
+import { useNavigate, useParams } from "react-router-dom";
 import icons from "../components/icons";
+import { StepLoadingStyle } from "../components/step-loading";
 
 
 const SBox = css`
   padding: 8px;
 `;
+const SLoadPlace = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+`;
+
 const SHead = css`
   display: flex;
   align-items: center;
@@ -37,14 +46,14 @@ const SHead = css`
     }
   }
 `;
-const SItem = css`
+const SFile = css`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 20px;
   cursor: pointer;
   font-size: 14px;
-  &:hover {
+  &:hover, &.active {
     background-color: rgba(0,0,0,0.04);
   }
   .file-icon {
@@ -58,27 +67,22 @@ const SItem = css`
   }
 `;
 
-interface DocInfo {
-  created: string;
-  updated: string;
-  id: string;
-  title?: string;
-}
-
-export function useDocLsit() {
-  const [docs, setDocs] = useState<DocInfo[]>([]);
-  useEffect(() => {
-    fetch('/api/list')
-      .then((r) => r.json())
-      .then(r => setDocs(r.list));
-  }, []);
-  return docs;
-}
-
 export function FileTree(props: {
-  docs: DocInfo[];
+  files: FileInfo[];
+  loading: boolean;
 }) {
-  const { docs } = props;
+  const { files, loading } = props;
+  const navigate = useNavigate();
+  const { fileId } = useParams();
+
+  if (loading) {
+    return (
+      <div className={SLoadPlace}>
+        <div className={StepLoadingStyle}/>
+      </div>
+    );
+  }
+
   return (
     <div className={SBox}>
       <div className={SHead}>
@@ -91,9 +95,14 @@ export function FileTree(props: {
         </div>
       </div>
       <div>
-        {docs.map((d) => {
+        {files.map((d) => {
+          const open = () => navigate(`/edit/${d.id}`);
+          const active = d.id === fileId;
           return (
-            <div key={d.id} className={SItem}>
+            <div
+              key={d.id}
+              className={SFile + (active ? ' active' : '')}
+              onClick={open}>
               <div className="file-icon">{icons.mindmap}</div>
               <div className="file-title">{d.title || 'Untitled'}</div>
             </div>

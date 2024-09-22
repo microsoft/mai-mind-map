@@ -18,6 +18,13 @@ const log = <T>(value: T) => {
   return value;
 };
 
+export interface FileInfo {
+  created: string;
+  updated: string;
+  id: string;
+  title: string;
+}
+
 export const listDocuments = () =>
   fetch('/api/list')
     .then((res) => res.json())

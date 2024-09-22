@@ -1,5 +1,7 @@
 import { atom } from '@root/base/atom';
 
+export { filesAtom } from './files';
+
 export const showSidepaneAtom = atom(true);
 
 const search = new URLSearchParams(location.search);

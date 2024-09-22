@@ -1,7 +1,8 @@
 import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled"
-import { showSidepaneAtom } from "../store";
-import { FileTree, useDocLsit } from "./file-tree";
+import { useEffect } from "react";
+import { filesAtom, showSidepaneAtom } from "../store";
+import { FileTree } from "./file-tree";
 import { SideHead } from "./head";
 import { Search } from "./search";
 
@@ -15,7 +16,8 @@ const SBox = css`
 `;
 
 export function SidePane() {
-  const docs = useDocLsit();
+  const [{ files, loading }, ,actions] = useAtom(filesAtom);
+  useEffect(actions.fetchFilesOnce, []);
   const [sidepaneVisible, showSide] = useAtom(showSidepaneAtom);
 
   if (!sidepaneVisible) return;
@@ -23,7 +25,7 @@ export function SidePane() {
     <div className={SBox}>
       <SideHead showSide={showSide} />
       <Search />
-      <FileTree docs={docs} />
+      <FileTree files={files} loading={loading} />
     </div>
   );
 }
