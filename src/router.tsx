@@ -1,28 +1,15 @@
 import 'react';
 
-import { createHashRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import { MindMapView } from './components/mind-map/MapIndex.tsx';
-import { OutlineView } from './components/outline';
 
-export const router = createHashRouter([
+export const router = createBrowserRouter([
   {
-    path: '/', // redirect to mind-map
+    path: '/',
     element: <App />,
-    children: [
-      {
-        index: true,
-        path: '',
-        element: <MindMapView />,
-      },
-      {
-        path: 'mindmap',
-        element: <MindMapView />,
-      },
-      {
-        path: 'outline',
-        element: <OutlineView />,
-      },
-    ],
+  },
+  {
+    path: '/edit/:docid',
+    element: <App />,
   },
 ]);

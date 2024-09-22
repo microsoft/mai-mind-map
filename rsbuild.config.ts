@@ -33,6 +33,11 @@ export default defineConfig({
   },
   server: {
     port: normalizePort(process.env.PORT || '3000'),
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/edit\/.*$/, to: '/index.html' },
+      ],
+    },
     proxy: {
       '/api': {
         target: 'https://mai-mind-map.azurewebsites.net',

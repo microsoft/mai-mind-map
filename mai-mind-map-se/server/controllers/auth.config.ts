@@ -1,5 +1,5 @@
-import { readConfig } from "../utils";
 import msal, { LogLevel } from '@azure/msal-node';
+import { readConfig } from "../utils";
 
 const config = readConfig();
 export const msalConfig: msal.Configuration = {

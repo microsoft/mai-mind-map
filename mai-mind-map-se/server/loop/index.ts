@@ -1,5 +1,5 @@
-import { Client } from '@microsoft/microsoft-graph-client';
 import { OnBehalfOfCredential } from '@azure/identity';
+import { Client } from '@microsoft/microsoft-graph-client';
 import 'isomorphic-fetch';
 import { readConfig } from '../utils';
 

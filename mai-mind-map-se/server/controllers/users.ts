@@ -2,9 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import { Session } from 'express-session';
 const router = express.Router();
 
+import { createLoopDocument } from '../loop';
 import { fetch } from '../utils';
 import { GRAPH_ME_ENDPOINT } from './auth.config';
-import { createLoopDocument } from '../loop';
 
 interface CustomSession extends Session {
   account?: {

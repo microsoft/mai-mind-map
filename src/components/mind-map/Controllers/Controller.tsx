@@ -1,6 +1,6 @@
 import { css } from '@base/styled';
-import { TreeViewControllerPortal } from '@root/components/state/mindMapState';
-import { FC, Fragment, useContext } from 'react';
+import { atom, useAtom, useChange } from '@root/base/atom';
+import { FC, Fragment, useContext, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Direction } from '../render';
 import { LinkMode } from '../render/hooks/constants';
@@ -19,9 +19,22 @@ interface ControllerProps {
 
 export const STreeViewController = css``;
 
+const controllerPortalAtom = atom<HTMLDivElement | null>(null);
+
+export function ControllerMountDiv(props: { className?: string }) {
+  const setPortal = useChange(controllerPortalAtom);
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    setPortal(ref.current);
+    return () => setPortal(null);
+  }, []);
+  const cls = props.className ? `${STreeViewController} ${props.className}` : STreeViewController;
+  return <div className={cls} ref={ref} />;
+};
+
 export const Controller: FC<ControllerProps> = (props) => {
   const { dir, serDir, scale, setScale } = props;
-  const portal = useContext(TreeViewControllerPortal);
+  const portal = useAtom(controllerPortalAtom)[0];
   return portal
     ? createPortal(
         <Fragment>

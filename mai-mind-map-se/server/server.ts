@@ -13,8 +13,8 @@ declare module 'express-session' {
     account?: { username: string };
   }
 }
-import { readConfig } from './utils';
 import cookieParser from 'cookie-parser';
+import { readConfig } from './utils';
 
 function normalizePort(val: string): number {
   const port = Number.parseInt(val, 10);

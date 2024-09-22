@@ -1,6 +1,6 @@
 import express from 'express';
+import { POST_LOGOUT_REDIRECT_URI, REDIRECT_URI } from './auth.config';
 import { authProvider } from './auth.provider';
-import { REDIRECT_URI, POST_LOGOUT_REDIRECT_URI } from './auth.config';
 
 const router = express.Router();
 
