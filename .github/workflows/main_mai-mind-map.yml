@@ -64,9 +64,12 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
+        env:
+          APP_CONFIG: ${{ secrets.APP_CONFIG }}
+        shell: bash
         run: |
           unzip release.zip
-          echo "${{ secrets.APP_CONFIG }}" > config.json
+          echo "$APP_CONFIG" > config.json
 
       - name: Login to Azure
         uses: azure/login@v2
