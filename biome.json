@@ -35,11 +35,9 @@
     "enabled": true,
     "include": [
       "src/**/*.json",
-      "src/**/*.js",
       "src/**/*.ts",
       "src/**/*.tsc",
       "src/*.json",
-      "src/*.js",
       "src/*.ts",
       "src/*.tsc"
     ],

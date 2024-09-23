@@ -167,7 +167,7 @@ function drawTree<D>(
           return re;
         })
         .attr('stroke', (d) => {
-          return treeState.current.colorMode === ColorMode.CUSTOM
+          return treeState.current.colorMode === ColorMode.COLORFUL
             ? getHiLightColor(d.target.data.payload)
             : '#0172DC';
         });
@@ -206,7 +206,7 @@ function drawTree<D>(
     })
     .attr('fill', 'transparent')
     .attr('stroke', (d) => {
-      return treeState.current.colorMode === ColorMode.CUSTOM
+      return treeState.current.colorMode === ColorMode.COLORFUL
         ? getHiLightColor(d.target.data.payload)
         : '#0172DC';
     });

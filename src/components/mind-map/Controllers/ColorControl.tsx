@@ -58,63 +58,6 @@ const SColoringBtn = css`
   }
 `;
 
-const rootColor = '#212429';
-const colors = [
-  '#E7A400',
-  '#E67505',
-  '#EB4824',
-  '#E82C41',
-  '#D7257D',
-  '#B91CBF',
-  '#9529C2',
-  '#6D37CD',
-  '#4A43CB',
-  '#2052CB',
-  '#0067BF',
-  '#0C74A1',
-  '#1A7F7C',
-  '#288A56',
-  '#379539',
-  '#63686E',
-  '#666666',
-];
-function shuffle<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function ColoringNode(
-  node: RawNode<Payload>,
-  color: string,
-  modifyNodePayload: (nodeId: string, payload: Payload) => void,
-) {
-  modifyNodePayload(
-    node.id,
-    Object.assign({}, node.payload, { hilight: color }),
-  );
-  node.children?.forEach((child, ind) => {
-    ColoringNode(child, color, modifyNodePayload);
-  });
-}
-
-function ColoringMindMap(tresState: MindMapStateType | null) {
-  if (!tresState) return;
-  const colorArray = shuffle([...colors]);
-  const root = tresState.mindMapData;
-  const modifyNodePayload = tresState.modifyNodePayload;
-  modifyNodePayload(
-    root.id,
-    Object.assign({}, root.payload, { hilight: rootColor }),
-  );
-  root.children?.forEach((node, ind) => {
-    let index = ind % colors.length;
-    ColoringNode(node, colorArray[index], modifyNodePayload);
-  });
-}
-const throttleColoringMindMap = throttle(ColoringMindMap, 1000);
 
 export const ColorModeControl: FC<{
   colorMode: ColorMode;
@@ -134,9 +77,9 @@ export const ColorModeControl: FC<{
               desc: 'System default color',
             },
             {
-              c: 'Custom',
-              k: ColorMode.CUSTOM,
-              desc: 'Customize color',
+              c: 'Colorful',
+              k: ColorMode.COLORFUL,
+              desc: 'Various colors',
             },
           ] as const
         ).map((d) => {
@@ -156,24 +99,6 @@ export const ColorModeControl: FC<{
           );
         })}
       </div>
-      {colorMode === ColorMode.DEFAULT ? (
-        <div className={SDefaultPane}></div>
-      ) : (
-        <Fragment>
-          <div className={SColorPane}></div>
-          <div>
-            <button
-              className={SColoringBtn}
-              onClick={() => {
-                throttleColoringMindMap(treeState);
-              }}
-            >
-              {' '}
-              Coloring my MindMap{' '}
-            </button>
-          </div>
-        </Fragment>
-      )}
     </div>
   );
 };

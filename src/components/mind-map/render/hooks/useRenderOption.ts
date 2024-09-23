@@ -15,7 +15,7 @@ const defaultOption: OptionStore = {
   direction: 'H',
   scale: 1,
   linkMode: LinkMode.HYBRID,
-  colorMode: ColorMode.CUSTOM,
+  colorMode: ColorMode.COLORFUL,
 };
 function loadOption(): OptionStore {
   let option: OptionStore = Object.assign({}, defaultOption);
