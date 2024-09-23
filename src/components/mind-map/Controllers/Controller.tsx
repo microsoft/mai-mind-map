@@ -50,7 +50,7 @@ export const Controller: FC<ControllerProps> = (props) => {
             colorMode={props.colorMode}
             setColorMode={props.setColorMode}
           />
-          <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} />
+          {/* <ScaleControl min={0.2} max={5} scale={scale} setScale={setScale} /> */}
         </Fragment>,
         portal,
       )

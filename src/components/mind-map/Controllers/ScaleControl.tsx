@@ -1,5 +1,6 @@
 import { css } from '@base/styled';
-import { FC } from 'react';
+import React, { FC } from 'react';
+import { Add, Sub } from '../../icons/icons';
 
 const SScaleControl = css`
   display: flex;
@@ -8,6 +9,23 @@ const SScaleControl = css`
   & > .label {
     width: 80px;
     text-align: right;
+  }
+`;
+const sBtn = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  color: #333;
+  cursor: pointer;
+  background-color: white;
+  &:hover {
+    background-color: #ddd;
   }
 `;
 
@@ -19,7 +37,7 @@ function scaler(val: number) {
     re = 1 + (val - 500) / 100;
   }
 
-  return Math.round(re * 100) / 100;
+  return Math.floor(re * 10 + 0.5) / 10;
 }
 
 function scalerIn(val: number) {
@@ -38,11 +56,19 @@ export const ScaleControl: FC<{
   setScale: (val: number) => void;
   min: number;
   max: number;
+  style?: React.CSSProperties;
 }> = (props) => {
-  const { scale, setScale } = props;
+  const { scale, setScale, style } = props;
   return (
-    <div className={SScaleControl}>
-      <span className="label">Scale:</span>
+    <div className={SScaleControl} style={style}>
+      <button
+        className={sBtn}
+        onClick={() => {
+          if (scale > props.min) setScale((scale * 10 - 1) / 10);
+        }}
+      >
+        <Sub />
+      </button>
       <input
         type="range"
         name="Scale"
@@ -51,7 +77,31 @@ export const ScaleControl: FC<{
         max={scalerIn(props.max)}
         onChange={(e) => setScale(scaler(+e.target.value))}
       ></input>{' '}
-      <span style={{ display: 'inline-block', width: 50 }}>{scale}</span>
+      <button
+        className={sBtn}
+        onClick={() => {
+          if (scale < props.max) setScale((scale * 10 + 1) / 10);
+        }}
+      >
+        <Add />
+      </button>
+      <input
+        style={{
+          display: 'inline-block',
+          width: 50,
+          border: 'none',
+          overflow: 'hidden',
+        }}
+        type="number"
+        step={0.1}
+        value={scale}
+        onChange={(e) => {
+          const val = +e.target.value;
+          if (val >= props.min && val <= props.max) {
+            setScale(val);
+          }
+        }}
+      />
     </div>
   );
 };

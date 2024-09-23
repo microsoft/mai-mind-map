@@ -59,6 +59,7 @@ export function MindMapView() {
         isNodeCollapsed={isNodeCollapsed}
         treeDirection={dir}
         scale={scale}
+        setScale={setScale}
         linkMode={linkMode}
         colorMode={colorMode}
         modifyNode={treeState.modifyNode}

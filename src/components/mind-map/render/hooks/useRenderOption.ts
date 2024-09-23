@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Direction } from '../layout/flex-tree/hierarchy';
 import { ColorMode, LinkMode } from './constants';
 
@@ -54,30 +54,27 @@ function saveOption() {
 }
 
 export function useRenderOption() {
-  const [dir, setDirFun] = useState<Direction>(direction);
-  const [scale, setScaleFun] = useState(scaleValue);
-  const [linkMode, setLinkModeFun] = useState(linkModeValue);
-  const [colorMode, setColorModeFun] = useState(colorModeValue);
-  const setDir = useCallback((dir: Direction) => {
-    setDirFun(dir);
+  const [dir, setDir] = useState<Direction>(direction);
+  const [scale, setScale] = useState(scaleValue);
+  const [linkMode, setLinkMode] = useState(linkModeValue);
+  const [colorMode, setColorMode] = useState(colorModeValue);
+
+  useEffect(() => {
     direction = dir;
     saveOption();
-  }, []);
-  const setScale = useCallback((scale: number) => {
-    setScaleFun(scale);
+  }, [dir]);
+  useEffect(() => {
     scaleValue = scale;
     saveOption();
-  }, []);
-  const setLinkMode = useCallback((linkMode: LinkMode) => {
-    setLinkModeFun(linkMode);
+  }, [scale]);
+  useEffect(() => {
     linkModeValue = linkMode;
     saveOption();
-  }, []);
-  const setColorMode = useCallback((colorMode: ColorMode) => {
-    setColorModeFun(colorMode);
+  }, [linkMode]);
+  useEffect(() => {
     colorModeValue = colorMode;
     saveOption();
-  }, []);
+  }, [colorMode]);
 
   return {
     dir,

@@ -1,5 +1,6 @@
 import { CSSProperties, Fragment, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { ScaleControl } from './Controllers/ScaleControl';
 import { EditingNode, EditingNodeType } from './EditingNode';
 import { SizeMeasurer } from './SizeMeasurer';
 import { TreeNode } from './TreeNode';
@@ -29,6 +30,7 @@ type MFC<D> = {
   isNodeCollapsed: IsNodeCollapsed<D>;
   treeDirection: Direction;
   scale: number;
+  setScale: (val: React.SetStateAction<number>) => void;
   linkMode: LinkMode;
   colorMode: ColorMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
@@ -44,6 +46,7 @@ export function MindMap(props: MFC<Payload>) {
     tree,
     treeDirection,
     scale,
+    setScale,
     linkMode,
     colorMode,
     isNodeCollapsed,
@@ -92,6 +95,15 @@ export function MindMap(props: MFC<Payload>) {
           ref={svg}
           role="presentation"
           style={{ height: '100%', width: '100%', display: 'block' }}
+          onWheelCapture={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setScale((s) => {
+              const ns = s - e.deltaY / 1000;
+              const ns01 = Math.floor(ns * 10 + 0.5) / 10;
+              return Math.max(0.2, Math.min(5, ns01));
+            });
+          }}
         ></svg>
         {pendingRenderNodes.map(([nodePortal, node]) => {
           return (
@@ -117,6 +129,17 @@ export function MindMap(props: MFC<Payload>) {
           toggleCollapseNode={toggleCollapseNode}
           addNode={addNode}
           delNode={delNode}
+        />
+        <ScaleControl
+          min={0.2}
+          max={5}
+          scale={scale}
+          setScale={setScale}
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+          }}
         />
       </div>
     </Fragment>

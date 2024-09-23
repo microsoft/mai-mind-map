@@ -33,7 +33,7 @@ export function SidePane() {
     : files;
 
   return (
-    <div className={SBox}>
+    <div className={SBox} style={{ overflowY: 'auto' }}>
       <SideHead showSide={showSide} />
       <Search text={filter} commit={setFilter} />
       <FileTree files={filteredFiles} loading={loading} />
