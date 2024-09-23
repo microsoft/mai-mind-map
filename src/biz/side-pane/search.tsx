@@ -1,4 +1,5 @@
 import { css } from "@root/base/styled";
+import { useMemo, useState } from "react";
 import icons from "../components/icons";
 
 const SBox = css`
@@ -42,13 +43,32 @@ const SBox = css`
 `;
 
 
-export function Search() {
+export function Search(props: {
+  text: string;
+  commit: (result: string) => void;
+}) {
+  const { commit, text } = props;
+  const [value, setValue] = useState(text);
+
+  const handle = useMemo(() => {
+    let timer = 0;
+    return (v: string) => {
+      clearTimeout(timer);
+      setValue(v);
+      timer = window.setTimeout(() => commit(v), 200);
+    };
+  }, [commit, setValue]);
+
   return (
     <div className={SBox}>
       <span className="search-icon">{icons.search}</span>
       <input
         className="search-input"
         placeholder="Search files"
+        value={value}
+        onChange={(e) => {
+          handle(e.target.value);
+        }}
       />
     </div>
   );

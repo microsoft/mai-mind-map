@@ -1,6 +1,7 @@
 import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { filesAtom, showSidepaneAtom } from "../store";
 import { FileTree } from "./file-tree";
 import { SideHead } from "./head";
@@ -19,13 +20,23 @@ export function SidePane() {
   const [{ files, loading }, ,actions] = useAtom(filesAtom);
   useEffect(actions.fetchFilesOnce, []);
   const [sidepaneVisible, showSide] = useAtom(showSidepaneAtom);
+  const [filter, setFilter] = useState('');
+  const { fileId } = useParams();
 
   if (!sidepaneVisible) return;
+
+  const filteredFiles = filter
+    ? files.filter(({ id, title = 'Untitled' }) => {
+      if (id === fileId) return true;
+      return title.toLocaleLowerCase().includes(filter.toLocaleLowerCase());
+    })
+    : files;
+
   return (
     <div className={SBox}>
       <SideHead showSide={showSide} />
-      <Search />
-      <FileTree files={files} loading={loading} />
+      <Search text={filter} commit={setFilter} />
+      <FileTree files={filteredFiles} loading={loading} />
     </div>
   );
 }
