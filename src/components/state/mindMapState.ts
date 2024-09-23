@@ -42,23 +42,26 @@ export interface MindMapStateType {
 
 export function useMindMapState(id: string): MindMapStateType {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (id) {
       engine.load({ '00000000': { stringProps: { content: { t: Date.now(), v: 'Loading...' }}}});
+      setLoading(true);
       console.log('Loading', id);
       getDocument(id).then((cp) => {
         console.log('Loaded', id, cp);
         engine.load(cp);
+        setLoading(false);
       });
     }
     return () => {
-      if (id) {
+      if (id && !loading) {
         const content = engine.model.peek();
         console.log('Saving', id, content);
         updateDocument(id, content).then(console.log);
       }
     };
-  }, [id, engine]);
+  }, [id, engine, loading]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {
