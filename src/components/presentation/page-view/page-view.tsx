@@ -229,7 +229,7 @@ class PageViewComponent extends Component<
           style={{
             gridTemplateColumns: `4px 100%`,
             gridTemplateRows: `repeat(${childrenLength}, 1fr)`,
-            gap: '10px',
+            gap: '20px 10px',
             alignItems: 'center',
             transition: animation ? `all ${animationTime}s` : undefined,
             opacity: showTree ? 1 : 0,
@@ -250,11 +250,11 @@ class PageViewComponent extends Component<
                   style={{
                     transition: `backgroundColor ${animationTime}s ease ${animationTime}s`,
                     backgroundColor:
-                      index === childIndex ? '#E94F4B' : 'transparent',
+                    index === childIndex ? '#E94F4B' : 'transparent',
                     flexShrink: '0',
                   }}
                 ></div>
-                <PageNodeContent
+                <div
                   className={
                     `presentation-view-tree-item-title` +
                     (index === childIndex
@@ -267,15 +267,24 @@ class PageViewComponent extends Component<
                       index <= childIndex
                         ? 'white'
                         : 'rgba(255, 255, 255, 0.2)',
-                    fontSize: `clamp(12px, ${100}vh, 4vh)`,
+                    fontSize: `clamp(12px, ${100 / childrenLength}vh, 4vh)`,
                     alignSelf: 'center',
                     overflow: 'scroll',
-                    maxHeight: '100%',
-                    maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 15%)`,
+                    height: '100%',
+                    maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 5px)`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
                   }}
-                  content={child.text || ''}
                 >
-                </PageNodeContent>
+                  <PageNodeContent
+                    content={child.text || ''}
+                    style={{
+                        maxHeight: '100%',
+                    }}
+                  ></PageNodeContent>
+                </div>
               </React.Fragment>
             );
           })}
