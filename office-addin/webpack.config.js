@@ -38,6 +38,7 @@ module.exports = async (env, options) => {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-typescript"],
+              plugins: [["@babel/plugin-proposal-decorators", { version: "2023-11" }]],
             },
           },
         },
