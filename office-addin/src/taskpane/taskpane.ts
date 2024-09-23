@@ -15,24 +15,28 @@ provideFluentDesignSystem().register(fluentButton());
 
 const template = html<TaskPane>`
   <div id="container">
-    <h2>Generate a mind map</h2>
+    <h2 id="title">Generate Mind Map</h2>
     <fluent-button
       id="btn-submit-all"
       ?disabled=${(x) => !x.officeIsReady || x.loading}
-      @click=${(x) => x.onSubmitAllButtonClick}
+      :appearance=${"accent"}
+      @click=${(x) => x.onSubmitAllButtonClick()}
     >
       Generate using full content
     </fluent-button>
     <fluent-button
       id="btn-submit-selected"
       ?disabled=${(x) => !x.officeIsReady || x.loading}
-      @click=${(x) => x.onSubmitSelectedButtonClick}
+      :appearance=${"accent"}
+      @click=${(x) => x.onSubmitSelectedButtonClick()}
     >
       Generate using selected content
     </fluent-button>
-    <message-container :showLoading=${(x) => x.loading}>
+    <div id="message-container-wrapper">
+      <message-container :showLoading=${(x) => x.loading}>
       <div slot="message">${(x) => x.message}</div>
     </message-container>
+    </div>
   </div>
 `;
 
@@ -41,6 +45,16 @@ const styles = css`
     display: block;
     width: 100%;
     height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  #title {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    text-align: center;
   }
 
   #container {
@@ -48,6 +62,10 @@ const styles = css`
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
+  }
+
+  #message-container-wrapper {
+    margin-top: 10px;
   }
 `;
 
@@ -62,6 +80,7 @@ export class TaskPane extends FASTElement {
   @observable message: string = "";
 
   connectedCallback(): void {
+    super.connectedCallback();
     Office.onReady().then((info) => {
       if (info.host === Office.HostType.Word) {
         this.officeIsReady = true;
@@ -69,7 +88,7 @@ export class TaskPane extends FASTElement {
     });
   }
 
-  async onSubmitAllButtonClick() {
+  onSubmitAllButtonClick = async () => {
     this.loading = true;
     try {
       this.showMessage("Generating mind map for the document...");
@@ -91,7 +110,7 @@ export class TaskPane extends FASTElement {
     }
   }
 
-  async onSubmitSelectedButtonClick() {
+  onSubmitSelectedButtonClick = async () => {
     this.loading = true;
     try {
       this.showMessage("Generating mind map for selected text...");

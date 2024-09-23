@@ -3,14 +3,14 @@
  * See LICENSE in the project root for license information.
  */
 
-import { attr, css, customElement, FASTElement, html } from "@microsoft/fast-element";
+import { attr, css, customElement, FASTElement, html, when } from "@microsoft/fast-element";
 import { provideFluentDesignSystem, fluentProgressRing } from "@fluentui/web-components";
 
 provideFluentDesignSystem().register(fluentProgressRing());
 
 const template = html<MessageContainer>`
   <div id="container">
-    <div id="spinner-container"><fluent-progress-ring></fluent-progress-ring></div>
+    <div id="spinner-container">${when((x) => x.showLoading, html`<fluent-progress-ring></fluent-progress-ring>`)}</fluent-progress-ring></div>
     <div id="message-container"><slot name="message"></slot></div>
   </div>
 `;
@@ -23,6 +23,7 @@ const styles = css`
   #container {
     display: flex;
     align-items: center;
+    gap: 10px;
   }
 
   #spinner-container {
