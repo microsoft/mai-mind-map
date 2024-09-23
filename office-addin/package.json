@@ -28,6 +28,8 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@fluentui/web-components": "^2.6.1",
+    "@microsoft/fast-element": "^2.0.0",
     "core-js": "^3.36.0",
     "regenerator-runtime": "^0.14.1"
   },
