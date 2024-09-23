@@ -28,7 +28,7 @@ export function useNodeColor(
       let textColor = '#fff';
       let bgColor = '#0172DC';
       if (
-        colorMode === ColorMode.CUSTOM &&
+        colorMode === ColorMode.COLORFUL &&
         color &&
         cHSL &&
         !Number.isNaN(cHSL.l)
@@ -47,7 +47,7 @@ export function useNodeColor(
       let textColor = '#212429';
       let bgColor = '#ecf2fb';
       if (
-        colorMode === ColorMode.CUSTOM &&
+        colorMode === ColorMode.COLORFUL &&
         color &&
         cHSL &&
         !Number.isNaN(cHSL.l)
@@ -66,7 +66,7 @@ export function useNodeColor(
     } else {
       let textColor = '#212429';
       if (
-        colorMode === ColorMode.CUSTOM &&
+        colorMode === ColorMode.COLORFUL &&
         color &&
         cHSL &&
         !Number.isNaN(cHSL.l)

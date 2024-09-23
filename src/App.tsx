@@ -7,6 +7,7 @@ import { LayoutStyle } from './biz/layout';
 import { SidePane } from './biz/side-pane';
 import { viewModeAtom } from './biz/store';
 import { MindMapView } from './components/mind-map/MapIndex';
+import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
 import {
   MindMapState,
@@ -17,6 +18,7 @@ const App = () => {
   const { fileId: id } = useParams();
   const {} = useParams<{ id: string }>();
   const treeState = useMindMapState(id || '');
+  useAutoColoringMindMap(treeState);
   const [view] = useAtom(viewModeAtom);
 
   return (

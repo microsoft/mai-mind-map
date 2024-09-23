@@ -12,7 +12,7 @@ export enum LinkMode {
 
 export enum ColorMode {
   DEFAULT = 1,
-  CUSTOM = 2,
+  COLORFUL = 2,
 }
 
 export interface RenderOptions {
