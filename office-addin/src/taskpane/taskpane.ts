@@ -3,101 +3,59 @@
  * See LICENSE in the project root for license information.
  */
 
-/* global document, Office, Word */
+import { MessageHelper } from "./helpers/MessageHelper";
+import { DocumentType, MindMapGenHelper } from "./helpers/MindMapGenHelper";
+import { WordHelper } from "./helpers/WordHelper";
+
+/* global document, Office, console */
+
+const submitAllButton = document.getElementById("btn-submit-all");
+const submitSelectedButton = document.getElementById("btn-submit-selected");
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
-    document.getElementById("btn-submit-all").onclick = submitAll;
-    document.getElementById("btn-submit-selected").onclick = submitSelected;
+    submitAllButton.addEventListener("click", onSubmitAllButtonClick);
+    submitSelectedButton.addEventListener("click", onSubmitSelectedButtonClick);
   }
 });
 
-function submitAll() {
-  Word.run(async (context) => {
-    const body: Word.Body = context.document.body;
-    body.load("text");
-    await context.sync();
-    uploadDocument(body.text);
-  });
-}
+async function onSubmitAllButtonClick() {
+  try {
+    MessageHelper.showMessage("Generating mind map for document...");
+    const [title, content] = await Promise.all([WordHelper.getDocumentTitle(), WordHelper.getDocumentContent()]);
 
-function submitSelected() {
-  Office.context.document.getSelectedDataAsync(Office.CoercionType.Text, function (asyncResult) {
-    if (asyncResult.status == Office.AsyncResultStatus.Failed) {
-      document.getElementById("test-content").innerHTML = asyncResult.error.message;
-    } else {
-      if (asyncResult.value) {
-        uploadDocument(asyncResult.value as string);
-      }
-    }
-  });
-}
-
-function navigateWebApp(docId: string) {
-  Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net?docId=${docId}`);
-}
-
-function uploadDocument(content: string) {
-  createDocument()
-    .then((response) => {
-      const docId = response.doc_id;
-      console.log("New doc created: ", docId);
-      return updateContent(docId, content);
-    })
-    .then((result) => {
-      const docId = result.doc_id;
-      navigateWebApp(docId);
-    })
-    .catch((error) => {
-      console.error("Error: ", error);
+    const mindMapUuid = await MindMapGenHelper.fromDocument({
+      type: DocumentType.DOCX,
+      title,
+      content,
     });
+
+    await WordHelper.showMindMapDialog(mindMapUuid);
+    MessageHelper.clearMessage();
+  } catch (e) {
+    MessageHelper.showMessage(e.message);
+    console.error(e);
+  }
 }
 
-function createDocument() {
-  return new Promise((resolve, reject) => {
-    const url = "https://mai-mind-map.azurewebsites.net/api/new";
-    const name = docName();
-    const data = { name };
+async function onSubmitSelectedButtonClick() {
+  try {
+    MessageHelper.showMessage("Generating mind map for selected text...");
+    const [title, selectedContent] = await Promise.all([
+      WordHelper.getDocumentTitle(),
+      WordHelper.getDocumentSelectedContent(),
+    ]);
 
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          resolve(JSON.parse(request.responseText));
-        } else {
-          reject(request.statusText);
-        }
-      }
-    };
+    const mindMapUuid = await MindMapGenHelper.fromDocument({
+      type: DocumentType.DOCX,
+      title,
+      content: selectedContent,
+    });
 
-    request.open("POST", url, true);
-    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    request.send(JSON.stringify(data));
-  });
-}
-
-function updateContent(docId: string, content: string) {
-  return new Promise((resolve, reject) => {
-    const url = `https://mai-mind-map.azurewebsites.net/api/update/${docId}`;
-    const data = { content };
-
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          resolve(JSON.parse(request.responseText));
-        } else {
-          reject(request.statusText);
-        }
-      }
-    };
-
-    request.open("PATCH", url, true);
-    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    request.send(JSON.stringify(data));
-  });
-}
-
-function docName() {
-  return `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`;
+    await WordHelper.showMindMapDialog(mindMapUuid);
+    MessageHelper.clearMessage();
+  } catch (e) {
+    MessageHelper.showMessage(e.message);
+    console.error(e);
+  }
 }
