@@ -26,11 +26,11 @@ interface IApiResponse {
   id: MindMapUUID;
 }
 
-export class MindMapGenerator {
+export class MindMapGenHelper {
   private static readonly GENERATOR_URL = new URL("https://mai-mind-map.azurewebsites.net/api/gen");
 
   static async fromDocument(doc: IDocument): Promise<MindMapUUID> {
-    const { id } = await MindMapGenerator.callApi({
+    const { id } = await MindMapGenHelper.callApi({
       from: doc.type,
       to: "markdown",
       title: doc.title,
@@ -44,7 +44,7 @@ export class MindMapGenerator {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
 
-    const response = await fetch(MindMapGenerator.GENERATOR_URL, {
+    const response = await fetch(MindMapGenHelper.GENERATOR_URL, {
       headers,
       body: JSON.stringify(parameters),
       method: "POST",

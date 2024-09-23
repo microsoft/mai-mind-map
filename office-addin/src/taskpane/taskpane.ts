@@ -4,8 +4,8 @@
  */
 
 import { MessageHelper } from "./helpers/MessageHelper";
+import { DocumentType, MindMapGenHelper } from "./helpers/MindMapGenHelper";
 import { WordHelper } from "./helpers/WordHelper";
-import { MindMapGenerator, DocumentType } from "./models/MindMapGenerator";
 
 /* global document, Office, console */
 
@@ -24,7 +24,7 @@ async function onSubmitAllButtonClick() {
     MessageHelper.showMessage("Generating mind map for document...");
     const [title, content] = await Promise.all([WordHelper.getDocumentTitle(), WordHelper.getDocumentContent()]);
 
-    const mindMapUuid = await MindMapGenerator.fromDocument({
+    const mindMapUuid = await MindMapGenHelper.fromDocument({
       type: DocumentType.DOCX,
       title,
       content,
@@ -46,7 +46,7 @@ async function onSubmitSelectedButtonClick() {
       WordHelper.getDocumentSelectedContent(),
     ]);
 
-    const mindMapUuid = await MindMapGenerator.fromDocument({
+    const mindMapUuid = await MindMapGenHelper.fromDocument({
       type: DocumentType.DOCX,
       title,
       content: selectedContent,

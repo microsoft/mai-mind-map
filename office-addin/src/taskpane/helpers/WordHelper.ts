@@ -3,7 +3,7 @@
  * See LICENSE in the project root for license information.
  */
 
-import { MindMapUUID } from "../models/MindMapGenerator";
+import { MindMapUUID } from "./MindMapGenHelper";
 
 /* global Office, Word */
 
@@ -44,7 +44,6 @@ export class WordHelper {
   }
 
   static async showMindMapDialog(mindMapUuid: MindMapUUID) {
-    // TODO
-    return Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net/?docId=${mindMapUuid}`);
+    return Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net/edit/${mindMapUuid}`);
   }
 }
