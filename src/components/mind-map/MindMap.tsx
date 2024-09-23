@@ -95,9 +95,7 @@ export function MindMap(props: MFC<Payload>) {
           ref={svg}
           role="presentation"
           style={{ height: '100%', width: '100%', display: 'block' }}
-          onWheelCapture={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onWheel={(e) => {
             setScale((s) => {
               const ns = s - e.deltaY / 1000;
               const ns01 = Math.floor(ns * 10 + 0.5) / 10;
