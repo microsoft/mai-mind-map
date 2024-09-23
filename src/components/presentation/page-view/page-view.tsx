@@ -4,8 +4,8 @@ import {
   PresentationPage,
 } from '../presentation-model/presentation-page';
 import './page-view.css';
-import { PageTreeComponent, PageTreeLinePoint } from '../page-tree/page-tree';
 import { PageNodeContent } from '../page-node-content/page-node-content';
+import { PageTreeComponent, PageTreeLinePoint } from '../page-tree/page-tree';
 
 interface PageViewComponentProps {
   page: PresentationPage | null;

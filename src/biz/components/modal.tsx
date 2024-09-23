@@ -24,15 +24,16 @@ const SContent = css`
 
 const container = document.createElement('div');
 document.body.append(container);
+const NOOP = () => {};
 
 function Modal(props: {
   style?: CSSProperties;
   className?: string;
   overlayBg?: string;
-  hide: () => void;
+  hide?: () => void;
   children?: React.ReactNode;
 }) {
-  const { hide, className, style, overlayBg, children } = props;
+  const { hide = NOOP, className, style, overlayBg, children } = props;
 
   let cls = SContent;
   if (className) cls += ' ' + className;

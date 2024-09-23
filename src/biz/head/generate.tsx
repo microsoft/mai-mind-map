@@ -2,6 +2,7 @@ import { css } from "@root/base/styled";
 import { MindMapState } from "@root/components/state/mindMapState";
 import { useContext, useState } from "react";
 import Markdown from "react-markdown";
+import { BeatLoader } from "react-spinners";
 import icons from "../components/icons";
 import Modal from "../components/modal";
 
@@ -40,6 +41,15 @@ const SFoot = css`
     }
   }
 `;
+const SLoading = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 300px;
+  height: 80px;
+`;
 
 function gen(title: string, content: string) {
   const data = { from: 'mind', to: 'markdown', title, content };
@@ -62,13 +72,46 @@ export function Generate(props: {
 }) {
   const { className } = props;
   const [result, setRes] = useState('');
+  const [loading, setLoading] = useState(false);
   const state = useContext(MindMapState);
 
   function handle() {
     const cp = state?.outputCP() || {};
-    console.log('current cp', cp);
+    setLoading(true);
     gen('Test', JSON.stringify(cp))
-      .then(setRes);
+      .then(setRes)
+      .finally(() => setLoading(false));
+  }
+
+  let preview: React.ReactNode;
+  if (loading) {
+    preview = (
+      <Modal>
+        <div className={SLoading}>
+          <div>Waiting for Generating...</div>
+          <BeatLoader />
+        </div>
+      </Modal>
+    );
+  } else if (result) {
+    preview = (
+      <Modal hide={() => setRes('')}>
+        <div className={SHead}>
+          <h1>Preview</h1>
+        </div>
+        <div className={SBody}>
+          <Markdown>{result}</Markdown>
+        </div>
+        <div className={SFoot}>
+          <div>
+            Generate a loop file and edit it in a new page
+          </div>
+          <button onClick={() => window.open(DemoLoop, '_blank')}>
+            Edit in page
+          </button>
+        </div>
+      </Modal>
+    );
   }
 
   return (
@@ -77,25 +120,7 @@ export function Generate(props: {
         {icons.makeFile}
       </span>
       <span>Generate</span>
-      {result && (
-        <Modal hide={() => setRes('')}>
-          <div className={SHead}>
-            <h1>Preview</h1>
-          </div>
-          <div className={SBody}>
-            <Markdown>{result}</Markdown>
-          </div>
-          <div className={SFoot}>
-            <div>
-              Generate a loop file and edit it in a new page
-            </div>
-            <button onClick={() => window.open(DemoLoop, '_blank')}>
-              Edit in page
-            </button>
-          </div>
-        </Modal>
-      )}
+      {preview}
     </div>
   );
 }
-
