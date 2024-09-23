@@ -1,12 +1,13 @@
 import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState } from 'react';
-import { AddChild, Collapse, Delete, Expand } from '../icons/icons';
+import { AddChild, Collapse, Delete, Expand, Color } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { ColorMode } from './render/hooks/constants';
 import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
+import { supportColors } from './render/hooks/useAutoColoringMindMap';
 
 export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;
@@ -18,12 +19,37 @@ const SToolbar = css`
   left: 0;
   display: flex;
 `;
+const SColorBox = css`
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 0px;
+  width: 278px;
+  display: flex;
+  flex-wrap: wrap;
+  z-index: 1;
+  padding: 10px;
+  border: 1px solid #999;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 3px -6px 10px 0 rgba(0, 0, 0, 0.3);
+  gap: 3px;
+`;
+const SColorBtn = css`
+  width: 40px;
+  height: 25px;
+  border: 0;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
 
 export const EditingNode: FC<{
   scale: number;
   node: EditingNodeType<Payload> | null;
   colorMode: ColorMode;
   modifyNode: (nodeId: string, content: string) => void;
+  modifyNodePayload: (nodeId: string, payload: Payload) => void;
   setPendingEditNode: (node: EditingNodeType<Payload> | null) => void;
   toggleCollapseNode(nodeId: string): void;
   addNode(parentId: string, index: number, content: string): void;
@@ -33,11 +59,13 @@ export const EditingNode: FC<{
     scale,
     node: pendingNode,
     modifyNode,
+    modifyNodePayload,
     toggleCollapseNode,
     setPendingEditNode,
     addNode,
     delNode,
   } = props;
+  const [showColorBox, setShowColorBox] = useState(false);
 
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
@@ -99,6 +127,12 @@ export const EditingNode: FC<{
     props.colorMode,
   );
 
+  useEffect(() => {
+    if (!editingNode) {
+      setShowColorBox(false);
+    }
+  }, [editingNode]);
+
   // const { node: editingNode } = props;
   if (!editingNode) return null;
   const { node, translate } = editingNode;
@@ -140,6 +174,7 @@ export const EditingNode: FC<{
         >
           <AddChild />
         </button>
+
         {node.parent && (
           <button
             onClick={() => {
@@ -151,6 +186,38 @@ export const EditingNode: FC<{
             <Delete />
           </button>
         )}
+        {node.depth === 1 && (
+          <button
+            onClick={() => {
+              setShowColorBox(!showColorBox);
+            }}
+            title="Add Child"
+          >
+            <Color />
+          </button>
+        )}
+        <div
+          className={SColorBox}
+          style={{ display: showColorBox ? '' : 'none' }}
+        >
+          {supportColors.map((color) => {
+            return (
+              <button
+                key={color}
+                className={SColorBtn}
+                title={color}
+                style={{ backgroundColor: color }}
+                onClick={() => {
+                  setShowColorBox(false);
+                  modifyNodePayload(
+                    id,
+                    Object.assign({}, data.payload, { hilight: color }),
+                  );
+                }}
+              ></button>
+            );
+          })}
+        </div>
       </div>
       <NodeContent
         id={id}

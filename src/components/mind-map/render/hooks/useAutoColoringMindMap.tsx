@@ -13,7 +13,8 @@ function shuffle<T>(array: T[]): T[] {
   }
   return array;
 }
-const colors = shuffle([
+
+export const supportColors = [
   '#E7A400',
   '#E67505',
   '#EB4824',
@@ -31,7 +32,9 @@ const colors = shuffle([
   '#379539',
   '#63686E',
   '#666666',
-]);
+];
+
+const colors = shuffle([...supportColors]);
 
 function ColoringNode(
   node: RawNode<Payload>,

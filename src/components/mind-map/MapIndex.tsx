@@ -63,6 +63,7 @@ export function MindMapView() {
         linkMode={linkMode}
         colorMode={colorMode}
         modifyNode={treeState.modifyNode}
+        modifyNodePayload={treeState.modifyNodePayload}
         moveNodeTo={treeState.moveNodeTo}
         toggleCollapseNode={treeState.toggleCollapseNode}
         addNode={treeState.addNode}

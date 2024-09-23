@@ -35,6 +35,7 @@ type MFC<D> = {
   colorMode: ColorMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
+  modifyNodePayload: (nodeId: string, payload: Payload) => void;
   toggleCollapseNode(nodeId: string): void;
   addNode(parentId: string, index: number, content: string): void;
   delNode(id: string): void;
@@ -52,6 +53,7 @@ export function MindMap(props: MFC<Payload>) {
     isNodeCollapsed,
     moveNodeTo,
     modifyNode,
+    modifyNodePayload,
     toggleCollapseNode,
     addNode,
     delNode,
@@ -123,6 +125,7 @@ export function MindMap(props: MFC<Payload>) {
           node={editingNode}
           colorMode={colorMode}
           modifyNode={modifyNode}
+          modifyNodePayload={modifyNodePayload}
           setPendingEditNode={setEditingNode}
           toggleCollapseNode={toggleCollapseNode}
           addNode={addNode}
