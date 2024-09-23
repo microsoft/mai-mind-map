@@ -9,13 +9,19 @@ import { MindMapUUID } from "./MindMapGenHelper";
 
 export class WordHelper {
   static async getDocumentTitle(): Promise<string> {
+    const documentUrl = Office.context.document.url;
+    const filename = documentUrl.substring(
+      Math.max(documentUrl.lastIndexOf("\\"), documentUrl.lastIndexOf("/")) + 1,
+      documentUrl.lastIndexOf(".")
+    );
+
     const defaultTitle = `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`;
 
     return Word.run(async (context) => {
       const properties = context.document.properties;
       properties.load("title");
       await context.sync();
-      return properties.title || defaultTitle;
+      return properties.title || filename || defaultTitle;
     });
   }
 
