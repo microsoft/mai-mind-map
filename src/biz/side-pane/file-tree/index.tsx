@@ -1,7 +1,7 @@
 import { css } from "@root/base/styled";
-import { LoadingVeiw } from "@root/components/LoadingView";
 import { FileInfo } from "@root/model/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 import icons from "../../components/icons";
 import { File } from "./file";
 
@@ -80,7 +80,11 @@ export function FileTree(props: {
   const navigate = useNavigate();
 
   if (loading) {
-    return <LoadingVeiw />;
+    return (
+      <div className={SLoadPlace}>
+        <BeatLoader />
+      </div>
+    );
   }
 
   return (

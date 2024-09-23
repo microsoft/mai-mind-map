@@ -1,8 +1,11 @@
 import { css } from "@root/base/styled";
+import Popup, { PopupPosition } from "@root/biz/components/popup";
 import { FileInfo } from "@root/model/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import icons from "../../components/icons";
+import { Menu, MenuProps } from "./menu";
+import { Rename } from "./rename";
 
 const SFile = css`
   display: flex;
@@ -41,25 +44,45 @@ const SFile = css`
     display: none;
     align-items: center;
   }
-  &:hover>.file-right {
+  &:hover>.file-right, .file-right.active {
     display: flex;
   }
 `;
-
 const SMore = css`
   width: 24px;
   height: 24px;
   padding: 4px;
   border-radius: 2px;
   &:hover, &.active {
-    background-color: aliceblue;
+    background-color: #e4e4e4;
   }
 `;
 
-function More() {
+function bindActive(flag: boolean, base: string) {
+  return flag ? (base + ' active') : base;
+}
+
+function Actions(props: MenuProps) {
+  const [morePosition, setPos] = useState<PopupPosition | null>(null);
+  const active = Boolean(morePosition)
+
   return (
-    <div className={SMore}>
-      {icons.more}
+    <div className={bindActive(active, 'file-right')} onClick={e => e.stopPropagation()}>
+      <div
+        className={bindActive(active, SMore)}
+        onClick={(ev) => {
+          if (morePosition) return;
+          const { x, bottom } = (ev.currentTarget).getBoundingClientRect();
+          setPos({ left: x, top: bottom + 4 });
+        }}
+      >
+        {icons.more}
+      </div>
+      {morePosition && (
+        <Popup position={morePosition} hide={() => setPos(null)}>
+          <Menu {...props} />
+        </Popup>
+      )}
     </div>
   );
 }
@@ -70,21 +93,25 @@ export function File(props: {
 }) {
   const { file, active } = props;
   const { id, title = 'Untitled' } = file;
+  const [renameing, setRename] = useState(false);
   const navigate = useNavigate();
 
-  const open = () => navigate(`/edit/${id}`);
   return (
     <div
       className={SFile + (active ? ' active' : '')}
-      onClick={open}
+      onClick={() => navigate(`/edit/${id}${location.search}`)}
     >
       <div className="file-left">
         <div className="file-icon">{icons.mindmap}</div>
-        <div className="file-title">{title}</div>
+        {renameing ? (
+          <Rename file={file} exit={() => setRename(false)} />
+        ) : (
+          <div className="file-title">{title}</div>
+        )}
       </div>
-      <div className="file-right" onClick={e => e.stopPropagation()}>
-        <More />
-      </div>
+      {!renameing && (
+        <Actions file={file} rename={() => setRename(true)} />
+      )}
     </div>
   );
 }

@@ -200,8 +200,6 @@ export function dragAction<D>(
             );
             oldPath.attr('class', `line _${node.data.id} _${to.data.id}`);
             if (from.data.id !== to.data.id) {
-                
-              
               treeState.current.moveNodeTo(from.data.id, to.data.id, 0);
               shadowNode.remove();
 

@@ -1,4 +1,4 @@
-import { createDocument, getDocument, updateDocument } from "@root/model/api";
+import { createDocument, getDocument, updateDocument } from '@root/model/api';
 
 import {
   createContext,
@@ -7,12 +7,12 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
-import { getExampleSourceData } from "@root/components/mind-map/render/model";
-import { Payload } from "@root/components/mind-map/render/model/interface";
-import { RawNode } from "@root/components/mind-map/render/node/interface";
-import { documentEngine } from "@root/model/document-engine";
+import { getExampleSourceData } from '@root/components/mind-map/render/model';
+import { Payload } from '@root/components/mind-map/render/model/interface';
+import { RawNode } from '@root/components/mind-map/render/node/interface';
+import { documentEngine } from '@root/model/document-engine';
 import {
   $invDocMindMap,
   MindMapCp,
@@ -20,10 +20,10 @@ import {
   modify,
   move,
   remove,
-} from "@root/model/mind-map-model";
-import { useObservable } from "../mind-map/render/hooks/observable-hook";
-import { cpToTree, payloadToProps, treeToCp } from "./converter";
-import { useNavigate } from "react-router-dom";
+} from '@root/model/mind-map-model';
+import { useNavigate } from 'react-router-dom';
+import { useObservable } from '../mind-map/render/hooks/observable-hook';
+import { cpToTree, payloadToProps, treeToCp } from './converter';
 
 export const MindMapState = createContext<MindMapStateType | null>(null);
 
@@ -38,7 +38,7 @@ export interface MindMapStateType {
   addNodeWithPayLoad: (
     parentId: string,
     payload: Payload,
-    index: number
+    index: number,
   ) => void;
   outputCP: () => MindMapCp;
 }
@@ -48,24 +48,24 @@ type Box<T> = { value: T };
 const box = <T>(value: T) => ({ value });
 type LoadState =
   | {
-      type: "init";
+      type: 'init';
     }
   | {
-      type: "creating";
+      type: 'creating';
     }
   | {
-      type: "loading";
+      type: 'loading';
       id: string;
     }
   | {
-      type: "loaded";
+      type: 'loaded';
       id: string;
     };
 
-const init = (): LoadState => ({ type: "init" });
-const creating = (): LoadState => ({ type: "creating" });
-const loading = (id: string): LoadState => ({ type: "loading", id });
-const loaded = (id: string): LoadState => ({ type: "loaded", id });
+const init = (): LoadState => ({ type: 'init' });
+const creating = (): LoadState => ({ type: 'creating' });
+const loading = (id: string): LoadState => ({ type: 'loading', id });
+const loaded = (id: string): LoadState => ({ type: 'loaded', id });
 
 export function useMindMapState(id: string): {
   loadState: LoadState;
@@ -79,41 +79,41 @@ export function useMindMapState(id: string): {
       stateBox.value = value;
       setLoadState(value);
     },
-    [stateBox]
+    [stateBox],
   );
   const navigate = useNavigate();
   useEffect(() => {
     const { value: state } = stateBox;
     if (
       id &&
-      (state.type === "init" || state.type === "creating" || state.id !== id)
+      (state.type === 'init' || state.type === 'creating' || state.id !== id)
     ) {
       updateLoadState(loading(id));
-      console.log("Loading", id);
+      console.log('Loading', id);
       getDocument(id).then((cp) => {
         const { value: stat } = stateBox;
-        if (stat.type === "loading" && stat.id === id) {
-          console.log("Loaded", id);
+        if (stat.type === 'loading' && stat.id === id) {
+          console.log('Loaded', id);
           engine.load(cp);
           setTimeout(() => {
             updateLoadState(loaded(id));
           }, 10);
         }
       });
-    } else if (!id && state.type !== "creating") {
+    } else if (!id && state.type !== 'creating') {
       updateLoadState(creating());
-      console.log("Creating");
+      console.log('Creating');
       createDocument().then((id) => {
         const { value: stat } = stateBox;
-        if (stat.type === "creating") {
-          console.log("Created", id);
+        if (stat.type === 'creating') {
+          console.log('Created', id);
           navigate(`/edit/${id}`);
         }
       });
     }
     return () => {
       const { value: stat } = stateBox;
-      if (stat.type === "loaded") {
+      if (stat.type === 'loaded') {
         const content = engine.model.peek();
         updateDocument(stat.id, content).then(console.log);
       }
@@ -131,21 +131,21 @@ export function useMindMapState(id: string): {
   const moveNodeTo = useCallback(
     (nodeId: string, targetId: string, index: number) =>
       engine.apply(move(nodeId, targetId, index)),
-    [engine]
+    [engine],
   );
   const modifyNode = useCallback(
     (nodeId: string, content: string) =>
       engine.apply(modify(nodeId, () => ({ stringProps: { content } }))),
-    [engine]
+    [engine],
   );
   const modifyNodePayload = useCallback(
     (nodeId: string, payload: Payload) =>
       engine.apply(
         modify(nodeId, () => {
           return payloadToProps(payload);
-        })
+        }),
       ),
-    [engine]
+    [engine],
   );
   const toggleCollapseNode = useCallback(
     (nodeId: string) =>
@@ -154,24 +154,24 @@ export function useMindMapState(id: string): {
           booleanProps: {
             collapsed: !booleanProps.collapsed,
           },
-        }))
+        })),
       ),
-    [engine]
+    [engine],
   );
   const addNode = useCallback(
     (parentId: string, index: number, content: string) =>
       engine.apply(add(parentId, index, { stringProps: { content } })),
-    [engine]
+    [engine],
   );
   const addNodeWithPayLoad = useCallback(
     (parentId: string, payload: Payload, index: number) =>
       engine.apply(add(parentId, index, payloadToProps(payload))),
-    [engine]
+    [engine],
   );
 
   const delNode = useCallback(
     (id: string) => engine.apply(remove(id)),
-    [engine]
+    [engine],
   );
 
   return {

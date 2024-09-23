@@ -1,13 +1,13 @@
 import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState } from 'react';
-import { AddChild, Collapse, Delete, Expand, Color } from '../icons/icons';
+import { AddChild, Collapse, Color, Delete, Expand } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { ColorMode } from './render/hooks/constants';
+import { supportColors } from './render/hooks/useAutoColoringMindMap';
 import { useNodeColor } from './render/hooks/useNodeColor';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
-import { supportColors } from './render/hooks/useAutoColoringMindMap';
 
 export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;

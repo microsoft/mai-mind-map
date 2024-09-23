@@ -1,6 +1,7 @@
 import { css } from "@root/base/styled";
-import { CSSProperties } from "react";
+import { CSSProperties, createElement } from "react";
 import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 const SOverlay = css`
   z-index: 1000000;
@@ -26,19 +27,19 @@ const container = document.createElement('div');
 document.body.append(container);
 const NOOP = () => {};
 
-function Modal(props: {
+interface Props {
   style?: CSSProperties;
   className?: string;
   overlayBg?: string;
   hide?: () => void;
   children?: React.ReactNode;
-}) {
-  const { hide = NOOP, className, style, overlayBg, children } = props;
+}
 
+function Content(props: Props) {
+  const { hide = NOOP, className, style, overlayBg, children } = props;
   let cls = SContent;
   if (className) cls += ' ' + className;
-
-  return ReactDOM.createPortal(
+  return (
     <div
       className={SOverlay}
       style={{ backgroundColor: overlayBg }}
@@ -52,10 +53,26 @@ function Modal(props: {
         onClick={e => e.stopPropagation()}>
         {children}
       </div>
-    </div>,
+    </div>
+  );
+}
+
+function Modal(props: Props) {
+  return ReactDOM.createPortal(
+    createElement(Content, props),
     container,
   );
 }
 
+function show(children: React.ReactNode) {
+  const root = createRoot(container);
+  const hide = () => root.unmount();
+  root.render(
+    <Content hide={hide}>{children}</Content>
+  );
+  return hide;
+}
+
+Modal.show = show;
 
 export default Modal;
