@@ -1,6 +1,7 @@
 import { css } from '@base/styled';
 import React, { FC } from 'react';
-import { Add, Sub } from '../../icons/icons';
+import { Add, Origin, Sub } from '../../icons/icons';
+import { resetDrawingTransformEventName } from '../render/hooks/useRenderWithD3';
 
 const SScaleControl = css`
   display: flex;
@@ -67,6 +68,17 @@ export const ScaleControl: FC<{
   return (
     <div className={SScaleControl} style={style}>
       <button
+        title="Reset scale and position"
+        className={`${sBtn} ${hoverShadow}`}
+        onClick={() => {
+          setScale(1);
+          window.dispatchEvent(new Event(resetDrawingTransformEventName));
+        }}
+      >
+        <Origin />
+      </button>
+      <button
+        title="Decrease scale"
         className={`${sBtn} ${hoverShadow}`}
         onClick={() => {
           if (scale > props.min) setScale((scale * 10 - 1) / 10);
@@ -83,6 +95,7 @@ export const ScaleControl: FC<{
         onChange={(e) => setScale(scaler(+e.target.value))}
       ></input>{' '}
       <button
+        title="Increase scale"
         className={`${sBtn} ${hoverShadow}`}
         onClick={() => {
           if (scale < props.max) setScale((scale * 10 + 1) / 10);

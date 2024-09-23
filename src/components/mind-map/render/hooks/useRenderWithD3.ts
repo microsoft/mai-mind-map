@@ -25,6 +25,7 @@ import {
   type TreeState,
 } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
+export const resetDrawingTransformEventName = 'reset-drawing-transform';
 
 export function useRenderWithD3<D>(
   root: NodeInterface<SizedRawNode<D>> | null,
@@ -115,6 +116,38 @@ export function useRenderWithD3<D>(
       }
     }
   }, [scale, drawing]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    window.addEventListener(
+      resetDrawingTransformEventName,
+      () => {
+        if (drawing) {
+          const g = drawing.drawingGroup.node();
+          if (g && svg.current) {
+            const { clientWidth, clientHeight } = svg.current;
+            const { v, h } = getPaddingForDirection(
+              treeStateRef.current.direction,
+            );
+            const tx = clientWidth / 2 + 2 * h;
+            const ty = clientHeight / 2 + 2 * v;
+            if (tx && ty) {
+              drawing.drawingGroup.attr(
+                'transform',
+                `translate(${tx}, ${ty}) scale(1)`,
+              );
+            }
+            g.dataset.tx = tx.toString();
+            g.dataset.ty = ty.toString();
+          }
+        }
+      },
+      { signal: controller.signal },
+    );
+    return () => {
+      controller.abort();
+    };
+  }, [drawing]);
 
   useEffect(() => {
     treeStateRef.current.direction = direction;
