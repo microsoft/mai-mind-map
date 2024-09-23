@@ -31,7 +31,7 @@ const SColorBox = css`
   border: 1px solid #999;
   background: #fff;
   border-radius: 6px;
-  box-shadow: 3px -6px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 5px 0px;
   gap: 3px;
 `;
 const SColorBtn = css`

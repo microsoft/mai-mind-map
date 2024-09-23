@@ -1,4 +1,4 @@
-import { CSSProperties, Fragment, useMemo, useState } from 'react';
+import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ScaleControl } from './Controllers/ScaleControl';
 import { EditingNode, EditingNodeType } from './EditingNode';
@@ -92,18 +92,21 @@ export function MindMap(props: MFC<Payload>) {
   return (
     <Fragment>
       <SizeMeasurer root={tree} onSize={setSizedData} />
-      <div style={style}>
+      <div
+        style={style}
+        onWheelCapture={(e) => {
+          console.log(e);
+          setScale((s) => {
+            const ns = s - e.deltaY / 1000;
+            const ns01 = Math.floor(ns * 10 + 0.5) / 10;
+            return Math.max(0.2, Math.min(5, ns01));
+          });
+        }}
+      >
         <svg
           ref={svg}
           role="presentation"
           style={{ height: '100%', width: '100%', display: 'block' }}
-          onWheel={(e) => {
-            setScale((s) => {
-              const ns = s - e.deltaY / 1000;
-              const ns01 = Math.floor(ns * 10 + 0.5) / 10;
-              return Math.max(0.2, Math.min(5, ns01));
-            });
-          }}
         ></svg>
         {pendingRenderNodes.map(([nodePortal, node]) => {
           return (
