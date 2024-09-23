@@ -26,14 +26,21 @@ const SDragBtn = css`
   border-radius: 5px;
   &:hover {
     outline: 2px solid #0172dc;
-    & > .fold {
+    & .fold {
       display: flex;
     }
   }
 `;
+const SBtnBox = css`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+`;
 const SFold = css`
   display: none;
-  position: absolute;
   margin: 0;
   padding: 0;
   align-items: center;
@@ -41,36 +48,37 @@ const SFold = css`
   box-sizing: border-box;
   font-size: 10px;
   border-radius: 10px;
-  border: 0;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition-duration: 0.2s;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   transform-origin: center;
+  border: 1px solid #0172dc;
+  cursor: pointer;
   &:hover {
     box-shadow: 0 0 0px 3px #a9d4fd;
   }
 `;
 
 const SExpandChar = css`
-  position: absolute;
-  height: 16px;
+  cursor: pointer;
+  height: 18px;
   margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  font-size: 10px;
+  font-size: 12px;
   border-radius: 10px;
-  border: 0;
+  border: 1px solid #0172dc;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition-duration: 0.2s;
   width: fit-content;
   padding: 0 5px;
-  line-height: 16;
+  line-height: 18px;
   &:hover {
     box-shadow: 0 0 0px 3px #a9d4fd;
   }
@@ -188,43 +196,37 @@ function FoldIndicator(props: {
     }
   }, [node, treeDirection]);
 
-  const posStyleF = useMemo(() => {
+  const posStyleFPos = useMemo(() => {
     switch (treeDirection) {
       case 'TB':
         return {
           top: '100%',
-          transform: 'translateX(-50%) rotate(180deg)',
-          left: '50%',
+          width: '100%',
         };
       case 'BT':
         return {
           bottom: '100%',
-          transform: 'translateX(-50%)',
-          left: '50%',
+          width: '100%',
         };
       case 'LR':
         return {
-          top: '50%',
-          transform: 'translateY(-50%) rotate(90deg)',
+          height: '100%',
           left: '100%',
         };
       case 'RL':
         return {
-          top: '50%',
-          transform: 'translateY(-50%) rotate(-90deg)',
-          right: '0',
+          height: '100%',
+          right: '100%',
         };
       case 'H':
         if (node.x > (node.parent?.x ?? 0)) {
           return {
-            top: '50%',
-            transform: 'translateY(-50%) rotate(90deg)',
+            height: '100%',
             left: '100%',
           };
         } else {
           return {
-            top: '50%',
-            transform: 'translateY(-50%) rotate(-90deg)',
+            height: '100%',
             right: '100%',
           };
         }
@@ -232,47 +234,93 @@ function FoldIndicator(props: {
         if (node.y > (node.parent?.y ?? 0)) {
           return {
             top: '100%',
-            transform: 'translateX(-50%) rotate(180deg)',
-            left: '50%',
+            width: '100%',
           };
         } else {
           return {
             bottom: '100%',
-            transform: 'translateX(-50%)',
-            left: '50%',
+            width: '100%',
           };
         }
       default:
         return {
-          top: '50%',
-          transform: 'translateY(-50%)',
+          height: '100%',
           left: '100%',
+        };
+    }
+  }, [node, treeDirection]);
+
+  const posStyleFScale = useMemo(() => {
+    switch (treeDirection) {
+      case 'TB':
+        return {
+          transform: 'rotate(180deg)',
+        };
+      case 'BT':
+        return {
+          transform: 'rotate(0deg)',
+        };
+      case 'LR':
+        return {
+          transform: ' rotate(90deg)',
+        };
+      case 'RL':
+        return {
+          transform: ' rotate(-90deg)',
+        };
+      case 'H':
+        if (node.x > (node.parent?.x ?? 0)) {
+          return {
+            transform: ' rotate(90deg)',
+          };
+        } else {
+          return {
+            transform: ' rotate(-90deg)',
+          };
+        }
+      case 'V':
+        if (node.y > (node.parent?.y ?? 0)) {
+          return {
+            transform: 'rotate(180deg)',
+          };
+        } else {
+          return {
+            transform: 'rotate(0deg)',
+          };
+        }
+      default:
+        return {
+          transform: 'rotate(90deg)',
         };
     }
   }, [node, treeDirection]);
 
   if (!node.data.children?.length) return null;
   return data.payload.collapsed ? (
-    <button
-      style={posStyleE}
-      title="Expand"
-      className={SExpandChar}
-      onClick={() => {
-        toggleCollapseNode(id);
-      }}
-    >
-      {node.data.children?.length ?? <Ellipsis />}
-    </button>
+    <div className={SBtnBox} style={posStyleE}>
+      <div
+        role="button"
+        title="Expand"
+        className={SExpandChar}
+        onClick={() => {
+          toggleCollapseNode(id);
+        }}
+      >
+        {node.data.children?.length ?? <Ellipsis />}
+      </div>
+    </div>
   ) : (
-    <button
-      style={posStyleF}
-      className={`fold ${SFold}`}
-      title="Collapse"
-      onClick={() => {
-        toggleCollapseNode(id);
-      }}
-    >
-      <Fold />
-    </button>
+    <div className={SBtnBox} style={posStyleFPos}>
+      <button
+        className={`fold ${SFold}`}
+        title="Collapse"
+        style={posStyleFScale}
+        onClick={() => {
+          toggleCollapseNode(id);
+        }}
+      >
+        <Fold />
+      </button>
+    </div>
   );
 }

@@ -45,17 +45,20 @@ export interface MindMapStateType {
 type Box<T> = { value: T };
 
 const box = <T>(value: T) => ({ value });
-type LoadState = {
-  type: 'init';
-} | {
-  type: 'loading';
-  id: string;
-} | {
-  type: 'loaded';
-  id: string;
-};
+type LoadState =
+  | {
+      type: 'init';
+    }
+  | {
+      type: 'loading';
+      id: string;
+    }
+  | {
+      type: 'loaded';
+      id: string;
+    };
 
-const init = (): LoadState => ({ type: 'init'});
+const init = (): LoadState => ({ type: 'init' });
 const loading = (id: string): LoadState => ({ type: 'loading', id });
 const loaded = (id: string): LoadState => ({ type: 'loaded', id });
 
@@ -66,10 +69,13 @@ export function useMindMapState(id: string): {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
   const stateBox = useMemo<Box<LoadState>>(() => box(init()), []);
   const [loadState, setLoadState] = useState<LoadState>(init());
-  const updateLoadState = useCallback((value: LoadState) => {
-    stateBox.value = value;
-    setLoadState(value);
-  }, [stateBox]);
+  const updateLoadState = useCallback(
+    (value: LoadState) => {
+      stateBox.value = value;
+      setLoadState(value);
+    },
+    [stateBox],
+  );
   useEffect(() => {
     const { value: state } = stateBox;
     if (state.type === 'init' || state.id !== id) {
@@ -78,7 +84,9 @@ export function useMindMapState(id: string): {
         const { value: stat } = stateBox;
         if (stat.type === 'loading' && stat.id === id) {
           engine.load(cp);
-          updateLoadState(loaded(id));
+          setTimeout(() => {
+            updateLoadState(loaded(id));
+          }, 10);
         }
       });
     }
@@ -146,7 +154,7 @@ export function useMindMapState(id: string): {
   );
 
   return {
-    loadState, 
+    loadState,
     treeState: {
       mindMapData,
       moveNodeTo,

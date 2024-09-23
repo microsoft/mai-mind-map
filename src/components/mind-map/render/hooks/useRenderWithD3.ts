@@ -178,7 +178,7 @@ function drawTree<D>(
   treeState: MutableRefObject<TreeState<D>>,
 ) {
   console.log('drawTree');
-  const drawTran = transition().duration(500);
+  const drawTran = transition().duration(300);
 
   // for path
   const tempDrawingPath = drawing.pathGroup

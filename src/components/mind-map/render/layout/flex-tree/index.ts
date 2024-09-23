@@ -14,6 +14,7 @@ function layout<T>(root: T, options: HierarchyOptions<T>): NodeInterface<T> {
     options,
     nonLayeredTidyTree,
   );
+  // re.centering();
   completeCollapseItems(re, root, options);
   return re;
 }

@@ -207,6 +207,17 @@ export class Node<T> implements NodeInterface<T> {
     });
   }
 
+  public centering() {
+    if (!this.isRoot()) {
+      return;
+    }
+    const bb = this.getBoundingBox();
+    console.log(bb);
+    const tx = (bb.left + bb.width) / 2;
+    const ty = (bb.top + bb.height) / 2;
+    this.translate(-tx, -ty);
+  }
+
   public right2left() {
     const bb = this.getBoundingBox();
     this.eachNode((node) => {
