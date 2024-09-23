@@ -28,6 +28,11 @@ const sBtn = css`
     background-color: #ddd;
   }
 `;
+const hoverShadow = css`
+  &:hover {
+    box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.5);
+  }
+`;
 
 function scaler(val: number) {
   let re;
@@ -62,7 +67,7 @@ export const ScaleControl: FC<{
   return (
     <div className={SScaleControl} style={style}>
       <button
-        className={sBtn}
+        className={`${sBtn} ${hoverShadow}`}
         onClick={() => {
           if (scale > props.min) setScale((scale * 10 - 1) / 10);
         }}
@@ -78,7 +83,7 @@ export const ScaleControl: FC<{
         onChange={(e) => setScale(scaler(+e.target.value))}
       ></input>{' '}
       <button
-        className={sBtn}
+        className={`${sBtn} ${hoverShadow}`}
         onClick={() => {
           if (scale < props.max) setScale((scale * 10 + 1) / 10);
         }}
