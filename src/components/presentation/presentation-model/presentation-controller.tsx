@@ -37,7 +37,9 @@ class PresentationControllerBase implements PresentationController {
             if (node.children) {
                 for (let child of node.children) {
                     this.presentationPages.push(new PresentationPageBase(node, child));
-                    preOrderTraversal(child);
+                    if (child.children && child.children.length > 0) {
+                        preOrderTraversal(child);
+                    }
                 }
             }
         };
