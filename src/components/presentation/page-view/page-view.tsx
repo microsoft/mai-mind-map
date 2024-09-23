@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   PresentationMode,
   PresentationPage,
 } from '../presentation-model/presentation-page';
 import './page-view.css';
 import { PageTreeComponent, PageTreeLinePoint } from '../page-tree/page-tree';
+import { PageNodeContent } from '../page-node-content/page-node-content';
 
 interface PageViewComponentProps {
   page: PresentationPage | null;
@@ -152,6 +153,7 @@ class PageViewComponent extends Component<
             transform: showTree
               ? 'translateX(-30%) scale(0.4)'
               : 'translateX(0) scale(1)',
+            maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 15%)`,
           }}
         >
           <div
@@ -168,23 +170,23 @@ class PageViewComponent extends Component<
             }}
           >
             {!!showTitle && (
-              <div
+              <PageNodeContent
+                content={node?.text || ''}
                 className="presentation-view-main-title"
                 style={{
                   transition: animation ? `all ${animationTime}s` : undefined,
-                  fontSize: `15vh`,
+                  fontSize: `10vh`,
                   maxWidth: '100%',
                 }}
               >
-                {node?.text}
-              </div>
+              </PageNodeContent>
             )}
             {!!showNote && (
               <div
                 className="presentation-view-main-description"
                 style={{
                   transition: animation ? `all ${animationTime}s` : undefined,
-                  fontSize: `8vh`,
+                  fontSize: `6vh`,
                   overflow: 'hidden',
                   maxWidth: '100%',
                 }}
@@ -225,30 +227,23 @@ class PageViewComponent extends Component<
           className="presentation-view-tree-content"
           ref={this.treeContentRef}
           style={{
-            gridTemplateColumns: `100%`,
+            gridTemplateColumns: `4px 100%`,
             gridTemplateRows: `repeat(${childrenLength}, 1fr)`,
             gap: '10px',
             alignItems: 'center',
             transition: animation ? `all ${animationTime}s` : undefined,
             opacity: showTree ? 1 : 0,
-            width: '50%',
+            width: '45%',
             position: 'absolute',
             top: '5%',
-            right: showTree ? '0' : '-50%',
+            right: showTree ? '5%' : '-50%',
             bottom: '5%',
           }}
         >
           {node?.children?.map((child, index) => {
             return (
-              <div
+              <React.Fragment
                 key={child.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
               >
                 <div
                   className="presentation-view-tree-item-line"
@@ -259,7 +254,7 @@ class PageViewComponent extends Component<
                     flexShrink: '0',
                   }}
                 ></div>
-                <div
+                <PageNodeContent
                   className={
                     `presentation-view-tree-item-title` +
                     (index === childIndex
@@ -272,25 +267,16 @@ class PageViewComponent extends Component<
                       index <= childIndex
                         ? 'white'
                         : 'rgba(255, 255, 255, 0.2)',
-                    fontSize: `clamp(12px, ${50 / childrenLength}vh, 4vh)`,
-                    flexGrow: '0',
-                    flexShrink: '1',
+                    fontSize: `clamp(12px, ${100}vh, 4vh)`,
+                    alignSelf: 'center',
+                    overflow: 'scroll',
+                    maxHeight: '100%',
+                    maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 15%)`,
                   }}
+                  content={child.text || ''}
                 >
-                  {child.text}
-                </div>
-                <div
-                  style={{
-                    minWidth: '5%',
-                    height: `${lineWidth}px`,
-                    borderBottomLeftRadius: `${lineWidth / 2}px`,
-                    borderTopLeftRadius: `${lineWidth / 2}px`,
-                    flexShrink: '0',
-                    flexGrow: '1',
-                    visibility: index === childIndex ? 'visible' : 'hidden',
-                  }}
-                ></div>
-              </div>
+                </PageNodeContent>
+              </React.Fragment>
             );
           })}
         </div>

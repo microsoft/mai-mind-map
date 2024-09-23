@@ -32,6 +32,10 @@
     color: white;
 
     text-align: center;
+
+    p {
+        margin: 0px;
+    }
 }
 
 .presentation-view-main-description {
@@ -60,15 +64,17 @@
 }
 
 .presentation-view-tree-item-line {
-    width: 5px;
-    border-radius: 2.5px;
+    width: 4px;
+    border-radius: 4px;
     height: 20px;
-    min-height: 5px;
+    min-height: 4px;
 }
 
 .presentation-view-tree-item-title {
     color: white;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+
+    p {
+        margin: 0px;
+    }
 }
