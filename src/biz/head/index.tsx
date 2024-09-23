@@ -6,6 +6,7 @@ import { MindMapStateType } from "@root/components/state/mindMapState";
 import icons from "../components/icons";
 import { showSidepaneAtom } from "../store";
 import { FileMeta } from "./file-meta";
+import { Generate } from "./generate";
 import { More } from "./more";
 import { Share } from "./share";
 import { Users } from "./users";
@@ -76,12 +77,7 @@ export function Header(props: HeadProps) {
       </div>
       <div className={SRight}>
         <Users />
-        <div className={SHeadBtn}>
-          <span style={{ width: 12, display: 'flex', alignItems: 'center' }}>
-            {icons.makeFile}
-          </span>
-          <span>Generate</span>
-        </div>
+        <Generate className={SHeadBtn} />
         <PresentationButton
           rootNode={presentationNodeFromSampleData(treeState.mindMapData)}
           className={SHeadBtn}

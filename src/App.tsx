@@ -6,6 +6,7 @@ import { Header } from './biz/head';
 import { LayoutStyle } from './biz/layout';
 import { SidePane } from './biz/side-pane';
 import { viewModeAtom } from './biz/store';
+import { LoadingVeiw } from './components/LoadingView';
 import { MindMapView } from './components/mind-map/MapIndex';
 import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
@@ -13,7 +14,6 @@ import {
   MindMapState,
   useMindMapState,
 } from './components/state/mindMapState';
-import { LoadingVeiw } from './components/LoadingView';
 
 const App = () => {
   const { fileId: id } = useParams();

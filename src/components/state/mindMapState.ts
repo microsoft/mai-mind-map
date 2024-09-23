@@ -15,6 +15,7 @@ import { RawNode } from '@root/components/mind-map/render/node/interface';
 import { documentEngine } from '@root/model/document-engine';
 import {
   $invDocMindMap,
+  MindMapCp,
   add,
   modify,
   move,
@@ -38,6 +39,7 @@ export interface MindMapStateType {
     payload: Payload,
     index: number,
   ) => void;
+  outputCP: () => MindMapCp;
 }
 
 type Box<T> = { value: T };
@@ -154,6 +156,7 @@ export function useMindMapState(id: string): {
       addNode,
       addNodeWithPayLoad,
       delNode,
+      outputCP: () => engine.model.peek(),
     },
   };
 }
