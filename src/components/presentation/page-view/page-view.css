@@ -61,6 +61,7 @@
 .presentation-view-tree-content {
     display: grid;
     overflow: hidden;
+    scrollbar-width: none;
 }
 
 .presentation-view-tree-item-line {
@@ -73,6 +74,7 @@
 .presentation-view-tree-item-title {
     color: white;
     overflow: hidden;
+    scrollbar-width: none;
 
     p {
         margin: 0px;

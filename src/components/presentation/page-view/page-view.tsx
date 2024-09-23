@@ -167,7 +167,7 @@ class PageViewComponent extends Component<
               maxHeight: '90%',
               maxWidth: '90%',
               overflow: 'auto',
-              scrollbarWidth: 'thin',
+              scrollbarWidth: 'none',
             }}
           >
             {!!showTitle && (
@@ -189,6 +189,7 @@ class PageViewComponent extends Component<
                   transition: animation ? `all ${animationTime}s` : undefined,
                   fontSize: `6vh`,
                   overflow: 'hidden',
+                  scrollbarWidth: 'none',
                   maxWidth: '100%',
                 }}
               >
@@ -271,6 +272,7 @@ class PageViewComponent extends Component<
                     fontSize: `clamp(12px, ${100 / childrenLength}vh, 4vh)`,
                     alignSelf: 'center',
                     overflow: 'scroll',
+                    scrollbarWidth: 'none',
                     height: '100%',
                     maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 5px)`,
                     display: 'flex',
