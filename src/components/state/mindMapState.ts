@@ -44,12 +44,10 @@ export function useMindMapState(id: string): MindMapStateType {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    if (id) {
+    if (id && !loading) {
       engine.load({ '00000000': { stringProps: { content: { t: Date.now(), v: 'Loading...' }}}});
       setLoading(true);
-      console.log('Loading', id);
       getDocument(id).then((cp) => {
-        console.log('Loaded', id, cp);
         engine.load(cp);
         setLoading(false);
       });
