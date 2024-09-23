@@ -1,4 +1,4 @@
-import { getDocument, listDocuments, updateDocument } from '@root/model/api';
+import { getDocument, updateDocument } from '@root/model/api';
 
 import {
   createContext,
@@ -43,7 +43,7 @@ export interface MindMapStateType {
 type Box<T> = { value: T };
 
 const box = <T>(value: T) => ({ value });
-type ModelState = {
+type LoadState = {
   type: 'init';
 } | {
   type: 'loading';
@@ -53,22 +53,30 @@ type ModelState = {
   id: string;
 };
 
-const init = (): ModelState => ({ type: 'init'});
-const loading = (id: string): ModelState => ({ type: 'loading', id });
-const loaded = (id: string): ModelState => ({ type: 'loaded', id });
+const init = (): LoadState => ({ type: 'init'});
+const loading = (id: string): LoadState => ({ type: 'loading', id });
+const loaded = (id: string): LoadState => ({ type: 'loaded', id });
 
-export function useMindMapState(id: string): MindMapStateType {
+export function useMindMapState(id: string): {
+  loadState: LoadState;
+  treeState: MindMapStateType;
+} {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
-  const stateBox = useMemo<Box<ModelState>>(() => box(init()), []);
+  const stateBox = useMemo<Box<LoadState>>(() => box(init()), []);
+  const [loadState, setLoadState] = useState<LoadState>(init());
+  const updateLoadState = useCallback((value: LoadState) => {
+    stateBox.value = value;
+    setLoadState(value);
+  }, [stateBox]);
   useEffect(() => {
     const { value: state } = stateBox;
     if (state.type === 'init' || state.id !== id) {
-      stateBox.value = loading(id);
+      updateLoadState(loading(id));
       getDocument(id).then((cp) => {
         const { value: stat } = stateBox;
         if (stat.type === 'loading' && stat.id === id) {
           engine.load(cp);
-          stateBox.value = loaded(id);
+          updateLoadState(loaded(id));
         }
       });
     }
@@ -79,7 +87,7 @@ export function useMindMapState(id: string): MindMapStateType {
         updateDocument(stat.id, content).then(console.log);
       }
     };
-  }, [id, engine, stateBox]);
+  }, [id, engine, stateBox, updateLoadState]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {
@@ -136,13 +144,16 @@ export function useMindMapState(id: string): MindMapStateType {
   );
 
   return {
-    mindMapData,
-    moveNodeTo,
-    modifyNode,
-    modifyNodePayload,
-    toggleCollapseNode,
-    addNode,
-    addNodeWithPayLoad,
-    delNode,
+    loadState, 
+    treeState: {
+      mindMapData,
+      moveNodeTo,
+      modifyNode,
+      modifyNodePayload,
+      toggleCollapseNode,
+      addNode,
+      addNodeWithPayLoad,
+      delNode,
+    },
   };
 }

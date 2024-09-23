@@ -13,11 +13,12 @@ import {
   MindMapState,
   useMindMapState,
 } from './components/state/mindMapState';
+import { LoadingVeiw } from './components/LoadingView';
 
 const App = () => {
   const { fileId: id } = useParams();
   const {} = useParams<{ id: string }>();
-  const treeState = useMindMapState(id || '');
+  const { treeState, loadState } = useMindMapState(id || '');
   useAutoColoringMindMap(treeState);
   const [view] = useAtom(viewModeAtom);
 
@@ -32,7 +33,7 @@ const App = () => {
             <Header treeState={treeState} />
           </div>
           <div className={LayoutStyle.Content}>
-            {view === 'mindmap' ? <MindMapView /> : <OutlineView />}
+            {loadState.type === 'loaded' ? (view === 'mindmap' ? <MindMapView /> : <OutlineView />) : <LoadingVeiw />}
             <FloatingTools />
           </div>
         </div>
