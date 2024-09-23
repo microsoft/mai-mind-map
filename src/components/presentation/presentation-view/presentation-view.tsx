@@ -3,7 +3,6 @@ import { PageViewComponent } from '../page-view/page-view';
 import { PresentationControllerBase as PresentationController, PresentationPage } from '../presentation-model/presentation-controller';
 import { PresentationNode } from '../presentation-model/presentation-node';
 import './presentation-view.css';
-import { PresentationMode } from '../presentation-model/presentation-page';
 
 enum PresentationSwitchMode {
     PUSH,
@@ -259,7 +258,6 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
                     }}
                 >
                     <PageViewComponent
-                        ref={this.pageARef}
                         page={pageA.page}
                         style={{
                             ...pageA.style,
@@ -267,7 +265,6 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
                         animation={pageA.animation}
                     ></PageViewComponent>
                     <PageViewComponent
-                        ref={this.pageBRef}
                         page={pageB.page}
                         style={{
                             ...pageB.style,
@@ -275,7 +272,6 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
                         animation={pageB.animation}
                     ></PageViewComponent>
                     <PageViewComponent
-                        ref={this.pageCRef}
                         page={pageC.page}
                         style={{
                             ...pageC.style,
@@ -285,7 +281,7 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
 
                 </div>
 
-                <div className='presentation-control-bar'>
+                {/* <div className='presentation-control-bar'>
                     <button
                         onClick={this.prevPage}
                         style={{
@@ -306,7 +302,7 @@ class PresentationViewComponent extends Component<PresentationViewComponentProps
                     >
                         Exit
                     </button>
-                </div>
+                </div> */}
             </div>
         );
     }
