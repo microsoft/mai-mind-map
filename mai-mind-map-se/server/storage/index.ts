@@ -117,7 +117,7 @@ export async function GetDocByID(blobName: string): Promise<Response> {
  * @throws Will return an error message if the blobName is invalid or if an
  * error occurs during the upload process.
  */
-export async function UpdateDocByID(blobName: string, content: Buffer): Promise<Response> {
+export async function UpdateDocByID(blobName: string, content: Object): Promise<Response> {
   if (blobName === undefined || blobName === null || blobName === '') {
     return { message: 'must specify a doc ID' };
   }
@@ -128,7 +128,8 @@ export async function UpdateDocByID(blobName: string, content: Buffer): Promise<
     const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     let uploadBlobResponse: BlockBlobUploadResponse;
-    uploadBlobResponse = await blockBlobClient.upload(content, content.length);
+    const data = JSON.stringify(content);
+    uploadBlobResponse = await blockBlobClient.upload(Buffer.from(data), data.length);
     return { id: blobName };
   } catch (err: unknown) {
     return { id: blobName, message: handleError(err) };
