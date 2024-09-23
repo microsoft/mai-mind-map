@@ -8,6 +8,7 @@ import React, {
   CSSProperties,
   useEffect,
   useMemo,
+  useLayoutEffect,
 } from 'react';
 import { INDENT, focusTextArea, getTextAreaId } from './common';
 import { OutlineNode } from './common';
@@ -77,7 +78,8 @@ const SText = css`
   appearance: none;
   height: 34px;
   line-height: 34px;
-  overflow: hidden;
+  overflow: auto;
+  padding: 0;
 `;
 const SDragItem = css`
   background-color: rgba(240, 248, 255, 0.75);
@@ -173,10 +175,21 @@ function handleKey(
 function Editor(props: { view: ViewModel; node: OutlineNode }) {
   const { view, node } = props;
   const { id, payload } = node;
+  const textarea = useRef<HTMLTextAreaElement>(null);
   const [text, setText] = useState(payload.content);
   const hilight = payload.hilight;
   // update text if changes happened from props
   useEffect(() => setText(payload.content), [payload.content]);
+  useLayoutEffect(() => {
+    if (textarea.current) {
+      console.log(
+        'textarea.current.scrollHeight',
+        textarea.current.scrollHeight,
+      );
+      textarea.current.style.height = 'auto';
+      textarea.current.style.height = `${textarea.current.scrollHeight}px`;
+    }
+  }, [text]);
 
   const backgroundColor = useMemo(() => {
     if (hilight) {
@@ -197,6 +210,8 @@ function Editor(props: { view: ViewModel; node: OutlineNode }) {
   };
   return (
     <textarea
+      ref={textarea}
+      rows={1}
       id={getTextAreaId(id)}
       autoCapitalize="off"
       className={SText}
