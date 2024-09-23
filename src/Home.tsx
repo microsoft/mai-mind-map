@@ -5,6 +5,7 @@ import { css } from "./base/styled";
 import icons from "./biz/components/icons";
 import { StepLoadingStyle } from "./biz/components/step-loading";
 import { filesAtom } from "./biz/store";
+import { LoadingVeiw } from "./components/LoadingView";
 
 const SPage = css`
   display: flex;
@@ -96,9 +97,7 @@ function Home() {
           )}
         </div>
         {loading ? (
-          <div className={SLoadPlace}>
-            <div className={StepLoadingStyle}/>
-          </div>
+          <LoadingVeiw />
         ) : (
           <div className={SFiles}>
             {files.map((d) => {

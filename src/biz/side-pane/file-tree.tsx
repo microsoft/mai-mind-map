@@ -3,6 +3,7 @@ import { FileInfo } from "@root/model/api";
 import { useNavigate, useParams } from "react-router-dom";
 import icons from "../components/icons";
 import { StepLoadingStyle } from "../components/step-loading";
+import { LoadingVeiw } from "@root/components/LoadingView";
 
 
 const SBox = css`
@@ -77,9 +78,10 @@ export function FileTree(props: {
 
   if (loading) {
     return (
-      <div className={SLoadPlace}>
-        <div className={StepLoadingStyle}/>
-      </div>
+      <LoadingVeiw />
+      // <div className={SLoadPlace}>
+      //   <div className={StepLoadingStyle}/>
+      // </div>
     );
   }
 
