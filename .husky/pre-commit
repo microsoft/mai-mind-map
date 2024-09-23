@@ -1,13 +1,4 @@
-#!/bin/sh
-# npm run check
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# # 获取上面脚本的退出码
-# exitCode="$?"
-
-# if [ "$exitCode" -ne 0 ]; then
-#   echo "🚫  Lint failed, please run 'npm run check:write'"
-#   exit 1
-# fi
-
-# echo "✅  Lint passed"
-# exit 0
+npm test
