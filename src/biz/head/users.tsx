@@ -29,6 +29,7 @@ const SAvatar = css`
 
 const SUserDetail = css`
   position: absolute;
+  z-index: 100;
   top: calc(100% + 6px);
   left: 0;
   padding: 4px;

@@ -15,8 +15,15 @@ export const filesAtom = atom(DefaultState, (get, set) => {
       .catch(() => set({ ...get(), loading: false }));
   }
 
+  function update(id: string, data: Partial<FileInfo>) {
+    const state = get();
+    const files = state.files.map((f) => (f.id === id ? { ...f, ...data } : f));
+    set({ ...state, files });
+  }
+
   const actions = {
     refresh,
+    update,
     fetchFilesOnce,
   };
 

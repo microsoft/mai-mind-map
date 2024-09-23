@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import './App.css';
 import { useParams } from 'react-router-dom';
 import { useAtom } from './base/atom';

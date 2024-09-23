@@ -1,7 +1,10 @@
+import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled";
 import { useEffect, useRef, useState } from "react";
 import ReactDOM from 'react-dom';
-
+import { useParams } from "react-router-dom";
+import SkeletonBlock from "../components/skeleton-block";
+import { filesAtom } from "../store";
 
 const SBox = css`
   display: flex;
@@ -96,8 +99,21 @@ function Rename(props: {
 
 export function FileMeta() {
   const [rename, setRename] = useState<[number, number] | null>(null);
-  const [title, setTitle] = useState('Document Title');
 
+  const id = useParams().fileId || '';
+  const [{ files, loading }, , actions] = useAtom(filesAtom);
+  const file = files.find(f => f.id === id);
+
+  if (loading || !file) {
+    return (
+      <div className={SBox} style={{ gap: 4 }}>
+        <SkeletonBlock style={{ width: 100 }} />
+        <SkeletonBlock style={{ width: 150 }} />
+      </div>
+    );
+  }
+
+  const title = file.title || 'Untitled';
   return (
     <div className={SBox}>
       <div className={STop}>
@@ -113,12 +129,15 @@ export function FileMeta() {
         <Rename
           position={rename}
           title={title}
-          commit={setTitle}
+          commit={(result) => {
+            // todo: update by server api
+            actions.update(id, { title: result });
+          }}
           hide={() => setRename(null)}
         />
       )}
       <div className={SLastEdit}>
-        Last edit: {(new Date()).toLocaleString()}
+        Last edit: {(new Date(file.updated)).toLocaleString()}
       </div>
     </div>
   );
