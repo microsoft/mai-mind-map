@@ -15,6 +15,7 @@ import { RawNode } from '@root/components/mind-map/render/node/interface';
 import { documentEngine } from '@root/model/document-engine';
 import {
   $invDocMindMap,
+  MindMapCp,
   add,
   modify,
   move,
@@ -39,6 +40,7 @@ export interface MindMapStateType {
     payload: Payload,
     index: number,
   ) => void;
+  outputCP: () => MindMapCp;
 }
 
 type Box<T> = { value: T };
@@ -86,7 +88,9 @@ export function useMindMapState(id: string): {
         if (stat.type === 'loading' && stat.id === id) {
           console.log('Loaded', id);
           engine.load(cp);
-          updateLoadState(loaded(id));
+          setTimeout(() => {
+            updateLoadState(loaded(id));
+          }, 10);
         }
       });
     } else if (!id && state.type !== 'creating') {
@@ -107,7 +111,7 @@ export function useMindMapState(id: string): {
         updateDocument(stat.id, content).then(console.log);
       }
     };
-  }, [id, engine, stateBox, updateLoadState]);
+  }, [id, engine, stateBox, updateLoadState, navigate]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {
@@ -164,7 +168,7 @@ export function useMindMapState(id: string): {
   );
 
   return {
-    loadState, 
+    loadState,
     treeState: {
       mindMapData,
       moveNodeTo,
@@ -174,6 +178,7 @@ export function useMindMapState(id: string): {
       addNode,
       addNodeWithPayLoad,
       delNode,
+      outputCP: () => engine.model.peek(),
     },
   };
 }

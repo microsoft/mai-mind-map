@@ -62,9 +62,6 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     if (req.to !== 'markdown') {
       return { message: 'invalid output doc type' };
     }
-    if (req.title === '') {
-      return { message: 'must specify a input doc title' };
-    }
     if (req.content === '') {
       return { message: 'must specify a input doc content' };
     }
@@ -72,14 +69,14 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
       return ToMarkdown(req);
     }
     let data = JSON.stringify({
-      "Url": req.title,
+      "Url": req.title ? req.title : 'test',
       "PageContent": req.content
     });
 
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: `${conf.NONE_STREAMING_AI_ENDPOINT}?features=udsmindtoken5`,
+      url: `${conf.NONE_STREAMING_AI_GENERATION_ENDPOINT}?features=udsmindtoken5`,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -88,6 +85,9 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     const result = await axios.request(config);
     const tokens = marked.lexer(result.data.result);
     const cp = tokensToMindMapCp(tokens);
+    if (req.title !== '') {
+      cp[ROOT_ID].stringProps!.content.v = req.title;
+    }
     return await NewDoc(Buffer.from(JSON.stringify(cp)));
   } catch (err: unknown) {
     return { message: handleError(err) };
@@ -181,18 +181,37 @@ function mindMapCpToMarkdown(mindMap: MindMapCp): string {
   return markdownContent;
 }
 
+
 /**
- * Converts the content of a GenRequest to a Markdown format.
+ * Converts a given GenRequest body to a markdown format and sends it to a
+ * specified AI creation endpoint.
  *
- * @param body - The GenRequest object containing the content to be converted.
- * @returns A promise that resolves to a GenResponse object containing the
- * converted Markdown content. If an error occurs during conversion, the promise
- * resolves to a GenResponse object containing an error message.
+ * @param {GenRequest} body - The request body containing the content to be
+ * converted.
+ * @returns {Promise<GenResponse>} - A promise that resolves to a GenResponse
+ * containing the result of the conversion.
+ *
+ * @throws {Error} - Throws an error if the conversion or the request fails.
  */
-function ToMarkdown(body: GenRequest): Promise<GenResponse> {
+async function ToMarkdown(body: GenRequest): Promise<GenResponse> {
   try {
     const cp = JSON.parse(body.content) as MindMapCp;
-    return Promise.resolve({ content: mindMapCpToMarkdown(cp) });
+    let data = JSON.stringify({
+      "Url": 'test',
+      "PageContent": mindMapCpToMarkdown(cp),
+      "FeatureFlags": ["RAG"],
+    });
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${conf.NONE_STREAMING_AI_CREATION_ENDPOINT}`,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data
+    };
+    const result = await axios.request(config);
+    return Promise.resolve({ content: result.data.result });
   } catch (err: unknown) {
     return Promise.resolve({ message: handleError(err) });
   }

@@ -1,14 +1,20 @@
 import { css } from "@root/base/styled";
-import { FileInfo } from "@root/model/api";
-import { useNavigate, useParams } from "react-router-dom";
-import icons from "../components/icons";
-import { StepLoadingStyle } from "../components/step-loading";
 import { LoadingVeiw } from "@root/components/LoadingView";
+import { FileInfo } from "@root/model/api";
+import { useParams } from "react-router-dom";
+import icons from "../../components/icons";
+import { File } from "./file";
 
 
 const SBox = css`
   padding: 8px;
+  flex: 1 1 100% !important;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
 `;
+
 const SLoadPlace = css`
   display: flex;
   justify-content: center;
@@ -17,6 +23,7 @@ const SLoadPlace = css`
 `;
 
 const SHead = css`
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,42 +54,32 @@ const SHead = css`
     }
   }
 `;
-const SFile = css`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  &:hover, &.active {
-    background-color: rgba(0,0,0,0.04);
+const SBody = css`
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
   }
-  .file-icon {
-    flex: 0 0 auto;
-    width: 16px;
-    display: flex;
-    align-items: center;
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 25px;
   }
-  .file-title {
-    flex: 1 1 auto;
+  &:hover::-webkit-scrollbar-thumb {
+    background: #c9c9c9;
   }
 `;
+
 
 export function FileTree(props: {
   files: FileInfo[];
   loading: boolean;
 }) {
   const { files, loading } = props;
-  const navigate = useNavigate();
   const { fileId } = useParams();
 
   if (loading) {
-    return (
-      <LoadingVeiw />
-      // <div className={SLoadPlace}>
-      //   <div className={StepLoadingStyle}/>
-      // </div>
-    );
+    return <LoadingVeiw />;
   }
 
   return (
@@ -96,19 +93,10 @@ export function FileTree(props: {
           <div className="add-new-file" onClick={() => navigate(`/edit`)}>{icons.add}</div>
         </div>
       </div>
-      <div>
-        {files.map((d) => {
-          const open = () => navigate(`/edit/${d.id}`);
-          const active = d.id === fileId;
-          return (
-            <div
-              key={d.id}
-              className={SFile + (active ? ' active' : '')}
-              onClick={open}>
-              <div className="file-icon">{icons.mindmap}</div>
-              <div className="file-title">{d.title || 'Untitled'}</div>
-            </div>
-          );
+      <div className={SBody}>
+        {files.map((f) => {
+          const active = f.id === fileId;
+          return <File key={f.id} active={active} file={f} />;
         })}
       </div>
     </div>

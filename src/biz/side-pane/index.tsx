@@ -14,6 +14,9 @@ const SBox = css`
   display: flex;
   flex-direction: column;
   background-color: rgba(250,251,251,1);
+  &>div {
+    flex: 0 0 auto;
+  }
 `;
 
 export function SidePane() {

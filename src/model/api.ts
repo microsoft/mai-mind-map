@@ -68,6 +68,7 @@ export const getDocument = (id: string) =>
     )
     .then((data) => {
       if (!data?.id) throw new Error(API_RESPONSE_TYPE_ERROR);
+      if (!data?.content) return {};
       return readRecord(
         readStruct({
           stringProps: readRecord(readTimestamped(readString)),

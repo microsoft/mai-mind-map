@@ -32,14 +32,29 @@ module.exports = async (env, options) => {
     module: {
       rules: [
         {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-typescript"],
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: "babel-loader",
+              options: {
+                presets: [["@babel/preset-env"]],
+              },
             },
-          },
+            {
+              loader: "ts-loader",
+            },
+          ],
+        },
+        {
+          test: /\.m?jsx?$/,
+          use: [
+            {
+              loader: "babel-loader",
+              options: {
+                presets: [["@babel/preset-env"]],
+              },
+            },
+          ],
         },
         {
           test: /\.html$/,
