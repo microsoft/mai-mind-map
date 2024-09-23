@@ -8,6 +8,7 @@ const SNodeItem = css`
   border-radius: 5px;
   position: relative;
   transition: background-color 0.2s;
+  font-size: 16px;
 `;
 
 const SNodeContentText = css`
@@ -24,6 +25,7 @@ const SNodeContentText = css`
   border-radius: 5px;
   outline: none !important;
   line-height: 1.4;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   & * {
     margin: 0;
     padding: 0;
@@ -72,14 +74,22 @@ export const NodeContent = memo<{
             onBlur={(e) => {
               props.onBlur && props.onBlur();
             }}
-            style={isRoot ? { fontSize: '1.5em', lineHeight: 1.5 } : {}}
+            style={
+              isRoot
+                ? { fontSize: '1.5em', lineHeight: 1.5 }
+                : { fontSize: '1em' }
+            }
             onKeyDown={props.onEditorKeyDown}
           ></pre>
         ) : (
           <pre
             id={`${idPrefix}-${id}`}
             className={SNodeContentText}
-            style={isRoot ? { fontSize: '1.5em', lineHeight: 1.5 } : {}}
+            style={
+              isRoot
+                ? { fontSize: '1.5em', lineHeight: 1.5 }
+                : { fontSize: '1em' }
+            }
             dangerouslySetInnerHTML={{ __html: contentHTML }}
           ></pre>
         )}
