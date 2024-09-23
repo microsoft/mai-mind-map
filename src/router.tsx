@@ -10,6 +10,10 @@ export const router = createBrowserRouter([
     element: <Home />,
   },
   {
+    path: '/edit',
+    element: <App />,
+  },
+  {
     path: '/edit/:fileId',
     element: <App />,
   },

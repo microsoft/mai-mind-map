@@ -93,7 +93,7 @@ export function FileTree(props: {
           <span>Catalog</span>
         </div>
         <div className="head-right">
-          <div className="add-new-file">{icons.add}</div>
+          <div className="add-new-file" onClick={() => navigate(`/edit`)}>{icons.add}</div>
         </div>
       </div>
       <div>

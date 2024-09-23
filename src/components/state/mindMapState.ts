@@ -1,4 +1,4 @@
-import { getDocument, updateDocument } from '@root/model/api';
+import { createDocument, getDocument, updateDocument } from '@root/model/api';
 
 import {
   createContext,
@@ -22,6 +22,7 @@ import {
 } from '@root/model/mind-map-model';
 import { useObservable } from '../mind-map/render/hooks/observable-hook';
 import { cpToTree, payloadToProps, treeToCp } from './converter';
+import { useNavigate } from 'react-router-dom';
 
 export const MindMapState = createContext<MindMapStateType | null>(null);
 
@@ -46,6 +47,8 @@ const box = <T>(value: T) => ({ value });
 type LoadState = {
   type: 'init';
 } | {
+  type: 'creating';
+} | {
   type: 'loading';
   id: string;
 } | {
@@ -54,6 +57,7 @@ type LoadState = {
 };
 
 const init = (): LoadState => ({ type: 'init'});
+const creating = (): LoadState => ({ type: 'creating'});
 const loading = (id: string): LoadState => ({ type: 'loading', id });
 const loaded = (id: string): LoadState => ({ type: 'loaded', id });
 
@@ -68,15 +72,31 @@ export function useMindMapState(id: string): {
     stateBox.value = value;
     setLoadState(value);
   }, [stateBox]);
+  const navigate = useNavigate();
   useEffect(() => {
     const { value: state } = stateBox;
-    if (state.type === 'init' || state.id !== id) {
+    if (
+      id &&
+      (state.type === 'init' || state.type === 'creating' || state.id !== id)
+    ) {
       updateLoadState(loading(id));
+      console.log('Loading', id);
       getDocument(id).then((cp) => {
         const { value: stat } = stateBox;
         if (stat.type === 'loading' && stat.id === id) {
+          console.log('Loaded', id);
           engine.load(cp);
           updateLoadState(loaded(id));
+        }
+      });
+    } else if (!id && state.type !== 'creating') {
+      updateLoadState(creating());
+      console.log('Creating');
+      createDocument().then((id) => {
+        const { value: stat } = stateBox;
+        if (stat.type === 'creating') {
+          console.log('Created', id);
+          navigate(`/edit/${id}`);
         }
       });
     }
