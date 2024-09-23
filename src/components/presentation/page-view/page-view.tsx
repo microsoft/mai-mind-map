@@ -113,6 +113,7 @@ class PageViewComponent extends Component<
     const mainCount = showTitle + showNote + showImages;
     const showTree = mode === PresentationMode.TREE && beiginPoint && endPoints;
     const animationTime = 0.5;
+    const animationDelay = (child?.children?.length || 0) > 0 ? 0.5 : 0;
     const imagesCount = node?.images?.length || 0;
     const lineWidth = childrenLength < 30 ? 4 : 2;
     const lineColor = 'white';
@@ -248,7 +249,7 @@ class PageViewComponent extends Component<
                 <div
                   className="presentation-view-tree-item-line"
                   style={{
-                    transition: `backgroundColor ${animationTime}s ease ${animationTime}s`,
+                    transition: `backgroundColor ${animationTime}s ease ${animationDelay}s`,
                     backgroundColor:
                     index === childIndex ? '#E94F4B' : 'transparent',
                     flexShrink: '0',
@@ -262,7 +263,7 @@ class PageViewComponent extends Component<
                       : '')
                   }
                   style={{
-                    transition: `color ${animationTime}s ease ${animationTime}s`,
+                    transition: `color ${animationTime}s ease ${animationDelay}s`,
                     color:
                       index <= childIndex
                         ? 'white'
