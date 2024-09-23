@@ -1,7 +1,7 @@
 import { css } from "@root/base/styled";
 import { LoadingVeiw } from "@root/components/LoadingView";
 import { FileInfo } from "@root/model/api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import icons from "../../components/icons";
 import { File } from "./file";
 
@@ -77,6 +77,7 @@ export function FileTree(props: {
 }) {
   const { files, loading } = props;
   const { fileId } = useParams();
+  const navigate = useNavigate();
 
   if (loading) {
     return <LoadingVeiw />;
