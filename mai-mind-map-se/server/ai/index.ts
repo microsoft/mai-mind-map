@@ -62,9 +62,6 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     if (req.to !== 'markdown') {
       return { message: 'invalid output doc type' };
     }
-    if (req.title === '') {
-      return { message: 'must specify a input doc title' };
-    }
     if (req.content === '') {
       return { message: 'must specify a input doc content' };
     }
@@ -72,7 +69,7 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
       return ToMarkdown(req);
     }
     let data = JSON.stringify({
-      "Url": req.title,
+      "Url": req.title ? req.title : 'test',
       "PageContent": req.content
     });
 
