@@ -34,8 +34,8 @@ const template = html<TaskPane>`
     </fluent-button>
     <div id="message-container-wrapper">
       <message-container :showLoading=${(x) => x.loading}>
-      <div slot="message">${(x) => x.message}</div>
-    </message-container>
+        <div slot="message">${(x) => x.message}</div>
+      </message-container>
     </div>
   </div>
 `;
@@ -108,7 +108,7 @@ export class TaskPane extends FASTElement {
     } finally {
       this.loading = false;
     }
-  }
+  };
 
   onSubmitSelectedButtonClick = async () => {
     this.loading = true;
@@ -133,7 +133,7 @@ export class TaskPane extends FASTElement {
     } finally {
       this.loading = false;
     }
-  }
+  };
 
   private showMessage(message: string) {
     this.message = message;
