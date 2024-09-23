@@ -64,6 +64,7 @@ export function dragAction<D>(
         drawing.nodeGroup
           .append('rect')
           .attr('class', 'shadow-dragging')
+          .style('opacity', 0)
           .attr('opacity', 1)
 
           .attr('x', node.x)
@@ -123,6 +124,7 @@ export function dragAction<D>(
         // update shadow node position
         drawing.nodeGroup
           .select('rect.shadow-dragging')
+          .style('opacity', 1)
           .attr('x', event.x)
           .attr('y', event.y);
 
