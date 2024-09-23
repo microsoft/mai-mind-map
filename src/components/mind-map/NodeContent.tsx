@@ -1,5 +1,6 @@
 import { css } from '@base/styled';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
+import { markdown } from './render/helpers/markdown';
 import { Payload } from './render/model/interface';
 
 const SNodeItem = css`
@@ -23,6 +24,10 @@ const SNodeContentText = css`
   border-radius: 5px;
   outline: none !important;
   line-height: 1.4;
+  & * {
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 export const editingNodePreId = 'editing-node-pre';
@@ -48,6 +53,7 @@ export const NodeContent = memo<{
       isRoot,
     } = props;
     const { content } = data;
+    const contentHTML = useMemo(() => markdown.makeHtml(content), [content]);
     const ref = useRef<HTMLPreElement>(null);
     useEffect(() => {
       if (!ref.current) return;
@@ -74,9 +80,8 @@ export const NodeContent = memo<{
             id={`${idPrefix}-${id}`}
             className={SNodeContentText}
             style={isRoot ? { fontSize: '1.5em', lineHeight: 1.5 } : {}}
-          >
-            {content}
-          </pre>
+            dangerouslySetInnerHTML={{ __html: contentHTML }}
+          ></pre>
         )}
       </div>
     );
