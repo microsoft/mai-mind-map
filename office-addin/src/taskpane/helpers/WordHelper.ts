@@ -9,12 +9,7 @@ import { MindMapUUID } from "./MindMapGenHelper";
 
 export class WordHelper {
   static async getDocumentTitle(): Promise<string> {
-    const documentUrl = Office.context.document.url;
-    const filename = documentUrl.substring(
-      Math.max(documentUrl.lastIndexOf("\\"), documentUrl.lastIndexOf("/")) + 1,
-      documentUrl.lastIndexOf(".")
-    );
-
+    const filename = WordHelper.getFilenameFromUrl(Office.context.document.url);
     const defaultTitle = `word_${Math.round((Math.random() + 1) * Date.now()).toString(36)}`;
 
     return Word.run(async (context) => {
@@ -51,5 +46,12 @@ export class WordHelper {
 
   static async showMindMapDialog(mindMapUuid: MindMapUUID) {
     return Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net/edit/${mindMapUuid}`);
+  }
+
+  static getFilenameFromUrl(documentUrl: string): string {
+    return documentUrl.substring(
+      Math.max(documentUrl.lastIndexOf("\\"), documentUrl.lastIndexOf("/")) + 1,
+      documentUrl.lastIndexOf(".")
+    );
   }
 }
