@@ -40,26 +40,46 @@ export interface MindMapStateType {
   ) => void;
 }
 
+type Box<T> = { value: T };
+
+const box = <T>(value: T) => ({ value });
+type ModelState = {
+  type: 'init';
+} | {
+  type: 'loading';
+  id: string;
+} | {
+  type: 'loaded';
+  id: string;
+};
+
+const init = (): ModelState => ({ type: 'init'});
+const loading = (id: string): ModelState => ({ type: 'loading', id });
+const loaded = (id: string): ModelState => ({ type: 'loaded', id });
+
 export function useMindMapState(id: string): MindMapStateType {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
-  const [loading, setLoading] = useState(false);
+  const stateBox = useMemo<Box<ModelState>>(() => box(init()), []);
   useEffect(() => {
-    if (id && !loading) {
-      engine.load({ '00000000': { stringProps: { content: { t: Date.now(), v: 'Loading...' }}}});
-      setLoading(true);
+    const { value: state } = stateBox;
+    if (state.type === 'init' || state.id !== id) {
+      stateBox.value = loading(id);
       getDocument(id).then((cp) => {
-        engine.load(cp);
-        setLoading(false);
+        const { value: stat } = stateBox;
+        if (stat.type === 'loading' && stat.id === id) {
+          engine.load(cp);
+          stateBox.value = loaded(id);
+        }
       });
     }
     return () => {
-      if (id && !loading) {
+      const { value: stat } = stateBox;
+      if (stat.type === 'loaded') {
         const content = engine.model.peek();
-        console.log('Saving', id, content);
-        updateDocument(id, content).then(console.log);
+        updateDocument(stat.id, content).then(console.log);
       }
     };
-  }, [id, engine, loading]);
+  }, [id, engine, stateBox]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {
