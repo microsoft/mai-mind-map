@@ -45,20 +45,19 @@ export function useMindMapState(id: string): MindMapStateType {
   useEffect(() => {
     if (id) {
       engine.load({});
-      console.log("Loading", id);
+      console.log('Loading', id);
       getDocument(id).then((cp) => {
-        console.log("Loaded", id, cp);
+        console.log('Loaded', id, cp);
         engine.load(cp);
       });
     }
     return () => {
       if (id) {
         const content = engine.model.peek();
-        console.log("Saving", id, content);
+        console.log('Saving', id, content);
         updateDocument(id, content).then(console.log);
       }
     };
-
   }, [id, engine]);
   useEffect(() => {
     (window as any).model = engine.model;

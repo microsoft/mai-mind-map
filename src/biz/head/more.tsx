@@ -61,7 +61,7 @@ export function More() {
       className={SMore + (pannelPos ? ' more-active' : '')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-        setPanel([window.innerWidth - rect.right, rect.bottom]);
+        setPanel([window.innerWidth - rect.right, rect.bottom + 2]);
       }}
     >
       {icons.more}

@@ -7,6 +7,7 @@ import icons from "../components/icons";
 import { showSidepaneAtom } from "../store";
 import { FileMeta } from "./file-meta";
 import { More } from "./more";
+import { Share } from "./share";
 import { Users } from "./users";
 
 const SBox = css`
@@ -81,12 +82,6 @@ export function Header(props: HeadProps) {
           </span>
           <span>Generate</span>
         </div>
-        <div className={SHeadBtn}>
-          <span style={{ width: 12, display: 'flex', alignItems: 'center' }}>
-            {icons.share}
-          </span>
-          <span>Share</span>
-        </div>
         <PresentationButton
           rootNode={presentationNodeFromSampleData(treeState.mindMapData)}
           className={SHeadBtn}
@@ -94,6 +89,7 @@ export function Header(props: HeadProps) {
           <Presenter />
           <span>Presenter</span>
         </PresentationButton>
+        <Share />
         <More />
       </div>
     </div>
