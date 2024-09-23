@@ -191,7 +191,7 @@ export const EditingNode: FC<{
             onClick={() => {
               setShowColorBox(!showColorBox);
             }}
-            title="Add Child"
+            title="Change color"
           >
             <Color />
           </button>

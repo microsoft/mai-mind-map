@@ -95,7 +95,6 @@ export function MindMap(props: MFC<Payload>) {
       <div
         style={style}
         onWheelCapture={(e) => {
-          console.log(e);
           setScale((s) => {
             const ns = s - e.deltaY / 1000;
             const ns01 = Math.floor(ns * 10 + 0.5) / 10;
