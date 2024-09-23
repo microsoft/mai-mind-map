@@ -7,7 +7,7 @@
 export type MindMapUUID = string;
 export enum DocumentType {
   DOCX = "docx",
-  PPT = "ppt",
+  PPT = "pptx",
 }
 interface IDocument {
   type: DocumentType;
