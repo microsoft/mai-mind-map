@@ -58,6 +58,7 @@ export const EditingNode: FC<{
   const {
     scale,
     node: pendingNode,
+    colorMode,
     modifyNode,
     modifyNodePayload,
     toggleCollapseNode,
@@ -186,7 +187,7 @@ export const EditingNode: FC<{
             <Delete />
           </button>
         )}
-        {node.depth === 1 && (
+        {node.depth === 1 && colorMode === ColorMode.COLORFUL && (
           <button
             onClick={() => {
               setShowColorBox(!showColorBox);

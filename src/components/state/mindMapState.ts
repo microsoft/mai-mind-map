@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import { createDocument, getDocument, updateDocument } from '@root/model/api';
 
 import {
@@ -74,10 +75,11 @@ export function useMindMapState(id: string): {
   const engine = useMemo(() => documentEngine($invDocMindMap, {}), []);
   const stateBox = useMemo<Box<LoadState>>(() => box(init()), []);
   const [loadState, setLoadState] = useState<LoadState>(init());
+  const debounceSetLoadState = useRef(debounce(setLoadState, 10));
   const updateLoadState = useCallback(
     (value: LoadState) => {
       stateBox.value = value;
-      setLoadState(value);
+      debounceSetLoadState.current(value);
     },
     [stateBox],
   );
@@ -95,9 +97,7 @@ export function useMindMapState(id: string): {
         if (stat.type === 'loading' && stat.id === id) {
           console.log('Loaded', id);
           engine.load(cp);
-          setTimeout(() => {
-            updateLoadState(loaded(id));
-          }, 10);
+          updateLoadState(loaded(id));
         }
       });
     } else if (!id && state.type !== 'creating') {
