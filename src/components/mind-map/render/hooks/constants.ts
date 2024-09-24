@@ -29,7 +29,7 @@ export interface TreeState<D> {
   linkMode: LinkMode;
   colorMode: ColorMode;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
-  setEditingNode: (node: EditingNodeType<D> | null) => void;
+  setPendingEditNode: (node: EditingNodeType<D> | null) => void;
 }
 export interface Drawing {
   drawingGroup: Selection<SVGGElement, unknown, null, undefined>;
