@@ -1,8 +1,8 @@
 import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled";
-import { useEffect, useRef, useState } from "react";
-import ReactDOM from 'react-dom';
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import Popup from "../components/popup";
 import SkeletonBlock from "../components/skeleton-block";
 import { filesAtom } from "../store";
 
@@ -30,32 +30,20 @@ const SLastEdit = css`
 `;
 
 const SRename = css`
-  z-index: 1000000;
-  position: fixed;
-  inset: 0;
-  .rename-content {
-    position: absolute;
-    border: 1px solid rgba(17, 31, 44, 0.12);
-    box-shadow: rgba(0, 0, 0, 0.1) 1px 3px 8px 0px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 4px;
-    padding: 12px;
-    &>input {
-      border: 1px solid #ccc;
-      border-radius: 2px;
-      padding: 4px 6px;
-      min-width: 200px;
-      &:focus {
-        outline: none;
-        box-shadow: rgba(0, 106, 254, 0.12) 0px 0px 0px 2px;
-        border-color: rgba(63,133,255,1);
-      }
+  padding: 12px;
+  &>input {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 4px 6px;
+    min-width: 200px;
+    &:focus {
+      outline: none;
+      box-shadow: rgba(0, 106, 254, 0.12) 0px 0px 0px 2px;
+      border-color: rgba(63,133,255,1);
     }
   }
 `;
 
-const container = document.createElement('div');
-document.body.append(container);
 function Rename(props: {
   position: [x: number, y: number];
   title: string;
@@ -70,14 +58,9 @@ function Rename(props: {
     ref.current?.focus();
   }, []);
 
-  return ReactDOM.createPortal(
-    <div
-      className={SRename}
-      onClick={() => requestAnimationFrame(hide)}>
-      <div
-        className="rename-content"
-        style={{ left, top }}
-        onClick={e => e.stopPropagation()}>
+  return (
+    <Popup hide={hide} position={{ left, top }}>
+      <div className={SRename}>
         <input
           value={text}
           ref={ref}
@@ -92,13 +75,13 @@ function Rename(props: {
           }}
         />
       </div>
-    </div>,
-    container,
+    </Popup>
   );
 }
 
 export function FileMeta() {
-  const [rename, setRename] = useState<[number, number] | null>(null);
+  const [popup, setPopup] = useState<[number, number] | null>(null);
+  const hide = useCallback(() => setPopup(null), []);
 
   const id = useParams().fileId || '';
   const [{ files, loading }, , actions] = useAtom(filesAtom);
@@ -121,19 +104,19 @@ export function FileMeta() {
           className={STitle}
           onClick={(ev) => {
             const rect = (ev.target as HTMLElement).getBoundingClientRect();
-            setRename([rect.left, rect.bottom]);
+            setPopup([rect.left, rect.bottom]);
           }}
         >{title}</div>
       </div>
-      {rename && (
+      {popup && (
         <Rename
-          position={rename}
+          position={popup}
           title={title}
           commit={(result) => {
             // todo: update by server api
             actions.update(id, { title: result });
           }}
-          hide={() => setRename(null)}
+          hide={hide}
         />
       )}
       <div className={SLastEdit}>

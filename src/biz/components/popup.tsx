@@ -1,7 +1,6 @@
 import { css } from "@root/base/styled";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-
 
 const SPopup = css`
   position: absolute;
@@ -12,6 +11,13 @@ const SPopup = css`
   border-radius: 4px;
   padding: 4px 0;
   min-width: 100px;
+  transition: 200ms;
+  transform-origin: top;
+`;
+
+const SAnimStart = css`
+  transform: translateY(-4px) scaleY(0.9);
+  opacity: 0;
 `;
 
 const container = document.createElement('div');
@@ -50,11 +56,15 @@ function Popup(props: {
   children?: React.ReactNode;
 }) {
   const { position, hide = NOOP, children } = props;
-  useEffect(() => bind(hide), []);
+  const [cls, setCls] = useState(`${SPopup} ${SAnimStart}`);
+  useEffect(() => {
+    setCls(SPopup);
+    return bind(hide);
+  }, []);
 
   return ReactDOM.createPortal(
     <div
-      className={SPopup}
+      className={cls}
       style={position}
       onClick={e => e.stopPropagation()}>
       {children}
