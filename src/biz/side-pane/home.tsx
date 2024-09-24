@@ -1,7 +1,7 @@
 import { css } from "@root/base/styled";
-import { useState } from "react";
-import ReactDOM from "react-dom";
+import { useCallback, useState } from "react";
 import icons from "../components/icons";
+import Popup from "../components/popup";
 
 const SHome = css`
   display: flex;
@@ -25,60 +25,38 @@ const SHome = css`
   }
 `;
 const SPannel = css`
-  z-index: 1000000;
-  position: fixed;
-  inset: 0;
-  .pannel-content {
-    position: absolute;
-    border: 1px solid rgba(17, 31, 44, 0.12);
-    box-shadow: rgba(0, 0, 0, 0.1) 1px 3px 8px 0px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 4px;
-    padding: 12px;
-    height: 400px;
-    width: 200px;
-  }
+  height: 400px;
+  width: 200px;
 `;
 
-const container = document.createElement('div');
-document.body.append(container);
 function Pannel(props: {
   position: [x: number, y: number];
   hide: () => void;
 }) {
   const { hide, position: [left, top] } = props;
-
-  return ReactDOM.createPortal(
-    <div
-      className={SPannel}
-      onClick={() => requestAnimationFrame(hide)}>
-      <div
-        className="pannel-content"
-        style={{ left, top }}
-        onClick={e => e.stopPropagation()}>
+  return (
+    <Popup hide={hide} position={{ left, top }}>
+      <div className={SPannel}>
       </div>
-    </div>,
-    container,
+    </Popup>
   );
 }
 
 export function SideHome() {
-  const [pannelPos, setPanel] = useState<[number, number] | null>(null);
+  const [popup, setPopup] = useState<[number, number] | null>(null);
+  const hide = useCallback(() => setPopup(null), []);
   return <>
     <div
-      className={SHome + (pannelPos ? ' more-active' : '')}
+      className={SHome + (popup ? ' more-active' : '')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-        setPanel([rect.left, rect.bottom]);
+        setPopup([rect.left, rect.bottom]);
       }}
     >
       {icons.home}
     </div>
-    {pannelPos && (
-      <Pannel
-        position={pannelPos}
-        hide={() => setPanel(null)}
-      />
+    {popup && (
+      <Pannel position={popup} hide={hide} />
     )}
   </>
 }

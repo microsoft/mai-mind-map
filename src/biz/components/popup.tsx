@@ -1,7 +1,6 @@
 import { css } from "@root/base/styled";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-
 
 const SPopup = css`
   position: absolute;
@@ -12,11 +11,17 @@ const SPopup = css`
   border-radius: 4px;
   padding: 4px 0;
   min-width: 100px;
+  transition: 200ms;
+  transform-origin: top;
+`;
+
+const SAnimStart = css`
+  transform: translateY(-4px) scaleY(0.9);
+  opacity: 0;
 `;
 
 const container = document.createElement('div');
 document.body.append(container);
-container.addEventListener('click', e => e.stopPropagation());
 
 export interface PopupPosition {
   left?: number;
@@ -25,7 +30,7 @@ export interface PopupPosition {
   bottom?: number;
 }
 
-function check(target: HTMLElement, self: HTMLElement) {
+function contain(self: HTMLElement, target: HTMLElement) {
   let node: HTMLElement | null = target;
   while (node) {
     if (node === self) return true;
@@ -34,17 +39,14 @@ function check(target: HTMLElement, self: HTMLElement) {
   return false;
 }
 
-// there may be some bugs of react
 function bind(call: VoidFunction) {
-  let flag = false;
-  const timer = window.setTimeout(() => {
-    document.addEventListener('click', call);
-    flag = true;
-  }, 50);
-  return () => {
-    if (flag) document.removeEventListener('click', call);
-    else window.clearTimeout(timer);
-  };
+  function handle(e: MouseEvent) {
+    if (contain(container, e.target as HTMLElement)) return;
+    window.requestAnimationFrame(call);
+  }
+  // use capture to avoid bubble bug
+  document.addEventListener('click', handle, true);
+  return () => document.removeEventListener('click', handle, true);
 }
 
 const NOOP = () => {};
@@ -54,11 +56,15 @@ function Popup(props: {
   children?: React.ReactNode;
 }) {
   const { position, hide = NOOP, children } = props;
-  useEffect(() => bind(hide), []);
+  const [cls, setCls] = useState(`${SPopup} ${SAnimStart}`);
+  useEffect(() => {
+    setCls(SPopup);
+    return bind(hide);
+  }, []);
 
   return ReactDOM.createPortal(
     <div
-      className={SPopup}
+      className={cls}
       style={position}
       onClick={e => e.stopPropagation()}>
       {children}

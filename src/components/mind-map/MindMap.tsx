@@ -61,7 +61,7 @@ export function MindMap(props: MFC<Payload>) {
   const [sizedData, setSizedData] = useState<SizedRawNode<Payload> | null>(
     null,
   );
-  const [editingNode, setEditingNode] =
+  const [editingNode, setPendingEditNode] =
     useState<EditingNodeType<Payload> | null>(null);
 
   const root = useMemo(() => {
@@ -86,7 +86,7 @@ export function MindMap(props: MFC<Payload>) {
       colorMode,
     },
     moveNodeTo,
-    setEditingNode,
+    setPendingEditNode,
   );
 
   return (
@@ -128,7 +128,7 @@ export function MindMap(props: MFC<Payload>) {
           colorMode={colorMode}
           modifyNode={modifyNode}
           modifyNodePayload={modifyNodePayload}
-          setPendingEditNode={setEditingNode}
+          setPendingEditNode={setPendingEditNode}
           toggleCollapseNode={toggleCollapseNode}
           addNode={addNode}
           delNode={delNode}

@@ -1,7 +1,7 @@
 import { css } from "@root/base/styled";
-import { useState } from "react";
-import ReactDOM from "react-dom";
+import { useCallback, useState } from "react";
 import icons from "../components/icons";
+import Popup from "../components/popup";
 
 const SMore = css`
   display: flex;
@@ -17,60 +17,38 @@ const SMore = css`
   }
 `;
 const SPannel = css`
-  z-index: 1000000;
-  position: fixed;
-  inset: 0;
-  .pannel-content {
-    position: absolute;
-    border: 1px solid rgba(17, 31, 44, 0.12);
-    box-shadow: rgba(0, 0, 0, 0.1) 1px 3px 8px 0px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 4px;
-    padding: 12px;
-    height: 400px;
-    width: 200px;
-  }
+  height: 400px;
+  width: 200px;
 `;
 
-const container = document.createElement('div');
-document.body.append(container);
 function Pannel(props: {
   position: [x: number, y: number];
   hide: () => void;
 }) {
   const { hide, position: [right, top] } = props;
-
-  return ReactDOM.createPortal(
-    <div
-      className={SPannel}
-      onClick={() => requestAnimationFrame(hide)}>
-      <div
-        className="pannel-content"
-        style={{ right, top }}
-        onClick={e => e.stopPropagation()}>
+  return (
+    <Popup position={{ top, right }} hide={hide}>
+      <div className={SPannel}>
       </div>
-    </div>,
-    container,
+    </Popup>
   );
 }
 
 export function More() {
-  const [pannelPos, setPanel] = useState<[number, number] | null>(null);
+  const [popup, setPopup] = useState<[number, number] | null>(null);
+  const hide = useCallback(() => setPopup(null), []);
   return <>
     <div
-      className={SMore + (pannelPos ? ' more-active' : '')}
+      className={SMore + (popup ? ' more-active' : '')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-        setPanel([window.innerWidth - rect.right, rect.bottom + 2]);
+        setPopup([window.innerWidth - rect.right, rect.bottom + 4]);
       }}
     >
       {icons.more}
     </div>
-    {pannelPos && (
-      <Pannel
-        position={pannelPos}
-        hide={() => setPanel(null)}
-      />
+    {popup && (
+      <Pannel position={popup} hide={hide} />
     )}
   </>
 }
