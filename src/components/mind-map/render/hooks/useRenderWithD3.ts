@@ -25,6 +25,12 @@ import {
   type TreeState,
 } from './constants';
 import { dragAction, handleDragItemHoverOnAction } from './dragAction';
+
+export interface EditingNodePos {
+  pos?: [number, number];
+  trans?: [number, number];
+}
+
 export const resetDrawingTransformEventName = 'reset-drawing-transform';
 
 export function useRenderWithD3<D>(
@@ -97,24 +103,43 @@ export function useRenderWithD3<D>(
   }, []);
 
   useEffect(() => {
-    treeStateRef.current.scale = scale;
     if (drawing) {
       const g = drawing.drawingGroup.node();
       if (g && svg.current) {
         const { clientWidth, clientHeight } = svg.current;
         const { v, h } = getPaddingForDirection(treeStateRef.current.direction);
-        const tx = +(g.dataset.tx || clientWidth / 2 + 2 * h);
-        const ty = +(g.dataset.ty || clientHeight / 2 + 2 * v);
-        if (tx && ty) {
+        const cx = clientWidth / 2 + 2 * h;
+        const cy = clientHeight / 2 + 2 * v;
+        let tx = +(g.dataset.tx || cx);
+        let ty = +(g.dataset.ty || cy);
+
+        // Correct the position vai translate after scaling
+        const oldScale = treeStateRef.current.scale;
+        const deltaX = cx - tx;
+        const deltaY = cy - ty;
+        const shiftX = deltaX * scale - deltaX * oldScale;
+        const shiftY = deltaY * scale - deltaY * oldScale;
+
+        tx -= shiftX / oldScale;
+        ty -= shiftY / oldScale;
+
+        if (!Number.isNaN(tx) && !Number.isNaN(ty)) {
+          // notify editing box's position via event
+          window.dispatchEvent(
+            new CustomEvent<EditingNodePos>('update-pos-all', {
+              detail: { trans: [tx, ty] },
+            }),
+          );
           drawing.drawingGroup.attr(
             'transform',
             `translate(${tx}, ${ty}) scale(${scale})`,
           );
+          g.dataset.tx = tx.toString();
+          g.dataset.ty = ty.toString();
         }
-        g.dataset.tx = tx.toString();
-        g.dataset.ty = ty.toString();
       }
     }
+    treeStateRef.current.scale = scale;
   }, [scale, drawing]);
 
   useEffect(() => {
@@ -216,23 +241,6 @@ function drawTree<D>(
       d.target.inCollapsedItem || d.source.inCollapsedItem ? '0' : '1',
     )
     .attr('d', (d) => {
-      const sourceRect: [number, number, number, number, number, number] = [
-        d.source.x,
-        d.source.y,
-        d.source.data.content_size[0],
-        d.source.data.content_size[1],
-        d.source.x,
-        d.source.y,
-      ];
-
-      const targetRect: [number, number, number, number, number, number] = [
-        d.target.x,
-        d.target.y,
-        d.target.data.content_size[0],
-        d.target.data.content_size[1],
-        d.target.x,
-        d.target.y,
-      ];
       const linkPointPair = getLinkPointPair(treeState, d);
       const re = getLinkFun(treeState, d)(linkPointPair) || '';
       return re;
@@ -279,10 +287,13 @@ function drawTree<D>(
           return (t) => {
             const newX = d.x * t + oldX * (1 - t);
             const newY = d.y * t + oldY * (1 - t);
+            const drawingEl = <SVGGElement>drawing.drawingGroup.node();
+            const tx = +(drawingEl.dataset.tx || 0);
+            const ty = +(drawingEl.dataset.ty || 0);
             // notify editing box's position via event
             window.dispatchEvent(
-              new CustomEvent(`update-pos-${d.data.id}`, {
-                detail: [newX, newY],
+              new CustomEvent<EditingNodePos>(`update-pos-${d.data.id}`, {
+                detail: { pos: [newX, newY], trans: [tx, ty] },
               }),
             );
             return '5';

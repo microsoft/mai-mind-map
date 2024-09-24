@@ -5,10 +5,10 @@ import { NodeContent, editingNodePreId } from './NodeContent';
 import { ColorMode } from './render/hooks/constants';
 import { supportColors } from './render/hooks/useAutoColoringMindMap';
 import { useNodeColor } from './render/hooks/useNodeColor';
+import { EditingNodePos } from './render/hooks/useRenderWithD3';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
-
 export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;
   translate: [number, number];
@@ -71,10 +71,10 @@ export const EditingNode: FC<{
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
 
-  const [pos, setPos] = useState<[number, number]>([
-    editingNode?.node?.x || 0,
-    editingNode?.node?.y || 0,
-  ]);
+  const [pos, setPos] = useState<{
+    pos: [number, number];
+    trans?: [number, number];
+  }>({ pos: [editingNode?.node?.x || 0, editingNode?.node?.y || 0] });
 
   useEffect(() => {
     // get current editing content and submit change
@@ -90,7 +90,7 @@ export const EditingNode: FC<{
     // then set editing node
     setEditingNode(pendingNode);
     if (pendingNode) {
-      setPos([pendingNode.node.x, pendingNode.node.y]);
+      setPos({ pos: [pendingNode.node.x, pendingNode.node.y] });
     }
   }, [pendingNode, modifyNode]);
 
@@ -102,7 +102,28 @@ export const EditingNode: FC<{
       window.addEventListener(
         `update-pos-${editingNode.node.data.id}`,
         (e) => {
-          setPos((e as CustomEvent<[number, number]>).detail);
+          setPos((oldVal) => {
+            const newVal = Object.assign(
+              {},
+              oldVal,
+              (e as CustomEvent<EditingNodePos>).detail,
+            );
+            return newVal;
+          });
+        },
+        { signal: controller1.signal },
+      );
+      window.addEventListener(
+        'update-pos-all',
+        (e) => {
+          setPos((oldVal) => {
+            const newVal = Object.assign(
+              {},
+              oldVal,
+              (e as CustomEvent<EditingNodePos>).detail,
+            );
+            return newVal;
+          });
         },
         { signal: controller1.signal },
       );
@@ -116,6 +137,7 @@ export const EditingNode: FC<{
         },
         { signal: controller2.signal },
       );
+
       return () => {
         controller1.abort();
         controller2.abort();
@@ -138,9 +160,9 @@ export const EditingNode: FC<{
   if (!editingNode) return null;
   const { node, translate } = editingNode;
   const { id, data } = node;
-  const [tx, ty] = translate;
-  const x = pos[0] || node.x;
-  const y = pos[1] || node.y;
+  const [tx, ty] = pos.trans ? pos.trans : translate;
+  const x = pos.pos[0] || node.x;
+  const y = pos.pos[1] || node.y;
   return (
     <div
       style={Object.assign({}, cssVarStyle, {

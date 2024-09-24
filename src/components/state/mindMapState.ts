@@ -1,5 +1,5 @@
-import { debounce } from 'lodash';
 import { createDocument, getDocument, updateDocument } from '@root/model/api';
+import { debounce } from 'lodash';
 
 import {
   createContext,
