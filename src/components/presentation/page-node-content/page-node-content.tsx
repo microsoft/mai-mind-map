@@ -13,7 +13,10 @@ export const PageNodeContent = (props: PageNodeContentProps) => {
     return (
         <div
             className={className}
-            style={style}
+            style={{
+                userSelect: 'none',
+                ...style
+            }}
             dangerouslySetInnerHTML={{ __html: contentHTML }}
         />
     );

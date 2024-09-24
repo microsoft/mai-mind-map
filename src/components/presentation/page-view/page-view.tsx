@@ -45,6 +45,9 @@ class PageViewComponent extends Component<
     if (this.treeAnimationTriggerRef.current) {
       this.resizeObserver.observe(this.treeAnimationTriggerRef.current);
     }
+    if (this.treeContentRef.current) {
+        this.treeContentRef.current.addEventListener('scroll', this.updatePageTree);
+    }
   }
 
   componentDidUpdate(
@@ -54,6 +57,7 @@ class PageViewComponent extends Component<
   ): void {
     if (prevProps.page !== this.props.page) {
       this.updatePageTree();
+      this.scrollToCurrentChild();
     }
   }
 
@@ -100,6 +104,25 @@ class PageViewComponent extends Component<
     this.setState({ beiginPoint, endPoints });
   };
 
+  scrollToCurrentChild = () => {
+    console.log('scrollToCurrentChild');
+    if (!this.treeContentRef.current) {
+      return;
+    }
+    const currentChild = this.treeContentRef.current.querySelector(
+      '.presentation-view-tree-item-title-current',
+    );
+    if (!currentChild) {
+      return;
+    }
+    const { animation } = this.props;
+    currentChild.scrollIntoView({
+      behavior: animation ? 'smooth' : 'auto',
+      block: 'center',
+      inline: 'start',
+    });
+  };
+
   render() {
     const { beiginPoint, endPoints } = this.state;
     const { page, animation } = this.props;
@@ -115,7 +138,7 @@ class PageViewComponent extends Component<
     const animationTime = 0.5;
     const animationDelay = (child?.children?.length || 0) > 0 ? 0.5 : 0;
     const imagesCount = node?.images?.length || 0;
-    const lineWidth = childrenLength < 30 ? 4 : 2;
+    const lineWidth = 4;
     const lineColor = 'white';
     return (
       <div
@@ -152,7 +175,7 @@ class PageViewComponent extends Component<
           style={{
             transition: animation ? `all ${animationTime}s` : undefined,
             transform: showTree
-              ? 'translateX(-30%) scale(0.4)'
+              ? 'translateX(-28%) scale(0.44)'
               : 'translateX(0) scale(1)',
             maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 15%)`,
           }}
@@ -229,68 +252,82 @@ class PageViewComponent extends Component<
           className="presentation-view-tree-content"
           ref={this.treeContentRef}
           style={{
-            gridTemplateColumns: `4px 100%`,
-            gridTemplateRows: `repeat(${childrenLength}, 1fr)`,
-            gap: '20px 10px',
-            alignItems: 'center',
             transition: animation ? `all ${animationTime}s` : undefined,
             opacity: showTree ? 1 : 0,
             width: '45%',
             position: 'absolute',
-            top: '5%',
-            right: showTree ? '5%' : '-50%',
-            bottom: '5%',
+            top: '0%',
+            right: showTree ? '5%' : '-45%',
+            bottom: '0%',
+            overflow: 'scroll',
+            paddingTop: '5vh',
+            paddingBottom: '5vh',
           }}
         >
-          {node?.children?.map((child, index) => {
-            return (
-              <React.Fragment
-                key={child.id}
-              >
+            <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  gap: '40px',
+                  alignItems: 'flex-start',
+                }}
+            
+            >
+            {node?.children?.map((child, index) => {
+                return (
                 <div
-                  className="presentation-view-tree-item-line"
-                  style={{
-                    transition: `backgroundColor ${animationTime}s ease ${animationDelay}s`,
-                    backgroundColor:
-                    index === childIndex ? '#E94F4B' : 'transparent',
-                    flexShrink: '0',
-                  }}
-                ></div>
-                <div
-                  className={
-                    `presentation-view-tree-item-title` +
-                    (index === childIndex
-                      ? ' presentation-view-tree-item-title-current'
-                      : '')
-                  }
-                  style={{
-                    transition: `color ${animationTime}s ease ${animationDelay}s`,
-                    color:
-                      index <= childIndex
-                        ? 'white'
-                        : 'rgba(255, 255, 255, 0.2)',
-                    fontSize: `clamp(12px, ${100 / childrenLength}vh, 4vh)`,
-                    alignSelf: 'center',
-                    overflow: 'scroll',
-                    scrollbarWidth: 'none',
-                    height: '100%',
-                    maskImage: `linear-gradient(to top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 5px)`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <PageNodeContent
-                    content={child.text || ''}
+                    key={child.id}
                     style={{
-                        maxHeight: '100%',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'stretch',
+                      gap: '20px',
                     }}
-                  ></PageNodeContent>
+                >
+                    <div
+                    className="presentation-view-tree-item-line"
+                    style={{
+                      backgroundColor:
+                      index === childIndex ? '#E94F4B' : 'transparent',
+                      flexShrink: '0',
+                      flexGrow: '1',
+                      height: '90%',
+                      width: `${lineWidth}px`,
+                      borderRadius: `${lineWidth / 2}px`,
+                    }}
+                    ></div>
+                    <PageNodeContent
+                      className={
+                        `presentation-view-tree-item-title` +
+                        (index === childIndex
+                        ? ' presentation-view-tree-item-title-current'
+                        : '')
+                      }
+                      style={{
+                        transition: `color ${animationTime}s ease ${animationDelay}s`,
+                        color:
+                        index <= childIndex
+                            ? 'white'
+                            : 'rgba(255, 255, 255, 0.2)',
+                        fontSize: ` 4vh`,
+                        alignSelf: 'center',
+                        overflow: 'scroll',
+                        scrollbarWidth: 'none',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'flex-start',
+                      }}
+                      content={child.text || ''}
+                    >
+                    </PageNodeContent>
                 </div>
-              </React.Fragment>
-            );
-          })}
+                );
+            })}
+
+            </div>
         </div>
       </div>
     );
