@@ -16,7 +16,6 @@ const SPopup = css`
 
 const container = document.createElement('div');
 document.body.append(container);
-container.addEventListener('click', e => e.stopPropagation());
 
 export interface PopupPosition {
   left?: number;
@@ -25,7 +24,7 @@ export interface PopupPosition {
   bottom?: number;
 }
 
-function check(target: HTMLElement, self: HTMLElement) {
+function contain(self: HTMLElement, target: HTMLElement) {
   let node: HTMLElement | null = target;
   while (node) {
     if (node === self) return true;
@@ -34,17 +33,14 @@ function check(target: HTMLElement, self: HTMLElement) {
   return false;
 }
 
-// there may be some bugs of react
 function bind(call: VoidFunction) {
-  let flag = false;
-  const timer = window.setTimeout(() => {
-    document.addEventListener('click', call);
-    flag = true;
-  }, 50);
-  return () => {
-    if (flag) document.removeEventListener('click', call);
-    else window.clearTimeout(timer);
-  };
+  function handle(e: MouseEvent) {
+    if (contain(container, e.target as HTMLElement)) return;
+    window.requestAnimationFrame(call);
+  }
+  // use capture to avoid bubble bug
+  document.addEventListener('click', handle, true);
+  return () => document.removeEventListener('click', handle, true);
 }
 
 const NOOP = () => {};
