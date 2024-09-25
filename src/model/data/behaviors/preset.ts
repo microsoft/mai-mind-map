@@ -1,25 +1,25 @@
-import { AnyDict, Behavior, Dict, behavior } from "../behavior";
-import { $Var } from "../higher-kinded-type";
+import { AnyDict, Behavior, behavior } from '../behavior';
+import { $Var } from '../higher-kinded-type';
 
 export type Preset<T = $Var> = { preset: T };
 
 const presetWith = <T>(preset: T): Preset<T> => ({ preset });
 
-const preset: Behavior<Preset> = {
+const preset = {
   $string: presetWith(''),
   $number: presetWith(0),
   $boolean: presetWith(false),
-  $array: <E>(elm: Preset<E>) => presetWith<E[]>([]),
-  $dict: <V>(val: Preset<V>) => presetWith<Dict<V>>({}),
-  $struct: <S extends AnyDict>(
-    stt: { [K in keyof S]: Preset<S[K]> },
-  ): Preset<S> =>
+  $array: () => presetWith([]),
+  $dict: () => presetWith({}),
+  $struct: (stt) =>
     presetWith(
-      (Object.keys(stt) as (keyof S)[]).reduce((m, key) => {
+      Object.keys(stt).reduce((m, key) => {
         m[key] = stt[key].preset;
         return m;
-      }, {} as S),
+      }, {} as AnyDict),
     ),
-};
+} as Behavior<Preset>;
 
 export default behavior(preset);
+
+const t = preset.$array(preset.$string);

@@ -20,7 +20,10 @@ export type Behavior<T extends AnyDict> = {
 /**
  * Behavior Definition
  */
-export type BehaviorDef<Type extends AnyDict, Base extends AnyDict> = {
+export type BehaviorDef<
+  Type extends AnyDict,
+  Base extends AnyDict = AnyDict,
+> = {
   $string: (u: $<Base, string>) => $<Type, string>;
   $number: (u: $<Base, number>) => $<Type, number>;
   $boolean: (u: $<Base, boolean>) => $<Type, boolean>;
@@ -65,9 +68,7 @@ const builder = <T extends AnyDict>(bhv: Behavior<T>): Builder<T> => ({
   build: () => bhv,
 });
 
-export const behavior = <T extends AnyDict, U extends AnyDict>(
-  bhv: Behavior<T>,
-) =>
+export const behavior = <T extends AnyDict>(bhv: Behavior<T>) =>
   ({
     $string: () => bhv.$string,
     $number: () => bhv.$number,
@@ -75,7 +76,7 @@ export const behavior = <T extends AnyDict, U extends AnyDict>(
     $array: () => bhv.$array,
     $dict: () => bhv.$dict,
     $struct: () => bhv.$struct,
-  }) as BehaviorDef<T, U>;
+  }) as BehaviorDef<T>;
 
 export const BehaviorBuilder = builder({
   $string: {},

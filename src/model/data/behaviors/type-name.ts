@@ -1,5 +1,4 @@
 import { Behavior, behavior } from "../behavior";
-import { $Var } from "../higher-kinded-type";
 
 export type TypeName = {
   typeName: string;
