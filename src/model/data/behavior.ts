@@ -18,7 +18,7 @@ export type Behavior<T extends AnyDict> = {
 };
 
 /**
- * Type Class Definition
+ * Behavior Definition
  */
 export type BehaviorDef<Type extends AnyDict, Base extends AnyDict> = {
   $string: (u: $<Base, string>) => $<Type, string>;
@@ -41,24 +41,18 @@ const define = <Type extends AnyDict, Base extends AnyDict>(
     $string: Object.assign({}, $string, def.$string($string)),
     $number: Object.assign({}, $number, def.$number($number)),
     $boolean: Object.assign({}, $boolean, def.$boolean($boolean)),
-    $array: <E>(elm: $<Type & Base, E>) =>
-      Object.assign(
-        {},
-        $array(elm as $<Base, E>),
-        def.$array($array(elm as $<Base, E>))(elm),
-      ),
-    $dict: <V>(val: $<Type & Base, V>) =>
-      Object.assign(
-        {},
-        $dict(val as $<Base, V>),
-        def.$dict($dict(val as $<Base, V>))(val),
-      ),
-    $struct: <S extends AnyDict>(stt: $Struct<Type & Base, S>) =>
-      Object.assign(
-        {},
-        $struct(stt as $Struct<Base, S>),
-        def.$struct($struct(stt as $Struct<Base, S>))(stt),
-      ),
+    $array: <E>(elm: $<Type & Base, E>) => {
+      const bhv = $array(elm);
+      return Object.assign({}, bhv, def.$array(bhv)(elm));
+    },
+    $dict: <V>(val: $<Type & Base, V>) => {
+      const bhv = $dict(val);
+      return Object.assign({}, bhv, def.$dict(bhv)(val));
+    },
+    $struct: <S extends AnyDict>(stt: $Struct<Type & Base, S>) => {
+      const bhv = $struct(stt);
+      return Object.assign({}, bhv, def.$struct(bhv)(stt));
+    },
   }) as Behavior<Type & Base>;
 
 type Builder<U extends AnyDict> = {
