@@ -3,8 +3,7 @@ import { $, $Var } from './higher-kinded-type';
 export type Dict<T> = Record<string, T>;
 export type AnyDict = Dict<any>;
 
-type $Intersection<T, U> = $<U> & $<T>;
-type $Product<T, S extends AnyDict> = { [K in keyof S]: $<T, S[K]> };
+type $Struct<T, S extends AnyDict> = { [K in keyof S]: $<T, S[K]> };
 
 /**
  * Behavior
@@ -15,7 +14,7 @@ export type Behavior<T extends AnyDict> = {
   $boolean: $<T, boolean>;
   $array: <E>(elm: $<T, E>) => $<T, E[]>;
   $dict: <V>(val: $<T, V>) => $<T, Dict<V>>;
-  $struct: <S extends AnyDict>(struct: $Product<T, S>) => $<T, S>;
+  $struct: <S extends AnyDict>(struct: $Struct<T, S>) => $<T, S>;
 };
 
 /**
@@ -25,15 +24,13 @@ export type BehaviorDef<Type extends AnyDict, Base extends AnyDict> = {
   $string: (u: $<Base, string>) => $<Type, string>;
   $number: (u: $<Base, number>) => $<Type, number>;
   $boolean: (u: $<Base, boolean>) => $<Type, boolean>;
-  $array: <E>(u: $<Base, E[]>) => (
-    elm: $<$Intersection<Type, Base>, E>,
-  ) => $<Type, E[]>;
-  $dict: <V>(u: $<Base, Dict<V>>) => (
-    val: $<$Intersection<Type, Base>, V>,
-  ) => $<Type, Dict<V>>;
-  $struct: <S extends AnyDict>(u: $<Base, S>) => (
-    stt: $Product<$Intersection<Type, Base>, S>,
-  ) => $<Type, S>;
+  $array: <E>(u: $<Base, E[]>) => (elm: $<Type & Base, E>) => $<Type, E[]>;
+  $dict: <V>(
+    u: $<Base, Dict<V>>,
+  ) => (val: $<Type & Base, V>) => $<Type, Dict<V>>;
+  $struct: <S extends AnyDict>(
+    u: $<Base, S>,
+  ) => (stt: $Struct<Type & Base, S>) => $<Type, S>;
 };
 
 const define = <Type extends AnyDict, Base extends AnyDict>(
@@ -44,30 +41,28 @@ const define = <Type extends AnyDict, Base extends AnyDict>(
     $string: Object.assign({}, $string, def.$string($string)),
     $number: Object.assign({}, $number, def.$number($number)),
     $boolean: Object.assign({}, $boolean, def.$boolean($boolean)),
-    $array: <E>(elm: $<$Intersection<Type, Base>, E>) =>
+    $array: <E>(elm: $<Type & Base, E>) =>
       Object.assign(
         {},
         $array(elm as $<Base, E>),
         def.$array($array(elm as $<Base, E>))(elm),
       ),
-    $dict: <V>(val: $<$Intersection<Type, Base>, V>) =>
+    $dict: <V>(val: $<Type & Base, V>) =>
       Object.assign(
         {},
         $dict(val as $<Base, V>),
         def.$dict($dict(val as $<Base, V>))(val),
       ),
-    $struct: <S extends AnyDict>(stt: $Product<$Intersection<Type, Base>, S>) =>
+    $struct: <S extends AnyDict>(stt: $Struct<Type & Base, S>) =>
       Object.assign(
         {},
-        $struct(stt as $Product<Base, S>),
-        def.$struct($struct(stt as $Product<Base, S>))(stt),
+        $struct(stt as $Struct<Base, S>),
+        def.$struct($struct(stt as $Struct<Base, S>))(stt),
       ),
-  }) as Behavior<$Intersection<Type, Base>>;
+  }) as Behavior<Type & Base>;
 
 type Builder<U extends AnyDict> = {
-  mixin: <T extends AnyDict>(
-    def: BehaviorDef<T, U>,
-  ) => Builder<$Intersection<T, U>>;
+  mixin: <T extends AnyDict>(def: BehaviorDef<T, U>) => Builder<T & U>;
   build: () => Behavior<U>;
 };
 
