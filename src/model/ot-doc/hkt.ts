@@ -4,14 +4,19 @@ declare const index: unique symbol;
 type _<N extends number = 0> = { [index]: N };
 
 // Type application (substitutes type variables with types)
-type $<T, S, N extends number = 0> =
-  T extends _<N> ? S :
-  T extends undefined | null | boolean | string | number ? T :
-  T extends Array<infer A> ? $Array<A, S, N> :
-  T extends () => infer O ? () => $<O, S, N> :
-  T extends (x: infer I) => infer O ? (x: $<I, S, N>) => $<O, S, N> :
-  T extends object ? { [K in keyof T]: $<T[K], S, N> } :
-  T;
+type $<T, S, N extends number = 0> = T extends _<N>
+  ? S
+  : T extends undefined | null | boolean | string | number
+    ? T
+    : T extends Array<infer A>
+      ? $Array<A, S, N>
+      : T extends () => infer O
+        ? () => $<O, S, N>
+        : T extends (x: infer I) => infer O
+          ? (x: $<I, S, N>) => $<O, S, N>
+          : T extends object
+            ? { [K in keyof T]: $<T[K], S, N> }
+            : T;
 
 interface $Array<T, S, N extends number> extends Array<$<T, S, N>> {}
 
@@ -21,9 +26,11 @@ type Construction<T> = {
   boolean: $<T, boolean>;
   array: <E>(elem: $<T, E>) => $<T, E[]>;
   record: <V>(value: $<T, V>) => $<T, Record<string, V>>;
-  struct: <S extends Record<string, any>>(struct: {
-    [K in keyof S]: $<T, S[K]>;
-  }) => $<T, S>;
+  struct: <S extends Record<string, any>>(
+    struct: {
+      [K in keyof S]: $<T, S[K]>;
+    },
+  ) => $<T, S>;
 };
 
 // type Preset<T> = () => T;
@@ -36,7 +43,7 @@ type Construction<T> = {
 //   boolean: presetWith(false),
 //   array: () => presetWith([]),
 //   record: () => presetWith({}),
-//   struct: <S extends Record<string, any>>(struct: { [K in keyof S]: Preset<S[K]> }): Preset<S> => 
+//   struct: <S extends Record<string, any>>(struct: { [K in keyof S]: Preset<S[K]> }): Preset<S> =>
 //     presetWith(
 //       (Object.keys(struct) as (keyof S)[]).reduce((m, key) => {
 //         m[key] = struct[key]();
@@ -45,7 +52,7 @@ type Construction<T> = {
 //     ),
 // };
 
-// const con = <T>(t: Construction<T>) => 
+// const con = <T>(t: Construction<T>) =>
 //   t.struct({ foo: t.array(t.string), bar: t.number });
 
 // const f = con(preset)();
