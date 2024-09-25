@@ -16,6 +16,8 @@ const p = $struct({ foo: $dict($string), bar: $array($number), tic: $boolean });
 
 console.log(p.typeName);
 
+const logErrors = (path: string) => (msg: string) => console.log(`${msg} @ $${path}`);
+
 console.log(
-  p.read((path) => (msg) => console.log(path, msg))({ bar: [1, 2, '123'] }),
+  p.read(logErrors)({ bar: [1, 2, '123'] }),
 );

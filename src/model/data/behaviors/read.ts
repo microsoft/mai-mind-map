@@ -12,27 +12,28 @@ export type Read<T = $Var> = {
   read: Reader<T>;
 };
 
-const readWith = <T>(read: Reader<T>): Read<T> => ({ read });
+const withRead = <T>(read: Reader<T>): Read<T> => ({ read });
 
-const readPrim = <T extends string | number | boolean>({
+const withReadPrim = <T extends string | number | boolean>({
   preset,
-}: Preset<T>): Read<T> =>
-  readWith((raise) => (u) => {
+  typeName,
+}: Preset<T> & TypeName): Read<T> =>
+  withRead((raise) => (u) => {
     if (typeof u === typeof preset) {
       return u as T;
     }
-    raise('')(`requires ${typeof preset}`);
+    raise('')(`requires ${typeName}`);
     return preset;
   });
 
 const read: BehaviorDef<Read, Preset & TypeName> = {
-  $string: readPrim,
-  $number: readPrim,
-  $boolean: readPrim,
+  $string: withReadPrim,
+  $number: withReadPrim,
+  $boolean: withReadPrim,
   $array:
     ({ preset, typeName }) =>
     ({ read }) =>
-      readWith((raise) => (u) => {
+      withRead((raise) => (u) => {
         if (!Array.isArray(u)) {
           raise('')(`requires ${typeName}`);
           return preset;
@@ -42,7 +43,7 @@ const read: BehaviorDef<Read, Preset & TypeName> = {
   $dict:
     ({ preset, typeName }) =>
     ({ read }) =>
-      readWith((raise) => (u) => {
+      withRead((raise) => (u) => {
         if (typeof u !== 'object' || !u) {
           raise('')(`requires ${typeName}`);
           return preset;
@@ -54,7 +55,7 @@ const read: BehaviorDef<Read, Preset & TypeName> = {
   $struct:
     ({ preset, typeName }) =>
     (stt) =>
-      readWith((raise) => (u) => {
+      withRead((raise) => (u) => {
         if (typeof u !== 'object' || !u) {
           raise('')(`requires ${typeName}`);
           return preset;
