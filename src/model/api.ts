@@ -11,6 +11,8 @@ import {
   readStruct,
 } from './read';
 
+import "./data/behaviors/test";
+
 const API_RESPONSE_TYPE_ERROR = 'API response type error';
 
 const log = <T>(value: T) => {

@@ -1,4 +1,4 @@
-import { AnyRec, Behavior, Rec, behavior } from "../behavior";
+import { AnyDict, Behavior, Dict, behavior } from "../behavior";
 import { $Var } from "../higher-kinded-type";
 
 export type Preset<T = $Var> = { preset: T };
@@ -10,8 +10,8 @@ const preset: Behavior<Preset> = {
   $number: presetWith(0),
   $boolean: presetWith(false),
   $array: <E>(elm: Preset<E>) => presetWith<E[]>([]),
-  $record: <V>(val: Preset<V>) => presetWith<Rec<V>>({}),
-  $struct: <S extends AnyRec>(
+  $dict: <V>(val: Preset<V>) => presetWith<Dict<V>>({}),
+  $struct: <S extends AnyDict>(
     stt: { [K in keyof S]: Preset<S[K]> },
   ): Preset<S> =>
     presetWith(

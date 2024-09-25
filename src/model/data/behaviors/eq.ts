@@ -18,7 +18,7 @@ const eq: Behavior<Eq> = {
       for (let i = 0; i < a.length; i += 1) if (!eq(a[i])(b[i])) return false;
       return true;
     }),
-  $record: ({ eq }) =>
+  $dict: ({ eq }) =>
     eqWith((a) => (b) => {
       for (const key in a) if (!(key in b) || !eq(a[key])(b[key])) return false;
       for (const key in b) if (!(key in a)) return false;
@@ -32,7 +32,3 @@ const eq: Behavior<Eq> = {
 } as Behavior<Eq>;
 
 export default behavior(eq);
-
-const p = eq.$struct({ foo: eq.$string, bar: eq.$array(eq.$number) });
-
-const v = p.eq;
