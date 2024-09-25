@@ -1,9 +1,5 @@
 import { $, $Var } from './higher-kinded-type';
-
-export type Dict<T> = Record<string, T>;
-export type AnyDict = Dict<any>;
-
-type $Struct<T, S extends AnyDict> = { [K in keyof S]: $<T, S[K]> };
+import { $Struct, AnyDict, Dict } from './struct';
 
 /**
  * Behavior

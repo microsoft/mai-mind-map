@@ -1,11 +1,13 @@
-import { BehaviorDef, Dict } from '../behavior';
-import { $, $Var } from '../higher-kinded-type';
+import { BehaviorDef } from '../behavior';
+import { $Var } from '../higher-kinded-type';
+import { $Struct, Dict, mapDict, mapStruct } from '../struct';
 import { Preset } from './preset';
 import { TypeName } from './type-name';
 
 export type Reader<T> = (
   raise: (path: string) => (message: string) => void,
 ) => (u: unknown) => T;
+
 export type Read<T = $Var> = {
   read: Reader<T>;
 };
@@ -45,14 +47,8 @@ const read: BehaviorDef<Read, Preset & TypeName> = {
           raise('')(`requires ${typeName}`);
           return preset;
         }
-        return Object.keys(u).reduce(
-          (m, key) => {
-            m[key] = read((path) => raise(`.${key}${path}`))(
-              (u as Dict<unknown>)[key],
-            );
-            return m;
-          },
-          {} as typeof preset,
+        return mapDict(u as Dict<unknown>, (v, key) =>
+          read((path) => raise(`.${key}${path}`))(v),
         );
       }),
   $struct:
@@ -63,14 +59,10 @@ const read: BehaviorDef<Read, Preset & TypeName> = {
           raise('')(`requires ${typeName}`);
           return preset;
         }
-        return Object.keys(stt).reduce(
-          (m, key: keyof typeof stt & string) => {
-            m[key] = stt[key].read((path) => raise(`.${key}${path}`))(
-              (u as Dict<unknown>)[key],
-            );
-            return m;
-          },
-          {} as typeof preset,
+        return mapStruct(stt, ({ read }, key) =>
+          read((path) => raise(`.${key as string}${path}`))(
+            (u as $Struct<unknown, typeof stt>)[key],
+          ),
         );
       }),
 };

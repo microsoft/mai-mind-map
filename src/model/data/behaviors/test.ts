@@ -5,13 +5,14 @@ import read from "./read";
 import typeName from "./type-name";
 
 const { $string, $number, $boolean, $array, $dict, $struct } =
-  BehaviorBuilder.mixin(eq)
+  BehaviorBuilder
     .mixin(preset)
     .mixin(typeName)
     .mixin(read)
+    .mixin(eq)
     .build();
 
-const p = $struct({ foo: $dict($string), bar: $array($number) });
+const p = $struct({ foo: $dict($string), bar: $array($number), tic: $boolean });
 
 console.log(p.typeName);
 

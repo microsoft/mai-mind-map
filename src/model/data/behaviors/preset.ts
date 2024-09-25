@@ -1,5 +1,6 @@
-import { AnyDict, Behavior, behavior } from '../behavior';
+import { Behavior, behavior } from '../behavior';
 import { $Var } from '../higher-kinded-type';
+import { mapStruct } from '../struct';
 
 export type Preset<T = $Var> = { preset: T };
 
@@ -11,13 +12,7 @@ const preset = {
   $boolean: presetWith(false),
   $array: () => presetWith([]),
   $dict: () => presetWith({}),
-  $struct: (stt) =>
-    presetWith(
-      Object.keys(stt).reduce((m, key) => {
-        m[key] = stt[key].preset;
-        return m;
-      }, {} as AnyDict),
-    ),
+  $struct: (stt) => presetWith(mapStruct(stt, ({ preset }) => preset)),
 } as Behavior<Preset>;
 
 export default behavior(preset);
