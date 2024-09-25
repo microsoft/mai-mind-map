@@ -12,12 +12,17 @@ const { $string, $number, $boolean, $array, $dict, $struct } =
     .mixin(eq)
     .build();
 
-const p = $struct({ foo: $dict($string), bar: $array($number), tic: $boolean });
+const myDocType = $struct({
+  foo: $dict($string),
+  bar: $array($number),
+  tic: $boolean,
+});
 
-console.log(p.typeName);
+console.log(myDocType.typeName);
 
-const logErrors = (path: string) => (msg: string) => console.log(`${msg} @ $${path}`);
+const logErrors = (path: string) => (msg: string) =>
+  console.log(`${msg} @ $${path}`);
 
-console.log(
-  p.read(logErrors)({ bar: [1, 2, '123'] }),
-);
+const doc = myDocType.read(logErrors)({ bar: [1, 2, '123'] });
+
+console.log(doc);
