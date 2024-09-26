@@ -1,4 +1,5 @@
 import { BehaviorBuilder } from "../behavior";
+import { $d, $s, updatePrim } from "../op";
 import editable from "./editable";
 import eq from "./eq";
 import preset from "./preset";
@@ -29,14 +30,16 @@ const readDoc = readData(myDocType);
 const doc = readDoc(content, console.log);
 
 console.log("Result", JSON.stringify(doc));
+
+const p = updatePrim(Date.now());
 console.log(
   'Composed',
   JSON.stringify(
     myDocType.update(
-      (cur) => ({
-        foo: { "Hello": { o: (cur.foo.Hello ?? ""), n: "World", t: 0 } },
-        bar: { i: [{ i: 1, a: [3, 4, 5] }], d: [] },
-        tic: { o: cur.tic, n: true, t: 0 },
+      $s({
+        foo: $d({ Hello: p('World') }),
+        bar: (_) => ({ i: [{ i: 1, a: [3, 4, 5] }], d: [] }),
+        tic: p(true),
       }),
     )(doc),
   ),

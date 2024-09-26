@@ -1,30 +1,30 @@
 import { Maybe, just, nothing } from "@root/model/ot-doc/maybe";
 import { BehaviorDef } from "../behavior";
 import { $Var } from "../higher-kinded-type";
-import { Op, Prim } from "../op";
+import { Op, Prim, Updater } from "../op";
 import { reduceDict, reduceStruct } from "../struct";
 import { Eq } from "./eq";
 import { Preset } from "./preset";
 
 export type Update<T> = (
-  updater: (a: T) => Op<T>
+  updater: Updater<T>
 ) => (a: T) => { value: Maybe<T>; op: Op<T> };
 
 export type Editable<T = $Var> = { update: Update<T> };
 
 const withUpdate = <T>(update: Update<T>): Editable<T> => ({ update });
 
-const withUpdatePrim = <T extends Prim>(): Editable<T> =>
+const withUpdatePrim = <T extends Prim>(preset: T) => (): Editable<T> =>
   withUpdate<T>(((updater) => (v) => {
     const op = updater(v);
-    const { o, n } = op;
+    const { o = preset, n } = op;
     return { value: o === v ? just(n) : nothing(), op };
   }) as Update<T>);
 
 const editable: BehaviorDef<Editable, Eq & Preset> = {
-  $string: withUpdatePrim,
-  $number: withUpdatePrim,
-  $boolean: withUpdatePrim,
+  $string: withUpdatePrim<string>(""),
+  $number: withUpdatePrim<number>(0),
+  $boolean: withUpdatePrim<boolean>(false),
   $array:
     ({ eq }) =>
     () =>
