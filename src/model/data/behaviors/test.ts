@@ -1,5 +1,4 @@
 import { BehaviorBuilder } from "../behavior";
-import { Op, op } from "../op";
 import editable from "./editable";
 import eq from "./eq";
 import preset from "./preset";
@@ -34,7 +33,7 @@ console.log(
   'Composed',
   JSON.stringify(
     myDocType.update(
-      (cur) => op({
+      (cur) => ({
         foo: { "Hello": { o: (cur.foo.Hello ?? ""), n: "World", t: 0 } },
         bar: { i: [{ i: 1, a: [3, 4, 5] }], d: [] },
         tic: { o: cur.tic, n: true, t: 0 },

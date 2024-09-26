@@ -1,9 +1,9 @@
-import { $Op, $OpSign, $Var, Op } from "./op";
+import { $OpSign, $Var, Op } from "./op";
 
 
 // Type application (substitutes type variables with types)
 export type $<T, S = $Var> =
-  T extends $OpSign<infer V> ? $Op<$<V, S>>
+  T extends $OpSign ? Op<S>
   : T extends $Var ? S
   : T extends undefined | null | boolean | string | number
     ? T

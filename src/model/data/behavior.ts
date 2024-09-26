@@ -1,5 +1,4 @@
-import { $, $Var } from './higher-kinded-type';
-import { $Op } from './op';
+import { $ } from './higher-kinded-type';
 import { $Struct, AnyDict, Dict } from './struct';
 
 /**

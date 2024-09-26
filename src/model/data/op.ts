@@ -3,7 +3,7 @@ declare const symVar: unique symbol;
 export type $Var = { [symVar]: typeof symVar };
 
 const symOp = Symbol();
-export type $OpSign<T> = { [symOp]: typeof symOp };
+export type $OpSign = { [symOp]: typeof symOp };
 export type Prim = string | number | boolean;
 
 /**
@@ -34,7 +34,7 @@ export type ArrayOplet<T> = { i: number; a: T[] };
 export type ArrayOp<T> = { d: ArrayOplet<T>[]; i: ArrayOplet<T>[] };
 
 export type Op<T> = T extends $Var
-  ? $OpSign<$Var>
+  ? $OpSign
   : T extends string
     ? PrimOp<string>
     : T extends number
@@ -46,9 +46,3 @@ export type Op<T> = T extends $Var
           : T extends object
             ? Partial<{ [K in keyof T]: Op<T[K]> }>
             : never;
-
-export type $Op<T> = Op<T> & $OpSign<T>;
-export type $PrimOp<T extends Prim> = PrimOp<T> & $OpSign<T>;
-
-export const op = <T>(op: Op<T>): $Op<T> => ({ [symOp]: symOp, ...op });
-

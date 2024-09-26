@@ -1,14 +1,14 @@
 import { Maybe, just, nothing } from "@root/model/ot-doc/maybe";
 import { BehaviorDef } from "../behavior";
 import { $Var } from "../higher-kinded-type";
-import { $Op, $PrimOp, Prim, op as $op } from "../op";
+import { Op, Prim } from "../op";
 import { reduceDict, reduceStruct } from "../struct";
 import { Eq } from "./eq";
 import { Preset } from "./preset";
 
 export type Update<T> = (
-  updater: (a: T) => $Op<T>
-) => (a: T) => { value: Maybe<T>; op: $Op<T> };
+  updater: (a: T) => Op<T>
+) => (a: T) => { value: Maybe<T>; op: Op<T> };
 
 export type Editable<T = $Var> = { update: Update<T> };
 
@@ -60,7 +60,7 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
             if (m.$ === "Nothing" || !opVal || typeof key !== "string")
               return m;
             const valOld = dictOld[key] ?? preset;
-            const { value: mValNew, op } = update(() => $op(opVal))(valOld);
+            const { value: mValNew } = update(() => opVal)(valOld);
             if (mValNew.$ === "Nothing") return nothing();
             if (!eq(dictOld[key])(mValNew.v)) {
               if (m.v === dictOld) {
@@ -85,11 +85,10 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
       const value = reduceStruct(
         sttOld,
         (m, valOld, key) => {
-          const opKey = key as keyof typeof op;
-          if (m.$ === "Nothing" || !op[opKey] || typeof opKey !== "string")
+          if (m.$ === "Nothing" || !(op as any)[key])
             return m;
           const { value: mValNew } = sttDoc[key].update(() =>
-            $op(op[opKey] as any)
+            (op as any)[key]
           )(valOld);
           if (mValNew.$ === "Nothing") return nothing();
           if (!sttDoc[key].eq(valOld)(mValNew.v)) {
