@@ -1,11 +1,10 @@
-declare const index: unique symbol;
+import { $Op, $OpSign, $Var, Op } from "./op";
 
-// A type for representing type variables
-export type $Var = { [index]: typeof index };
 
 // Type application (substitutes type variables with types)
-export type $<T, S = $Var> = T extends $Var
-  ? S
+export type $<T, S = $Var> =
+  T extends $OpSign<infer V> ? $Op<$<V, S>>
+  : T extends $Var ? S
   : T extends undefined | null | boolean | string | number
     ? T
     : T extends Array<infer A>
@@ -17,3 +16,5 @@ export type $<T, S = $Var> = T extends $Var
           : T extends object
             ? { [K in keyof T]: $<T[K], S> }
             : T;
+
+export type { $Var };
