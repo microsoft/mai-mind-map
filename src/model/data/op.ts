@@ -16,7 +16,7 @@ export type Prim = string | number | boolean;
 
 export type PrimOp<T extends Prim> = {
   o?: T;
-  n: T;
+  n?: T;
   t: number;
 };
 

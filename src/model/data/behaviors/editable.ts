@@ -17,7 +17,7 @@ const withUpdate = <T>(update: Update<T>): Editable<T> => ({ update });
 const withUpdatePrim = <T extends Prim>(preset: T) => (): Editable<T> =>
   withUpdate<T>(((updater) => (v) => {
     const op = updater(v);
-    const { o = preset, n } = op;
+    const { o = preset, n = preset } = op;
     return { value: o === v ? just(n) : nothing(), op };
   }) as Update<T>);
 
