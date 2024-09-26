@@ -33,11 +33,11 @@ console.log("Result", JSON.stringify(doc));
 console.log(
   'Composed',
   JSON.stringify(
-    myDocType.compose(
-      op({
-        foo: { "Hello": { o: "", n: "World", t: 0 } },
+    myDocType.update(
+      (cur) => op({
+        foo: { "Hello": { o: (cur.foo.Hello ?? ""), n: "World", t: 0 } },
         bar: { i: [{ i: 1, a: [3, 4, 5] }], d: [] },
-        tic: { o: false, n: true, t: 0 },
+        tic: { o: cur.tic, n: true, t: 0 },
       }),
     )(doc),
   ),

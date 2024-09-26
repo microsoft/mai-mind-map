@@ -1,29 +1,33 @@
 import { Maybe, just, nothing } from "@root/model/ot-doc/maybe";
 import { BehaviorDef } from "../behavior";
-import { $, $Var } from "../higher-kinded-type";
-import { $Op, $OpSign, $PrimOp, Prim, PrimOp, op } from "../op";
+import { $Var } from "../higher-kinded-type";
+import { $Op, $PrimOp, Prim, op } from "../op";
 import { reduceDict, reduceStruct } from "../struct";
 import { Eq } from "./eq";
 import { Preset } from "./preset";
 
 export type Editable<T = $Var> = {
-  compose: (op: $Op<T>) => (a: T) => Maybe<T>;
+  update: (op: (a: T) => $Op<T>) => (a: T) => Maybe<T>;
 };
 
-const withCompose = <T>(
-  compose: (op: $Op<T>) => (a: T) => Maybe<T>,
-): Editable<T> => ({ compose });
+const withUpdate = <T>(
+  update: (op: (a: T) => $Op<T>) => (a: T) => Maybe<T>,
+): Editable<T> => ({ update });
 
-const composePrim = <T extends Prim>({ o, n }: $PrimOp<T>) => (v: T): Maybe<T> => o === v ? just(n) : nothing();
+const updatePrim = <T extends Prim>(op: (a: T) => $PrimOp<T>) => (v: T): Maybe<T> => {
+  const { o, n } = op(v);
+  return o === v ? just(n) : nothing();
+}
 
 const editable: BehaviorDef<Editable, Eq & Preset> = {
-  $string: () => withCompose(composePrim),
-  $number: () => withCompose(composePrim),
-  $boolean: () => withCompose(composePrim),
+  $string: () => withUpdate(updatePrim),
+  $number: () => withUpdate(updatePrim),
+  $boolean: () => withUpdate(updatePrim),
   $array:
     ({ eq }) =>
     () =>
-      withCompose(({ i: ins, d: del }) => (arrOld) => {
+      withUpdate((f) => (arrOld) => {
+        const { i: ins, d: del } = f(arrOld);
         if (del.length === 0 && ins.length === 0) return just(arrOld);
         const arrNew = [...arrOld];
         for (const { i: idx, a: arr } of del) {
@@ -41,10 +45,10 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
         }
         return just(arrNew);
       }),
-  $dict: () => ({ compose, preset, eq }) => withCompose((dictOp) => (dictOld) => reduceDict(dictOp, (m, opVal, key) => {
+  $dict: () => ({ update, preset, eq }) => withUpdate((f) => (dictOld) => reduceDict(f(dictOld), (m, opVal, key) => {
     if (m.$ === 'Nothing' || !opVal || typeof key !== 'string') return m;
     const valOld = dictOld[key] ?? preset;
-    const mValNew = compose(op(opVal))(valOld);
+    const mValNew = update(() => op(opVal))(valOld);
     if (mValNew.$ === 'Nothing') return nothing();
     if (!eq(dictOld[key])(mValNew.v)) {
       if (m.v === dictOld) {
@@ -59,11 +63,12 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
     return m;
   }, just(dictOld))),
   $struct: () => (sttDoc) =>
-    withCompose(
-      (sttOp) => (sttOld) => reduceStruct(sttOld, (m, valOld, key) => {
+    withUpdate(
+      (f) => (sttOld) => reduceStruct(sttOld, (m, valOld, key) => {
+        const sttOp = f(sttOld);
         const opKey = key as keyof typeof sttOp;
         if (m.$ === 'Nothing' || !sttOp[opKey] || typeof opKey !== 'string') return m;
-        const valNew = sttDoc[key].compose(op(sttOp[opKey] as any))(valOld);
+        const valNew = sttDoc[key].update(() => op(sttOp[opKey] as any))(valOld);
         if (valNew.$ === 'Nothing') return nothing();
         if (!sttDoc[key].eq(valOld)(valNew.v)) {
           if (m.v === sttOld) {
