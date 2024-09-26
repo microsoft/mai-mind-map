@@ -1,14 +1,14 @@
 import { BehaviorBuilder } from "../behavior";
 import eq from "./eq";
 import preset from "./preset";
-import read from "./read";
-import typeName from "./type-name";
+import readable, { readData } from "./readable";
+import signatured from "./signatured";
 
 const { $string, $number, $boolean, $array, $dict, $struct } =
   BehaviorBuilder
     .mixin(preset)
-    .mixin(typeName)
-    .mixin(read)
+    .mixin(signatured)
+    .mixin(readable)
     .mixin(eq)
     .build();
 
@@ -18,11 +18,12 @@ const myDocType = $struct({
   tic: $boolean,
 });
 
-console.log(myDocType.typeName);
 
-const logErrors = (path: string) => (msg: string) =>
-  console.log(`${msg} @ $${path}`);
+console.log("Format", myDocType.signature);
 
-const doc = myDocType.read(logErrors)({ bar: [1, 2, '123'] });
+const content = { bar: [1, 2, '123'] };
+console.log("Read", JSON.stringify(content));
+const readDoc = readData(myDocType);
+const doc = readDoc(content, console.log);
 
-console.log(doc);
+console.log("Result", JSON.stringify(doc));
