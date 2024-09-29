@@ -16,6 +16,12 @@ export type Config = {
   NONE_STREAMING_AI_GENERATION_ENDPOINT: string,
   NONE_STREAMING_AI_CREATION_ENDPOINT: string,
   STREAMING_AI_CREATION_ENDPOINT: string,
+  DB_CONN_LIMIT: number,
+  DB_HOST: string,
+  DB_PORT: number,
+  DB_USER: string,
+  DB_SECRET: string,
+  DB_NAME: string,
 };
 
 /**
