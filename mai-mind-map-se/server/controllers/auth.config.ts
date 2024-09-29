@@ -5,7 +5,7 @@ const config = readConfig();
 export const msalConfig: msal.Configuration = {
   auth: {
     clientId: config.CLIENT_ID,
-    authority: config.CLOUD_INSTANCE + config.TENANT_ID,
+    authority: config.CLOUD_INSTANCE + 'common',
     clientSecret: config.CLIENT_SECRET
   },
   system: {
