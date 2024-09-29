@@ -10,7 +10,7 @@ import session from 'express-session';
 declare module 'express-session' {
   interface SessionData {
     isAuthenticated: boolean;
-    account?: { username: string };
+    account: { name: string; username: string };
   }
 }
 import cookieParser from 'cookie-parser';
