@@ -3,18 +3,18 @@ import { Session } from 'express-session';
 const router = express.Router();
 
 import { createLoopDocument } from '../loop';
-import { fetch } from '../utils';
-import { GRAPH_ME_ENDPOINT } from './auth.config';
 
 interface CustomSession extends Session {
   account?: {
     idTokenClaims?: any;
+    name: string;
+    username: string;
   };
   isAuthenticated?: boolean;
   accessToken?: string;
 }
 
-function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
+export function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
   if (!(req.session as CustomSession)?.isAuthenticated) {
     return res.redirect('/auth/signin');
   }
@@ -31,16 +31,12 @@ router.get('/id',
   }
 );
 
-router.get('/profile',
-  isAuthenticated,
-  async function (req: Request, res: Response, next: NextFunction) {
-    try {
-      const accessToken: string = (req.session as CustomSession)?.accessToken!;
-      const graphResponse = await fetch(GRAPH_ME_ENDPOINT, accessToken);
-      res.send({ profile: graphResponse });
-    } catch (error: unknown) {
-      next(error);
-    }
+router.get('/profile', isAuthenticated,
+  async function (req, res) {
+    res.send({
+      name: (req.session as CustomSession).account?.name,
+      email: (req.session as CustomSession).account?.username,
+    });
   }
 );
 

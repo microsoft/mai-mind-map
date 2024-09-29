@@ -1,6 +1,6 @@
 import msal from '@azure/msal-node';
 import axios from 'axios';
-import { msalConfig } from './auth.config';
+import { msalConfig, POST_LOGOUT_REDIRECT_URI } from './auth.config';
 import { AddUser, GetUserByLocalAccountID } from '../storage/users';
 
 interface AuthProviderOptions {
@@ -149,7 +149,7 @@ export class AuthProvider {
       }
 
       req.session.destroy(() => {
-        res.redirect(logoutUri);
+        res.redirect(POST_LOGOUT_REDIRECT_URI);
       });
     }
   }
