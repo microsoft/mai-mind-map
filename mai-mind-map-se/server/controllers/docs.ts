@@ -7,7 +7,7 @@ import {
   NewDoc,
   UpdateDocByID,
 } from '../storage/index';
-import { getDocTitle, handleError } from '../utils';
+import { getDocTitle, handleError, PERMISSION_DENIED } from '../utils';
 import { getUID } from '../storage/users';
 import {
   AddDoc,
@@ -31,7 +31,7 @@ docs.get('/list', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ list: docs, message: 'Permission denied' });
+      res.send({ list: docs, message: PERMISSION_DENIED });
       return;
     }
     const result = await (ListDocByUID(uid));
@@ -55,7 +55,7 @@ docs.post('/new', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ msg: 'Only register user can be create doc' });
+      res.send({ message: PERMISSION_DENIED });
       return;
     }
     const user = await (AddDoc(uid, docID));
@@ -81,12 +81,12 @@ docs.get('/get/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, msg: 'Permission denied' });
+      res.send({ id: docID, message: PERMISSION_DENIED });
       return;
     }
     const result = await (GetDocByUID(uid, docID));
     if (result.rows.length === 0) {
-      res.send({ id: docID, msg: 'Doc not found' });
+      res.send({ id: docID, message: 'Doc not found' });
       return;
     }
   } catch (err: unknown) {
@@ -111,14 +111,14 @@ docs.patch('/update/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, msg: 'Permission denied' });
+      res.send({ id: docID, message: PERMISSION_DENIED });
       return;
     }
     const title = getDocTitle(req.body);
     if (title) {
       const result = await (UpdateDocByUID(uid, docID, title));
       if (result.rows.affectedRows === 0) {
-        res.send({ id: docID, msg: 'Doc not found' });
+        res.send({ id: docID, message: 'Doc not found' });
         return;
       }
     }
@@ -130,7 +130,7 @@ docs.patch('/update/:id', async function (req, res) {
   res.send(result);
 });
 
-docs.get('/delete/:id', async function (req, res) {
+docs.delete('/delete/:id', async function (req, res) {
   /**
    * Deletes a document by its ID.
    *
@@ -142,7 +142,7 @@ docs.get('/delete/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, msg: 'Permission denied' });
+      res.send({ id: docID, message: 'Permission denied' });
       return;
     }
     const result = await (DeleteDocByUID(uid, docID));
@@ -161,7 +161,22 @@ docs.get('/delete/:id', async function (req, res) {
  * Generate content in specified format by given content with AI services.
  */
 docs.post('/gen', async function (req, res) {
-  const result = await Gen(req.body);
+  const docID = uuidv4();
+  try {
+    const uid = await getUID(req);
+    if (uid === undefined) {
+      res.send({ message: PERMISSION_DENIED });
+      return;
+    }
+    const user = await (AddDoc(uid, docID));
+    if (user.rows.affectedRows != 1) {
+      throw new Error(user.rows.message);
+    }
+  } catch (err: unknown) {
+    res.send({ message: handleError(err) });
+    return;
+  }
+  const result = await Gen(docID, req.body);
   res.send(result);
 });
 

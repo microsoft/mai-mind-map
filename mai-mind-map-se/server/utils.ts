@@ -86,6 +86,19 @@ export const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 1
  */
 export const ROOT_ID = '00000000';
 
+/**
+ * Constant representing a permission denied error message.
+ *
+ * @constant {string}
+ */
+export const PERMISSION_DENIED = 'Permission denied';
+
+/**
+ * Retrieves the title of a document from its structure.
+ *
+ * @param doc - The document object from which to extract the title.
+ * @returns The title of the document if it exists, otherwise `undefined`.
+ */
 export function getDocTitle(doc: any): string | undefined {
   return doc && doc[ROOT_ID] &&
     doc[ROOT_ID].stringProps &&

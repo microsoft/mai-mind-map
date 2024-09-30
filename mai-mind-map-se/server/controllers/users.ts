@@ -43,7 +43,7 @@ router.get('/profile', isAuthenticated,
         email: (req.session as CustomSession).account?.username,
       });
     } catch (err: unknown) {
-      res.send({ msg: handleError(err) });
+      res.send({ message: handleError(err) });
     }
   }
 );
