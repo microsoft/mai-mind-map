@@ -1,6 +1,20 @@
 import { OkPacket } from 'mysql';
+import { Request } from 'express';
 import { executeQuery } from './pool';
 import { handleError } from '../utils';
+import { CustomSession } from '../controllers/users';
+
+export async function getUID(req: Request): Promise<string | undefined> {
+  const accountID = (req.session as CustomSession).account?.localAccountId;
+  if (accountID === undefined) {
+    return undefined;
+  }
+  const result = await GetUserByLocalAccountID(accountID);
+  if (result.rows.length === 0) {
+    return undefined;
+  }
+  return result.rows[0].id;
+}
 
 /**
  * Retrieves a user by their local account ID.
@@ -11,7 +25,7 @@ import { handleError } from '../utils';
  * @throws Will throw an error if the query fails.
  */
 export function GetUserByLocalAccountID(localAccountID: string):
-  Promise<{ rows: any[] }> {
+  Promise<{ rows: any }> {
   return new Promise((resolve, reject) => {
     executeQuery(`SELECT id FROM users WHERE
       local_account_id = "${localAccountID}";`, (err, result) => {

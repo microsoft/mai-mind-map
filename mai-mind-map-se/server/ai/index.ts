@@ -1,5 +1,6 @@
 import axios from 'axios';
 import marked from 'marked';
+import { v4 as uuidv4 } from 'uuid';
 import { NewDoc } from '../storage';
 import { ROOT_ID, genId, handleError, readConfig } from '../utils';
 
@@ -88,7 +89,8 @@ export async function Gen(body: Buffer): Promise<GenResponse> {
     if (req.title !== '') {
       cp[ROOT_ID].stringProps!.content.v = req.title;
     }
-    return await NewDoc(Buffer.from(JSON.stringify(cp)));
+    const docID = uuidv4();
+    return await NewDoc(docID, Buffer.from(JSON.stringify(cp)));
   } catch (err: unknown) {
     return { message: handleError(err) };
   }

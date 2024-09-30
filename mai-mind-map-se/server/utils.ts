@@ -85,3 +85,11 @@ export const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 1
  * The identifier of the root node.
  */
 export const ROOT_ID = '00000000';
+
+export function getDocTitle(doc: any): string | undefined {
+  return doc && doc[ROOT_ID] &&
+    doc[ROOT_ID].stringProps &&
+    doc[ROOT_ID].stringProps.content &&
+    doc[ROOT_ID].stringProps.content.v
+    ? doc[ROOT_ID].stringProps.content.v : undefined;
+}
