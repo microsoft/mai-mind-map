@@ -1,28 +1,30 @@
-import { Maybe, just, nothing } from "@root/model/ot-doc/maybe";
-import { BehaviorDef } from "../behavior";
-import { $Var } from "../higher-kinded-type";
-import { Op, Prim, Updater } from "../op";
-import { reduceDict, reduceStruct } from "../struct";
-import { Eq } from "./eq";
-import { Preset } from "./preset";
+import { Maybe, just, nothing } from '@root/model/ot-doc/maybe';
+import { BehaviorDef } from '../behavior';
+import { $Var } from '../higher-kinded-type';
+import { Op, Prim, Updater } from '../op';
+import { reduceDict, reduceStruct } from '../struct';
+import { Eq } from './eq';
+import { Preset } from './preset';
 
 export type Update<T> = (
-  updater: Updater<T>
+  updater: Updater<T>,
 ) => (a: T) => { value: Maybe<T>; op: Op<T> };
 
 export type Editable<T = $Var> = { update: Update<T> };
 
 const withUpdate = <T>(update: Update<T>): Editable<T> => ({ update });
 
-const withUpdatePrim = <T extends Prim>(preset: T) => (): Editable<T> =>
-  withUpdate<T>(((updater) => (v) => {
-    const op = updater(v);
-    const { o = preset, n = preset } = op;
-    return { value: o === v ? just(n) : nothing(), op };
-  }) as Update<T>);
+const withUpdatePrim =
+  <T extends Prim>(preset: T) =>
+  (): Editable<T> =>
+    withUpdate<T>(((updater) => (v) => {
+      const op = updater(v);
+      const { o = preset, n = preset } = op;
+      return { value: o === v ? just(n) : nothing(), op };
+    }) as Update<T>);
 
 const editable: BehaviorDef<Editable, Eq & Preset> = {
-  $string: withUpdatePrim<string>(""),
+  $string: withUpdatePrim<string>(''),
   $number: withUpdatePrim<number>(0),
   $boolean: withUpdatePrim<boolean>(false),
   $array:
@@ -57,11 +59,11 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
         const value = reduceDict(
           op,
           (m, opVal, key) => {
-            if (m.$ === "Nothing" || !opVal || typeof key !== "string")
+            if (m.$ === 'Nothing' || !opVal || typeof key !== 'string')
               return m;
             const valOld = dictOld[key] ?? preset;
             const { value: mValNew } = update(() => opVal)(valOld);
-            if (mValNew.$ === "Nothing") return nothing();
+            if (mValNew.$ === 'Nothing') return nothing();
             if (!eq(dictOld[key])(mValNew.v)) {
               if (m.v === dictOld) {
                 m.v = { ...dictOld };
@@ -74,7 +76,7 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
             }
             return m;
           },
-          just(dictOld)
+          just(dictOld),
         );
         return { value, op };
       }),
@@ -85,12 +87,11 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
       const value = reduceStruct(
         sttOld,
         (m, valOld, key) => {
-          if (m.$ === "Nothing" || !(op as any)[key])
-            return m;
-          const { value: mValNew } = sttDoc[key].update(() =>
-            (op as any)[key]
-          )(valOld);
-          if (mValNew.$ === "Nothing") return nothing();
+          if (m.$ === 'Nothing' || !(op as any)[key]) return m;
+          const { value: mValNew } = sttDoc[key].update(() => (op as any)[key])(
+            valOld,
+          );
+          if (mValNew.$ === 'Nothing') return nothing();
           if (!sttDoc[key].eq(valOld)(mValNew.v)) {
             if (m.v === sttOld) {
               m.v = { ...sttOld };
@@ -99,7 +100,7 @@ const editable: BehaviorDef<Editable, Eq & Preset> = {
           }
           return m;
         },
-        just(sttOld)
+        just(sttOld),
       );
       return { value, op };
     }),

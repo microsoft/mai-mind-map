@@ -1,14 +1,13 @@
-import { BehaviorBuilder } from "../behavior";
-import { $d, $s, updatePrim } from "../op";
-import editable from "./editable";
-import eq from "./eq";
-import preset from "./preset";
-import readable, { readData } from "./readable";
-import signatured from "./signatured";
+import { BehaviorBuilder } from '../behavior';
+import { $d, $s, updatePrim } from '../op';
+import editable from './editable';
+import eq from './eq';
+import preset from './preset';
+import readable, { readData } from './readable';
+import signatured from './signatured';
 
 const { $string, $number, $boolean, $array, $dict, $struct } =
-  BehaviorBuilder
-    .mixin(preset)
+  BehaviorBuilder.mixin(preset)
     .mixin(signatured)
     .mixin(readable)
     .mixin(eq)
@@ -21,15 +20,14 @@ const myDocType = $struct({
   tic: $boolean,
 });
 
-
-console.log("Format", myDocType.signature);
+console.log('Format', myDocType.signature);
 
 const content = { bar: [1, 2, '123'] };
-console.log("Read", JSON.stringify(content));
+console.log('Read', JSON.stringify(content));
 const readDoc = readData(myDocType);
 const doc = readDoc(content, console.log);
 
-console.log("Result", JSON.stringify(doc));
+console.log('Result', JSON.stringify(doc));
 
 const p = updatePrim(Date.now());
 console.log(

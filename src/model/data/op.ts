@@ -1,4 +1,4 @@
-import { Dict, mapStruct } from "./struct";
+import { Dict, mapStruct } from './struct';
 
 declare const symVar: unique symbol;
 // A type for representing type variables
@@ -51,9 +51,14 @@ export type Op<T> = T extends $Var
 
 export type Updater<T> = (v: T) => Op<T>;
 
-export const $s = <T extends object>(stt: {
-  [K in keyof T]: Updater<T[K]>
-}): Updater<T> => (t: T) => mapStruct(stt, (f: any, key) => f(t[key])) as Op<T>;
+export const $s =
+  <T extends object>(
+    stt: {
+      [K in keyof T]: Updater<T[K]>;
+    },
+  ): Updater<T> =>
+  (t: T) =>
+    mapStruct(stt, (f: any, key) => f(t[key])) as Op<T>;
 
 export const $d = $s as <T>(dict: Dict<Updater<T>>) => Updater<Dict<T>>;
 
