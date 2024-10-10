@@ -1,3 +1,4 @@
+import clsnames from "@base/classnames";
 import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled";
 import icons from "../components/icons";
@@ -70,13 +71,13 @@ export function FloatingTools() {
     <div className={SBox}>
       <div className={SToolBox}>
         <div
-          className={STool + (isMindmap ? ' active' : '')}
+          className={clsnames(STool, isMindmap && 'active')}
           onClick={() => viewActions.showMindmap()}
         >
           {icons.mindmapView}
         </div>
         <div
-          className={STool + (isOutline ? ' active' : '')}
+          className={clsnames(STool, isOutline && 'active')}
           onClick={() => viewActions.showOutline()}
         >
           {icons.outlineView}

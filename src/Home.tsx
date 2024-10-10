@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAtom } from "./base/atom";
 import { css } from "./base/styled";
 import icons from "./biz/components/icons";
-import { StepLoadingStyle } from "./biz/components/step-loading";
 import { filesAtom } from "./biz/store";
 import { LoadingVeiw } from "./components/LoadingView";
 
@@ -41,6 +40,24 @@ const SHead = css`
     color: #666;
   }
 `;
+const SEmpty = css`
+  padding: 2px 0 9px;
+  button {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+    background-color: #0078d4;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      background-color: #005a9e;
+    }
+  }
+`;
 const SFiles = css`
   display: grid;
   grid-template-columns: repeat(auto-fill, 120px);
@@ -73,45 +90,69 @@ const SFile = css`
   }
 `;
 
-const SLoadPlace = css`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-`;
+function LoadingContent() {
+  return (
+    <>
+      <div className={SHead}>
+        <h1>Welcome to Ms Mind Map</h1>
+        <h2>Loading files ...</h2>
+      </div>
+      <LoadingVeiw />
+    </>
+  );
+}
+
+function EmptyContent() {
+  const navigate = useNavigate();
+  return (
+    <>
+      <div className={SHead}>
+        <h1>Welcome to Ms Mind Map</h1>
+      </div>
+      <div className={SEmpty}>
+        <button onClick={() => navigate('/edit')}>
+          Create your first mind map
+        </button>
+      </div>
+    </>
+  );
+}
 
 function Home() {
   const [{ files, loading }, ,actions] = useAtom(filesAtom);
   useEffect(actions.fetchFilesOnce, []);
   const navigate = useNavigate();
 
-  return (
-    <div className={SPage}>
-      <div className={SBox}>
+  let content: React.ReactNode;
+  if (loading) {
+    content = <LoadingContent />;
+  } else if (files.length === 0) {
+    content = <EmptyContent />;
+  } else {
+    content = (
+      <>
         <div className={SHead}>
           <h1>Welcome to Ms Mind Map</h1>
-          {loading ? (
-            <h2>Loading files ...</h2>
-          ) : (
-            <h2>Choose one file to view</h2>
-          )}
+          <h2>Choose one file to view</h2>
         </div>
-        {loading ? (
-          <LoadingVeiw />
-        ) : (
-          <div className={SFiles}>
-            {files.map((d) => {
-              const open = () => navigate(`/edit/${d.id}`);
-              return (
-                <div key={d.id} className={SFile} onClick={open}>
-                  <div className="file-icon">{icons.mindmap}</div>
-                  <div className="file-title">{d.title || 'Untitled'}</div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+        <div className={SFiles}>
+          {files.map((d) => {
+            const open = () => navigate(`/edit/${d.id}`);
+            return (
+              <div key={d.id} className={SFile} onClick={open}>
+                <div className="file-icon">{icons.mindmap}</div>
+                <div className="file-title">{d.title || 'Untitled'}</div>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className={SPage}>
+      <div className={SBox}>{content}</div>
     </div>
   );
 }

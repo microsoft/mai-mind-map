@@ -1,5 +1,5 @@
 import { css } from "@root/base/styled";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const SBox = css`
   display: flex;

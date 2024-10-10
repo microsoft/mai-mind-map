@@ -1,3 +1,4 @@
+import clsnames from "@root/base/classnames";
 import { css } from "@root/base/styled";
 import Popup, { PopupPosition } from "@root/biz/components/popup";
 import { FileInfo } from "@root/model/api";
@@ -58,18 +59,14 @@ const SMore = css`
   }
 `;
 
-function bindActive(flag: boolean, base: string) {
-  return flag ? (base + ' active') : base;
-}
-
 function Actions(props: MenuProps) {
   const [morePosition, setPos] = useState<PopupPosition | null>(null);
   const active = Boolean(morePosition)
 
   return (
-    <div className={bindActive(active, 'file-right')} onClick={e => e.stopPropagation()}>
+    <div className={clsnames('file-right', { active })} onClick={e => e.stopPropagation()}>
       <div
-        className={bindActive(active, SMore)}
+        className={clsnames(SMore, { active })}
         onClick={(ev) => {
           if (morePosition) return;
           const { x, bottom } = (ev.currentTarget).getBoundingClientRect();
@@ -98,7 +95,7 @@ export function File(props: {
 
   return (
     <div
-      className={SFile + (active ? ' active' : '')}
+      className={clsnames(SFile, { active })}
       onClick={() => navigate(`/edit/${id}${location.search}`)}
     >
       <div className="file-left">

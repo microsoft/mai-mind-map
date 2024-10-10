@@ -52,6 +52,9 @@ export function run() {
   app.get('/', (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });
+  app.get('/edit', (req: Request, res: Response) => {
+    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
+  });
   app.get('/edit/:id', (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });

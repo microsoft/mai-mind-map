@@ -1,3 +1,4 @@
+import clsnames from "@base/classnames";
 import copyText from "@base/copy-text";
 import { css } from "@root/base/styled";
 import { useCallback, useState } from "react";
@@ -101,7 +102,7 @@ export function Share() {
   const hide = useCallback(() => setPopup(null), []);
   return <>
     <div
-      className={SShare + (popup ? ' share-active' : '')}
+      className={clsnames(SShare, popup && 'share-active')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
         setPopup([window.innerWidth - rect.right, rect.bottom + 4]);
