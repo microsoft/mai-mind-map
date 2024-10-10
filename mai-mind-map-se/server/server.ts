@@ -10,7 +10,7 @@ import session from 'express-session';
 declare module 'express-session' {
   interface SessionData {
     isAuthenticated: boolean;
-    account: { name: string; username: string };
+    account?: { username: string };
   }
 }
 import cookieParser from 'cookie-parser';
@@ -50,9 +50,6 @@ export function run() {
   app.use(express.urlencoded({ extended: false }));
 
   app.get('/', (req: Request, res: Response) => {
-    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
-  });
-  app.get('/edit', (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });
   app.get('/edit/:id', (req: Request, res: Response) => {

@@ -1,4 +1,3 @@
-import clsnames from "@base/classnames";
 import { css, keyframes } from "@root/base/styled";
 import { CSSProperties, createElement } from "react";
 
@@ -25,7 +24,7 @@ function SkeletonBlock(props: {
 }) {
   const { className, style } = props;
   return createElement('div', {
-    className: clsnames(SBox, className),
+    className: SBox + (className ? (' ' + className) : ''),
     style,
   }, null);
 }

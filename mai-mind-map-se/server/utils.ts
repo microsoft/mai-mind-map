@@ -16,12 +16,6 @@ export type Config = {
   NONE_STREAMING_AI_GENERATION_ENDPOINT: string,
   NONE_STREAMING_AI_CREATION_ENDPOINT: string,
   STREAMING_AI_CREATION_ENDPOINT: string,
-  DB_CONN_LIMIT: number,
-  DB_HOST: string,
-  DB_PORT: number,
-  DB_USER: string,
-  DB_SECRET: string,
-  DB_NAME: string,
 };
 
 /**
@@ -85,24 +79,3 @@ export const genId = () => Math.random().toString(36).padEnd(10, '0').slice(2, 1
  * The identifier of the root node.
  */
 export const ROOT_ID = '00000000';
-
-/**
- * Constant representing a permission denied error message.
- *
- * @constant {string}
- */
-export const PERMISSION_DENIED = 'Permission denied';
-
-/**
- * Retrieves the title of a document from its structure.
- *
- * @param doc - The document object from which to extract the title.
- * @returns The title of the document if it exists, otherwise `undefined`.
- */
-export function getDocTitle(doc: any): string | undefined {
-  return doc && doc[ROOT_ID] &&
-    doc[ROOT_ID].stringProps &&
-    doc[ROOT_ID].stringProps.content &&
-    doc[ROOT_ID].stringProps.content.v
-    ? doc[ROOT_ID].stringProps.content.v : undefined;
-}

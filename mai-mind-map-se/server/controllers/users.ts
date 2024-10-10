@@ -1,27 +1,26 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { Session } from 'express-session';
-import { createLoopDocument } from '../loop';
-import { GetUserByLocalAccountID } from '../storage/users';
-import { handleError } from '../utils';
 const router = express.Router();
 
-export interface CustomSession extends Session {
+import { createLoopDocument } from '../loop';
+import { fetch } from '../utils';
+import { GRAPH_ME_ENDPOINT } from './auth.config';
+
+interface CustomSession extends Session {
   account?: {
     idTokenClaims?: any;
-    localAccountId: string;
-    name: string;
-    username: string;
   };
   isAuthenticated?: boolean;
   accessToken?: string;
 }
 
-export function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
+function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
   if (!(req.session as CustomSession)?.isAuthenticated) {
     return res.redirect('/auth/signin');
   }
   next();
 }
+
 
 router.get('/id',
   isAuthenticated,
@@ -32,18 +31,15 @@ router.get('/id',
   }
 );
 
-router.get('/profile', isAuthenticated,
-  async function (req, res) {
+router.get('/profile',
+  isAuthenticated,
+  async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await GetUserByLocalAccountID(
-        (req.session as CustomSession).account?.localAccountId!)
-      res.send({
-        uid: result.rows[0].id,
-        name: (req.session as CustomSession).account?.name,
-        email: (req.session as CustomSession).account?.username,
-      });
-    } catch (err: unknown) {
-      res.send({ message: handleError(err) });
+      const accessToken: string = (req.session as CustomSession)?.accessToken!;
+      const graphResponse = await fetch(GRAPH_ME_ENDPOINT, accessToken);
+      res.send({ profile: graphResponse });
+    } catch (error: unknown) {
+      next(error);
     }
   }
 );

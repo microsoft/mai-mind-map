@@ -1,4 +1,3 @@
-import clsnames from "@base/classnames";
 import { css } from "@root/base/styled";
 import { useCallback, useState } from "react";
 import icons from "../components/icons";
@@ -40,7 +39,7 @@ export function More() {
   const hide = useCallback(() => setPopup(null), []);
   return <>
     <div
-      className={clsnames(SMore, popup && 'more-active')}
+      className={SMore + (popup ? ' more-active' : '')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
         setPopup([window.innerWidth - rect.right, rect.bottom + 4]);

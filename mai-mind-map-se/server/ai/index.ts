@@ -1,6 +1,5 @@
 import axios from 'axios';
 import marked from 'marked';
-import { v4 as uuidv4 } from 'uuid';
 import { NewDoc } from '../storage';
 import { ROOT_ID, genId, handleError, readConfig } from '../utils';
 
@@ -48,7 +47,7 @@ const conf = readConfig();
  * @throws Will return an error message if any of the input fields are
  * invalid or if the API request fails.
  */
-export async function Gen(docID: string, body: Buffer): Promise<GenResponse> {
+export async function Gen(body: Buffer): Promise<GenResponse> {
   try {
     const req: GenRequest = body as unknown as GenRequest;
     if (req.from === '') {
@@ -89,7 +88,7 @@ export async function Gen(docID: string, body: Buffer): Promise<GenResponse> {
     if (req.title !== '') {
       cp[ROOT_ID].stringProps!.content.v = req.title;
     }
-    return await NewDoc(docID, Buffer.from(JSON.stringify(cp)));
+    return await NewDoc(Buffer.from(JSON.stringify(cp)));
   } catch (err: unknown) {
     return { message: handleError(err) };
   }

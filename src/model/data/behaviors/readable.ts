@@ -14,8 +14,8 @@ export type Read<T = $Var> = {
 
 export const readData =
   <T>({ read }: Read<T>) =>
-  (u: unknown, onError: (message: string) => void = () => {}) =>
-    read((path) => (message) => onError(`${message}, at $${path}`))(u);
+  (u: unknown, onError: (message: string) => void = () => {}) => 
+    read(path => message => onError(`${message}, at $${path}`))(u);
 
 const withRead = <T>(read: Readable<T>): Read<T> => ({ read });
 

@@ -17,6 +17,7 @@ import {
 
 const App = () => {
   const { fileId: id } = useParams();
+  const {} = useParams<{ id: string }>();
   const { treeState, loadState } = useMindMapState(id || '');
   useAutoColoringMindMap(treeState);
   const [view] = useAtom(viewModeAtom);

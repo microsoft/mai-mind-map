@@ -1,4 +1,5 @@
 import { BlobServiceClient, BlockBlobUploadResponse } from '@azure/storage-blob';
+import { v4 as uuidv4 } from 'uuid';
 import { handleError, readConfig } from '../utils';
 const CONTAINER_NAME = 'docs'
 const DEFAULT_BLANK_DOC_BUFFER = Buffer.from(`{}`, 'utf8');
@@ -126,8 +127,9 @@ export async function UpdateDocByID(blobName: string, content: Object): Promise<
   try {
     const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    let uploadBlobResponse: BlockBlobUploadResponse;
     const data = JSON.stringify(content);
-    await blockBlobClient.upload(Buffer.from(data), data.length);
+    uploadBlobResponse = await blockBlobClient.upload(Buffer.from(data), data.length);
     return { id: blobName };
   } catch (err: unknown) {
     return { id: blobName, message: handleError(err) };
@@ -144,17 +146,18 @@ export async function UpdateDocByID(blobName: string, content: Object): Promise<
  *
  * @throws {Error} - Throws an error if the document creation fails.
  */
-export async function NewDoc(docID: string, defaultContent?: Buffer): Promise<Response> {
+export async function NewDoc(default_content?: Buffer): Promise<Response> {
   try {
     const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
-    const blockBlobClient = containerClient.getBlockBlobClient(docID);
+    const newDocID = uuidv4();
+    const blockBlobClient = containerClient.getBlockBlobClient(newDocID);
     let uploadBlobResponse: BlockBlobUploadResponse;
     let buffer: Buffer = DEFAULT_BLANK_DOC_BUFFER;
-    if (defaultContent) {
-      buffer = defaultContent;
+    if (default_content) {
+      buffer = default_content;
     }
     uploadBlobResponse = await blockBlobClient.upload(buffer, buffer.length);
-    return { id: docID };
+    return { id: newDocID };
   } catch (err: unknown) {
     return { id: undefined, message: handleError(err) };
   }

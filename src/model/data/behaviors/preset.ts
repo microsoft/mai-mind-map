@@ -14,3 +14,4 @@ export default behavior<Preset>({
   $dict: () => withPreset({}),
   $struct: (stt) => withPreset(mapStruct(stt, ({ preset }) => preset)),
 });
+

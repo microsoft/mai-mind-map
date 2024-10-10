@@ -1,7 +1,6 @@
 import msal from '@azure/msal-node';
 import axios from 'axios';
-import { AddUser, GetUserByLocalAccountID } from '../storage/users';
-import { POST_LOGOUT_REDIRECT_URI, msalConfig } from './auth.config';
+import { msalConfig } from './auth.config';
 
 interface AuthProviderOptions {
   scopes?: string[];
@@ -132,7 +131,6 @@ export class AuthProvider {
         req.session.isAuthenticated = true;
 
         const state = JSON.parse(this.cryptoProvider.base64Decode(req.body.state));
-        await RegisterUser(req.session.account);
         res.redirect(state.successRedirect);
       } catch (error) {
         next(error);
@@ -149,7 +147,7 @@ export class AuthProvider {
       }
 
       req.session.destroy(() => {
-        res.redirect(POST_LOGOUT_REDIRECT_URI);
+        res.redirect(logoutUri);
       });
     }
   }
@@ -215,26 +213,6 @@ export class AuthProvider {
     } catch (error) {
       console.log(error);
     }
-  }
-}
-
-/**
- * Registers a new user if the user does not already exist.
- *
- * @param account - The account information of the user to be registered.
- * @returns A promise that resolves when the user is successfully registered or
- * if the user already exists.
- * @throws Will throw an error if the user registration fails.
- */
-export async function RegisterUser(account: any) {
-  const { rows } = await GetUserByLocalAccountID(account.localAccountId);
-  if (rows.length != 0) {
-    return;
-  }
-  // Register user
-  const user = await (AddUser(account));
-  if (user.rows.affectedRows != 1) {
-    throw new Error('Failed to register user');
   }
 }
 

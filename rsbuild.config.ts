@@ -35,8 +35,7 @@ export default defineConfig({
     port: normalizePort(process.env.PORT || '3000'),
     historyApiFallback: {
       rewrites: [
-        { from: /^\/edit$/, to: '/index.html' },
-        { from: /^\/edit\/.*/, to: '/index.html' },
+        { from: /^\/edit\/.*$/, to: '/index.html' },
       ],
     },
     proxy: {

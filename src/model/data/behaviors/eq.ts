@@ -1,6 +1,6 @@
-import { Relation } from '@root/model/ot-doc/algebra';
-import { behavior } from '../behavior';
-import { $Var } from '../higher-kinded-type';
+import { Relation } from "@root/model/ot-doc/algebra";
+import { $Var } from "../higher-kinded-type";
+import { behavior } from "../behavior";
 
 export type Eq<T = $Var> = { eq: Relation<T> };
 

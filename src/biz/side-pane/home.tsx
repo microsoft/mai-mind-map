@@ -1,4 +1,3 @@
-import clsnames from "@root/base/classnames";
 import { css } from "@root/base/styled";
 import { useCallback, useState } from "react";
 import icons from "../components/icons";
@@ -48,7 +47,7 @@ export function SideHome() {
   const hide = useCallback(() => setPopup(null), []);
   return <>
     <div
-      className={clsnames(SHome, popup && 'more-active')}
+      className={SHome + (popup ? ' more-active' : '')}
       onClick={(ev) => {
         const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
         setPopup([rect.left, rect.bottom]);
