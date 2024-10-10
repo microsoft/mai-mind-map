@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import * as msal from '@azure/msal-node';
 import axios from 'axios';
-import { msalConfig, POST_LOGOUT_REDIRECT_URI } from './auth.config';
 import { AddUser, GetUserByLocalAccountID } from '../storage/users';
+import { POST_LOGOUT_REDIRECT_URI, msalConfig } from './auth.config';
 
 interface AuthProviderOptions {
   scopes?: string[];
