@@ -1,6 +1,6 @@
 import { OkPacket } from 'mysql';
-import { executeQuery } from './pool';
 import { handleError } from '../utils';
+import { executeQuery } from './pool';
 
 /**
  * Adds a document to the database for a given user.

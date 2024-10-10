@@ -1,8 +1,8 @@
-import { OkPacket } from 'mysql';
 import { Request } from 'express';
-import { executeQuery } from './pool';
-import { handleError } from '../utils';
+import { OkPacket } from 'mysql';
 import { CustomSession } from '../controllers/users';
+import { handleError } from '../utils';
+import { executeQuery } from './pool';
 
 export async function getUID(req: Request): Promise<string | undefined> {
   const accountID = (req.session as CustomSession).account?.localAccountId;
