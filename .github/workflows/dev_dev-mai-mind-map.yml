@@ -65,12 +65,12 @@ jobs:
 
       - name: Unzip artifact for deployment
         env:
-          APP_CONFIG: ${{ secrets.APP_CONFIG }}
+          APP_CONFIG_DEV: ${{ secrets.APP_CONFIG_DEV }}
         shell: bash
         run: |
           unzip release.zip
-          echo "$APP_CONFIG" > config.json
-      
+          echo "$APP_CONFIG_DEV" > config.json
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -85,4 +85,3 @@ jobs:
           app-name: 'dev-mai-mind-map'
           slot-name: 'Production'
           package: .
-          

@@ -14,5 +14,5 @@ dist/
 
 # Server
 mai-mind-map-se/**/*.js
-mai-mind-map-se/config.json
+mai-mind-map-se/config*.json
 mai-mind-map-se/pnpm-lock.yaml
