@@ -1,7 +1,7 @@
 import { useAtom } from "@root/base/atom";
 import { css } from "@root/base/styled"
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { filesAtom, showSidepaneAtom } from "../store";
 import { FileTree } from "./file-tree";
 import { SideHead } from "./head";
@@ -21,10 +21,14 @@ const SBox = css`
 
 export function SidePane() {
   const [{ files, loading }, ,actions] = useAtom(filesAtom);
-  useEffect(actions.fetchFilesOnce, []);
   const [sidepaneVisible, showSide] = useAtom(showSidepaneAtom);
   const [filter, setFilter] = useState('');
   const { fileId } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    actions.fetchFilesOnce(navigate, fileId);
+  }, []);
 
   if (!sidepaneVisible) return;
 
