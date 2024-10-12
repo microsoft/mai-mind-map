@@ -21,6 +21,16 @@ const App = () => {
   useAutoColoringMindMap(treeState);
   const [view] = useAtom(viewModeAtom);
 
+  function renderContent() {
+    if (loadState.type === 'loaded') {
+      return <>
+        {view === 'mindmap' ? <MindMapView /> : <OutlineView />}
+        <FloatingTools />
+      </>;
+    }
+    return <LoadingVeiw />;
+  }
+
   return (
     <MindMapState.Provider value={treeState}>
       <div className={LayoutStyle.Page}>
@@ -32,8 +42,7 @@ const App = () => {
             <Header treeState={treeState} />
           </div>
           <div className={LayoutStyle.Content}>
-            {loadState.type === 'loaded' ? (view === 'mindmap' ? <MindMapView /> : <OutlineView />) : <LoadingVeiw />}
-            <FloatingTools />
+            {renderContent()}
           </div>
         </div>
       </div>

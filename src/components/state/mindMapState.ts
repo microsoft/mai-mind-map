@@ -1,4 +1,4 @@
-import { createDocument, getDocument, updateDocument } from '@root/model/api';
+import { getDocument, updateDocument } from '@root/model/api';
 import { debounce } from 'lodash';
 
 import {
@@ -22,7 +22,6 @@ import {
   move,
   remove,
 } from '@root/model/mind-map-model';
-import { useNavigate } from 'react-router-dom';
 import { useObservable } from '../mind-map/render/hooks/observable-hook';
 import { cpToTree, payloadToProps, treeToCp } from './converter';
 
@@ -83,7 +82,6 @@ export function useMindMapState(id: string): {
     },
     [stateBox],
   );
-  const navigate = useNavigate();
   useEffect(() => {
     const { value: state } = stateBox;
     if (
@@ -100,16 +98,6 @@ export function useMindMapState(id: string): {
           updateLoadState(loaded(id));
         }
       });
-    } else if (!id && state.type !== 'creating') {
-      updateLoadState(creating());
-      console.log('Creating');
-      createDocument().then((id) => {
-        const { value: stat } = stateBox;
-        if (stat.type === 'creating') {
-          console.log('Created', id);
-          navigate(`/edit/${id}`);
-        }
-      });
     }
     return () => {
       const { value: stat } = stateBox;
@@ -118,7 +106,7 @@ export function useMindMapState(id: string): {
         updateDocument(stat.id, content).then(console.log);
       }
     };
-  }, [id, engine, stateBox, updateLoadState, navigate]);
+  }, [id, engine, stateBox, updateLoadState]);
   useEffect(() => {
     (window as any).model = engine.model;
     return engine.model.observe((data) => {

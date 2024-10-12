@@ -1,5 +1,6 @@
 import { atom } from '@root/base/atom';
-import { FileInfo, deleteDocument } from '@root/model/api';
+import { FileInfo, createDocument, deleteDocument } from '@root/model/api';
+import { NavigateFunction } from 'react-router-dom';
 
 
 interface State {
@@ -52,17 +53,26 @@ export const filesAtom = atom(DefaultState, (get, set) => {
     });
   }
 
-  const actions = {
+  let fetched = false;
+  async function fetchFilesOnce(navigate: NavigateFunction, id?: string) {
+    if (fetched) return;
+    fetched = true;
+    await refresh();
+    if (id) return;
+    const { files } = get();
+    if (files.length > 0) {
+      const docId = await createDocument();
+      refresh();
+      navigate(`/edit/${docId}`);
+    } else {
+      navigate(`/edit/${files[0].id}`);
+    }
+  }
+
+  return {
     refresh,
     update,
     fetchFilesOnce,
     remove,
   };
-
-  function fetchFilesOnce() {
-    refresh();
-    actions.fetchFilesOnce = () => {};
-  }
-
-  return actions;
 });
