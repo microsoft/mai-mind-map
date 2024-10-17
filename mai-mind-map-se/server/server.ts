@@ -73,14 +73,7 @@ export function run() {
   app.use('/users', userRouter);
   app.use('/auth', authRouter);
 
-  app.use('/addin', (req: Request, res: Response, next: NextFunction)=>{
-    // force to authenticate for taskpane.html
-    if(req.originalUrl.startsWith('/addin/taskpane.html')){
-      isAuthenticated(req, res, next);
-    } else {
-      next();
-    }
-  }, express.static(path.resolve(__dirname, '../dist/addin')));
+  app.use('/addin', express.static(path.resolve(__dirname, '../dist/addin')));
 
   app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
