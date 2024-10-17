@@ -2,8 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import { Session } from 'express-session';
 import { createLoopDocument } from '../loop';
 import { GetUserByLocalAccountID } from '../storage/users';
-import { handleError } from '../utils';
-const router = express.Router();
+import { handleError, PERMISSION_DENIED } from '../utils';
+import { getUID } from '../storage/users';
+export const router = express.Router();
 
 export interface CustomSession extends Session {
   account?: {
@@ -18,7 +19,7 @@ export interface CustomSession extends Session {
 
 export function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
   if (!(req.session as CustomSession)?.isAuthenticated) {
-    return res.redirect('/auth/signin');
+    return res.redirect( `/auth/signin?targetUrl=${encodeURIComponent(req.originalUrl)}`);
   }
   next();
 }
@@ -34,6 +35,11 @@ router.get('/id',
 
 router.get('/profile', isAuthenticated,
   async function (req, res) {
+    const uid = await getUID(req);
+    if (uid === undefined) {
+      res.status(401).send({ message: PERMISSION_DENIED });
+      return;
+    }
     try {
       const result = await GetUserByLocalAccountID(
         (req.session as CustomSession).account?.localAccountId!)
@@ -47,5 +53,3 @@ router.get('/profile', isAuthenticated,
     }
   }
 );
-
-module.exports = router;

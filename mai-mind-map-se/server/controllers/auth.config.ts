@@ -1,8 +1,8 @@
-import msal, { LogLevel } from '@azure/msal-node';
+import {Configuration,  LogLevel } from '@azure/msal-node';
 import { readConfig } from "../utils";
 
 const config = readConfig();
-export const msalConfig: msal.Configuration = {
+export const msalConfig: Configuration = {
   auth: {
     clientId: config.CLIENT_ID,
     authority: config.CLOUD_INSTANCE + 'common',

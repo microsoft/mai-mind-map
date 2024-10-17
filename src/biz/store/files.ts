@@ -1,8 +1,16 @@
 import { atom } from '@root/base/atom';
 import { FileInfo, deleteDocument } from '@root/model/api';
 
-const DefaultState = {
+
+interface State {
+  loading: boolean;
+  login: boolean | undefined;
+  files: FileInfo[];
+}
+
+const DefaultState: State = {
   loading: false,
+  login: undefined,
   files: [] as FileInfo[],
 };
 
@@ -10,9 +18,22 @@ export const filesAtom = atom(DefaultState, (get, set) => {
   function refresh() {
     set({ ...get(), loading: true });
     fetch('/api/list')
-      .then((r) => r.json())
-      .then((r) => set({ files: r.list, loading: false }))
-      .catch(() => set({ ...get(), loading: false }));
+      .then((r) => {
+        if (r.status === 401) {
+          set({ ...get(), loading: false, login: false });
+          return;
+        }
+        return r.json();
+      })
+      .then((r) => {
+        if (r) {
+          set({ files: r.list, loading: false, login: true });
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        set({ ...get(), loading: false });
+      });
   }
 
   // Todo call server api to update

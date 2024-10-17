@@ -32,7 +32,7 @@ export default defineConfig({
     title: 'MAI mind map',
   },
   server: {
-    port: normalizePort(process.env.PORT || '3000'),
+    port: normalizePort(process.env.PORT || '3001'),
     historyApiFallback: {
       rewrites: [
         { from: /^\/edit$/, to: '/index.html' },
@@ -41,7 +41,12 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://mai-mind-map.azurewebsites.net',
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+      "/auth/signin": {
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },

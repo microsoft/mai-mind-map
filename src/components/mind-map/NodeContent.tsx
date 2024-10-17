@@ -16,6 +16,7 @@ const SNodeContentText = css`
   color: var(--text-color);
   width: fit-content;
   max-width: 500px;
+  min-height: 42.39px;
   box-sizing: border-box;
   margin: 0;
   padding: 10px;

@@ -4,8 +4,12 @@ import express, {
   type Request,
   type Response,
   type Application,
+  type NextFunction,
 } from 'express';
 import session from 'express-session';
+import {router as userRouter} from './controllers/users'
+import {docsRouter} from './controllers/docs'
+import {router as authRouter} from './controllers/auth'
 
 declare module 'express-session' {
   interface SessionData {
@@ -15,6 +19,7 @@ declare module 'express-session' {
 }
 import cookieParser from 'cookie-parser';
 import { readConfig } from './utils';
+import { isAuthenticated } from './controllers/users';
 
 function normalizePort(val: string): number {
   const port = Number.parseInt(val, 10);
@@ -52,10 +57,10 @@ export function run() {
   app.get('/', (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });
-  app.get('/edit', (req: Request, res: Response) => {
+  app.get('/edit', isAuthenticated, (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });
-  app.get('/edit/:id', (req: Request, res: Response) => {
+  app.get('/edit/:id', isAuthenticated, (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
   });
   app.get('/favicon.ico', (req: Request, res: Response) => {
@@ -64,11 +69,18 @@ export function run() {
   app.use('/static', express.static(path.resolve(__dirname, '../dist/static')));
 
   app.use(express.raw({ type: '*/*', limit: '10mb' }));
-  app.use('/api', require('./controllers/docs'));
-  app.use('/users', require('./controllers/users'));
-  app.use('/auth', require('./controllers/auth'));
+  app.use('/api', docsRouter);
+  app.use('/users', userRouter);
+  app.use('/auth', authRouter);
 
-  app.use('/addin', express.static(path.resolve(__dirname, '../dist/addin')));
+  app.use('/addin', (req: Request, res: Response, next: NextFunction)=>{
+    // force to authenticate for taskpane.html
+    if(req.originalUrl.startsWith('/addin/taskpane.html')){
+      isAuthenticated(req, res, next);
+    } else {
+      next();
+    }
+  }, express.static(path.resolve(__dirname, '../dist/addin')));
 
   app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);

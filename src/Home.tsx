@@ -1,10 +1,10 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAtom } from "./base/atom";
-import { css } from "./base/styled";
-import icons from "./biz/components/icons";
-import { filesAtom } from "./biz/store";
-import { LoadingVeiw } from "./components/LoadingView";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAtom } from './base/atom';
+import { css } from './base/styled';
+import icons from './biz/components/icons';
+import { filesAtom } from './biz/store';
+import { LoadingVeiw } from './components/LoadingView';
 
 const SPage = css`
   display: flex;
@@ -21,21 +21,23 @@ const SBox = css`
   background-color: white;
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: rgba(0, 16, 32, 0.2) 0px 0px 1px 0px, rgba(0, 16, 32, 0.12) 0px 4px 24px 0px;
+  box-shadow: rgba(0, 16, 32, 0.2) 0px 0px 1px 0px,
+    rgba(0, 16, 32, 0.12) 0px 4px 24px 0px;
 `;
 
 const SHead = css`
   margin-bottom: 20px;
-  &>h1, &>h2 {
+  & > h1,
+  & > h2 {
     all: unset;
     display: block;
     text-align: center;
   }
-  &>h1 {
+  & > h1 {
     font-size: 24px;
     margin-bottom: 8px;
   }
-  &>h2 {
+  & > h2 {
     font-size: 16px;
     color: #666;
   }
@@ -74,7 +76,7 @@ const SFile = css`
   border: 1px solid #e9e9e9;
   border-radius: 4px;
   &:hover {
-    background-color: rgba(0,0,0,0.04);
+    background-color: rgba(0, 0, 0, 0.04);
   }
   .file-icon {
     flex: 0 0 auto;
@@ -102,7 +104,7 @@ function LoadingContent() {
   );
 }
 
-function EmptyContent() {
+function EmptyContent(props: { login: boolean }) {
   const navigate = useNavigate();
   return (
     <>
@@ -110,24 +112,30 @@ function EmptyContent() {
         <h1>Welcome to Ms Mind Map</h1>
       </div>
       <div className={SEmpty}>
-        <button onClick={() => navigate('/edit')}>
-          Create your first mind map
-        </button>
+        {props.login ? (
+          <button onClick={() => navigate('/edit')}>
+            Create your first mind map
+          </button>
+        ) : (
+          <button onClick={() => (location.href = '/auth/signin')}>
+            Login to create your first mind map
+          </button>
+        )}
       </div>
     </>
   );
 }
 
 function Home() {
-  const [{ files, loading }, ,actions] = useAtom(filesAtom);
+  const [{ files, loading, login }, , actions] = useAtom(filesAtom);
   useEffect(actions.fetchFilesOnce, []);
   const navigate = useNavigate();
 
   let content: React.ReactNode;
-  if (loading) {
+  if (loading || login === undefined) {
     content = <LoadingContent />;
   } else if (files.length === 0) {
-    content = <EmptyContent />;
+    content = <EmptyContent login={login} />;
   } else {
     content = (
       <>
