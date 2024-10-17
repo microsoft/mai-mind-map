@@ -1,4 +1,5 @@
-import msal from '@azure/msal-node';
+import { Request, Response } from 'express';
+import * as msal from '@azure/msal-node';
 import axios from 'axios';
 import { msalConfig, POST_LOGOUT_REDIRECT_URI } from './auth.config';
 import { AddUser, GetUserByLocalAccountID } from '../storage/users';
@@ -32,10 +33,14 @@ export class AuthProvider {
   }
 
   login(options: AuthProviderOptions = {}) {
-    return async (req: any, res: any, next: any) => {
+    return async (req: Request, res: Response, next: any) => {
+      let targetUrl = req.query['targetUrl'] as string;
+      if (targetUrl) {
+        targetUrl = decodeURIComponent(targetUrl);
+      }
       const state = this.cryptoProvider.base64Encode(
         JSON.stringify({
-          successRedirect: options.successRedirect || '/',
+          successRedirect: targetUrl || options.successRedirect || '/',
         })
       );
 

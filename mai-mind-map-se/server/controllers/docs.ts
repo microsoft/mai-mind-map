@@ -17,7 +17,7 @@ import {
   UpdateDocByUID
 } from '../storage/docs';
 
-let docs = express.Router();
+export const docsRouter = express.Router();
 
 type ListItem = {
   id: string,
@@ -26,12 +26,12 @@ type ListItem = {
   title?: string,
 };
 
-docs.get('/list', async function (req, res) {
+docsRouter.get('/list', async function (req, res) {
   const docs: ListItem[] = [];
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ list: docs, message: PERMISSION_DENIED });
+      res.status(401).send({ list: docs, message: PERMISSION_DENIED });
       return;
     }
     const result = await (ListDocByUID(uid));
@@ -45,17 +45,17 @@ docs.get('/list', async function (req, res) {
     }
     res.send({ list: docs });
   } catch (err: unknown) {
-    res.send({ message: handleError(err), list: docs });
+    res.status(500).send({ message: handleError(err), list: docs });
     return;
   }
 });
 
-docs.post('/new', async function (req, res) {
+docsRouter.post('/new', async function (req, res) {
   const docID = uuidv4();
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ message: PERMISSION_DENIED });
+      res.status(401).send({ message: PERMISSION_DENIED });
       return;
     }
     const user = await (AddDoc(uid, docID));
@@ -63,14 +63,14 @@ docs.post('/new', async function (req, res) {
       throw new Error(user.rows.message);
     }
   } catch (err: unknown) {
-    res.send({ message: handleError(err) });
+    res.status(500).send({ message: handleError(err) });
     return;
   }
   const result = await NewDoc(docID);
   res.send(result);
 });
 
-docs.get('/get/:id', async function (req, res) {
+docsRouter.get('/get/:id', async function (req, res) {
   /**
    * Retrieves a document by its ID from the request parameters.
    *
@@ -81,7 +81,7 @@ docs.get('/get/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, message: PERMISSION_DENIED });
+      res.status(401).send({ id: docID, message: PERMISSION_DENIED });
       return;
     }
     const result = await (GetDocByUID(uid, docID));
@@ -90,14 +90,14 @@ docs.get('/get/:id', async function (req, res) {
       return;
     }
   } catch (err: unknown) {
-    res.send({ id: docID, message: handleError(err) });
+    res.status(500).send({ id: docID, message: handleError(err) });
     return;
   }
   const result = await GetDocByID(docID);
   res.send(result);
 });
 
-docs.patch('/update/:id', async function (req, res) {
+docsRouter.patch('/update/:id', async function (req, res) {
   /**
    * Updates a document by its ID with the provided data from the request body.
    *
@@ -111,7 +111,7 @@ docs.patch('/update/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, message: PERMISSION_DENIED });
+      res.status(401).send({ id: docID, message: PERMISSION_DENIED });
       return;
     }
     const title = getDocTitle(req.body);
@@ -123,14 +123,14 @@ docs.patch('/update/:id', async function (req, res) {
       }
     }
   } catch (err: unknown) {
-    res.send({ id: docID, message: handleError(err) });
+    res.status(500).send({ id: docID, message: handleError(err) });
     return;
   }
   const result = await UpdateDocByID(docID, req.body);
   res.send(result);
 });
 
-docs.delete('/delete/:id', async function (req, res) {
+docsRouter.delete('/delete/:id', async function (req, res) {
   /**
    * Deletes a document by its ID.
    *
@@ -142,7 +142,7 @@ docs.delete('/delete/:id', async function (req, res) {
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ id: docID, message: 'Permission denied' });
+      res.status(401).send({ id: docID, message: 'Permission denied' });
       return;
     }
     const result = await (DeleteDocByUID(uid, docID));
@@ -150,7 +150,7 @@ docs.delete('/delete/:id', async function (req, res) {
       throw new Error(result.rows.message);
     }
   } catch (err: unknown) {
-    res.send({ id: docID, message: handleError(err) });
+    res.status(500).send({ id: docID, message: handleError(err) });
     return;
   }
   const result = await DeleteDocByID(docID)
@@ -160,12 +160,12 @@ docs.delete('/delete/:id', async function (req, res) {
 /**
  * Generate content in specified format by given content with AI services.
  */
-docs.post('/gen', async function (req, res) {
+docsRouter.post('/gen', async function (req, res) {
   const docID = uuidv4();
   try {
     const uid = await getUID(req);
     if (uid === undefined) {
-      res.send({ message: PERMISSION_DENIED });
+      res.status(401).send({ message: PERMISSION_DENIED });
       return;
     }
     const user = await (AddDoc(uid, docID));
@@ -173,11 +173,9 @@ docs.post('/gen', async function (req, res) {
       throw new Error(user.rows.message);
     }
   } catch (err: unknown) {
-    res.send({ message: handleError(err) });
+    res.status(500).send({ message: handleError(err) });
     return;
   }
   const result = await Gen(docID, req.body);
   res.send(result);
 });
-
-module.exports = docs;
