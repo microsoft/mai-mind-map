@@ -64,17 +64,19 @@ export function getLinkPointPair<D>(
             // on the right side
             if (target.y < source.y) {
               // top right
-              const shiftX =
-                halfWidth * (1 - Math.abs(target.y - source.y) / maxTopRightD);
+              const shiftX = maxTopRightD
+                ? halfWidth * (1 - Math.abs(target.y - source.y) / maxTopRightD)
+                : 0;
               return {
                 source: [originX + shiftX, originY],
                 target: [target.x, target.y + targetHeight / 2],
               };
             } else {
               // bottom right
-              const shiftX =
-                halfWidth *
-                (1 - Math.abs(target.y - source.y) / maxBottomRightD);
+              const shiftX = maxBottomRightD
+                ? halfWidth *
+                  (1 - Math.abs(target.y - source.y) / maxBottomRightD)
+                : 0;
               return {
                 source: [originX + shiftX, originY],
                 target: [target.x, target.y + targetHeight / 2],
@@ -84,17 +86,19 @@ export function getLinkPointPair<D>(
             // on the left side
             if (target.y < source.y) {
               // top left
-              const shiftX =
-                halfWidth * (1 - Math.abs(target.y - source.y) / maxTopLeftD);
+              const shiftX = maxTopLeftD
+                ? halfWidth * (1 - Math.abs(target.y - source.y) / maxTopLeftD)
+                : 0;
               return {
                 source: [originX - shiftX, originY],
                 target: [target.x + targetWidth, target.y + targetHeight / 2],
               };
             } else {
               // bottom left
-              const shiftX =
-                halfWidth *
-                (1 - Math.abs(target.y - source.y) / maxBottomLeftD);
+              const shiftX = maxBottomLeftD
+                ? halfWidth *
+                  (1 - Math.abs(target.y - source.y) / maxBottomLeftD)
+                : 0;
               return {
                 source: [originX - shiftX, originY],
                 target: [target.x + targetWidth, target.y + targetHeight / 2],
@@ -116,16 +120,19 @@ export function getLinkPointPair<D>(
             // on the top side
             if (target.x < source.x) {
               // top left
-              const shiftY =
-                halfHeight * (1 - Math.abs(target.x - source.x) / maxTopLeftD);
+              const shiftY = maxTopLeftD
+                ? halfHeight * (1 - Math.abs(target.x - source.x) / maxTopLeftD)
+                : 0;
               return {
                 source: [originX, originY - shiftY],
                 target: [target.x + targetWidth / 2, target.y + targetHeight],
               };
             } else {
               // top right
-              const shiftY =
-                halfHeight * (1 - Math.abs(target.x - source.x) / maxTopRightD);
+              const shiftY = maxTopRightD
+                ? halfHeight *
+                  (1 - Math.abs(target.x - source.x) / maxTopRightD)
+                : 0;
               return {
                 source: [originX, originY - shiftY],
                 target: [target.x + targetWidth / 2, target.y + targetHeight],
@@ -135,18 +142,20 @@ export function getLinkPointPair<D>(
             // on the bottom side
             if (target.x < source.x) {
               // bottom left
-              const shiftY =
-                halfHeight *
-                (1 - Math.abs(target.x - source.x) / maxBottomLeftD);
+              const shiftY = maxBottomLeftD
+                ? halfHeight *
+                  (1 - Math.abs(target.x - source.x) / maxBottomLeftD)
+                : 0;
               return {
                 source: [originX, originY + shiftY],
                 target: [target.x + targetWidth / 2, target.y],
               };
             } else {
               // bottom right
-              const shiftY =
-                halfHeight *
-                (1 - Math.abs(target.x - source.x) / maxBottomRightD);
+              const shiftY = maxBottomRightD
+                ? halfHeight *
+                  (1 - Math.abs(target.x - source.x) / maxBottomRightD)
+                : 0;
               return {
                 source: [originX, originY + shiftY],
                 target: [target.x + targetWidth / 2, target.y],
