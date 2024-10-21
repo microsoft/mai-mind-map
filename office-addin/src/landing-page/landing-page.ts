@@ -5,7 +5,7 @@
 
 import { css, customElement, FASTElement, html } from "@microsoft/fast-element";
 
-const template = html``;
+const template = html`Signed in`;
 const styles = css``;
 
 Office.onReady(function () {
