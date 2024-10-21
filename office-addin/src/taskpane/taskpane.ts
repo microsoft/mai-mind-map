@@ -6,6 +6,7 @@
 import { css, customElement, FASTElement, html, observable } from "@microsoft/fast-element";
 import { fluentButton, provideFluentDesignSystem } from "@fluentui/web-components";
 import { DocumentType, MindMapGenHelper } from "./helpers/MindMapGenHelper";
+import { SignInHelper } from "./helpers/SignInHelper";
 import { WordHelper } from "./helpers/WordHelper";
 import "./components/message-container";
 
@@ -18,7 +19,7 @@ const template = html<TaskPane>`
     <h2 id="title">Generate Mind Map</h2>
     <fluent-button
       id="btn-submit-all"
-      ?disabled=${(x) => !x.officeIsReady || x.loading}
+      ?disabled=${(x) => !x.officeIsReady || x.loading || !x.signedIn}
       :appearance=${"accent"}
       @click=${(x) => x.onSubmitAllButtonClick()}
     >
@@ -26,7 +27,7 @@ const template = html<TaskPane>`
     </fluent-button>
     <fluent-button
       id="btn-submit-selected"
-      ?disabled=${(x) => !x.officeIsReady || x.loading}
+      ?disabled=${(x) => !x.officeIsReady || x.loading || !x.signedIn}
       :appearance=${"accent"}
       @click=${(x) => x.onSubmitSelectedButtonClick()}
     >
@@ -77,6 +78,7 @@ const styles = css`
 export class TaskPane extends FASTElement {
   @observable officeIsReady: boolean = false;
   @observable loading: boolean = false;
+  @observable signedIn: boolean = false;
   @observable message: string = "";
 
   connectedCallback(): void {
@@ -85,6 +87,9 @@ export class TaskPane extends FASTElement {
       if (info.host === Office.HostType.Word) {
         this.officeIsReady = true;
       }
+    });
+    SignInHelper.getInstance().observeSignIn((success: boolean) => {
+      this.signedIn = success;
     });
   }
 
