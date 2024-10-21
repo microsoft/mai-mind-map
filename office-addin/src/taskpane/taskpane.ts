@@ -88,9 +88,11 @@ export class TaskPane extends FASTElement {
         this.officeIsReady = true;
       }
     });
-    SignInHelper.getInstance().observeSignIn((success: boolean) => {
+    const signInObserver = (success: boolean) => {
       this.signedIn = success;
-    });
+      SignInHelper.getInstance().unobserveSignIn(signInObserver);
+    };
+    SignInHelper.getInstance().observeSignIn(signInObserver);
   }
 
   onSubmitAllButtonClick = async () => {

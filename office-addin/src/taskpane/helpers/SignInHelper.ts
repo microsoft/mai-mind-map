@@ -61,10 +61,6 @@ export class SignInHelper {
         this.dialog.addEventHandler(Office.EventType.DialogMessageReceived, this.processDialogMesssage);
       }
     );
-    return Office.context.ui.displayDialogAsync(`https://dev-mai-mind-map.azurewebsites.net/auth/signin`, {
-      height: 500,
-      width: 500,
-    });
   }
 
   async signOut() {
