@@ -27,7 +27,7 @@ interface IApiResponse {
 }
 
 export class MindMapGenHelper {
-  private static readonly GENERATOR_URL = new URL("https://mai-mind-map.azurewebsites.net/api/gen");
+  private static readonly GENERATOR_URL = new URL(`${location.origin}/api/gen`);
 
   static async fromDocument(doc: IDocument): Promise<MindMapUUID> {
     const { id } = await MindMapGenHelper.callApi({
@@ -48,6 +48,7 @@ export class MindMapGenHelper {
       headers,
       body: JSON.stringify(parameters),
       method: "POST",
+      credentials: "include",
     });
 
     const responseBody = await response.json();

@@ -45,7 +45,7 @@ export class WordHelper {
   }
 
   static async showMindMapDialog(mindMapUuid: MindMapUUID) {
-    return Office.context.ui.displayDialogAsync(`https://mai-mind-map.azurewebsites.net/edit/${mindMapUuid}`);
+    return Office.context.ui.displayDialogAsync(`${location.origin}/edit/${mindMapUuid}`);
   }
 
   static getFilenameFromUrl(documentUrl: string): string {

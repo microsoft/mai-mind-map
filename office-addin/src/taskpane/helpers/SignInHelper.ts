@@ -58,7 +58,7 @@ export class SignInHelper {
       { height: 500, width: 500 },
       (asyncResult) => {
         this.dialog = asyncResult.value;
-        this.dialog.addEventHandler(Office.EventType.DialogMessageReceived, this.processDialogMesssage);
+        this.dialog.addEventHandler(Office.EventType.DialogMessageReceived, this.processDialogMesssage.bind(this));
       }
     );
   }

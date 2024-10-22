@@ -39,7 +39,7 @@ function normalizePort(val: string): number {
 
 export function run() {
   const app: Application = express();
-  const port = normalizePort(process.env.PORT || '2999');
+  const port = normalizePort(process.env.PORT || '3000');
   app.use(cors());
   app.use(session({
     secret: readConfig().EXPRESS_SESSION_SECRET,
@@ -72,6 +72,10 @@ export function run() {
   app.use('/api', docsRouter);
   app.use('/users', userRouter);
   app.use('/auth', authRouter);
+  app.use('/cookie/unrestrict', (req: Request, res: Response) => {
+    res.cookie('connect.sid', req.cookies['connect.sid'], { httpOnly: true, secure: true, path:'/', sameSite: 'none' });
+    res.send({});
+  });
 
   app.use('/addin', express.static(path.resolve(__dirname, '../dist/addin')));
 

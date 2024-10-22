@@ -118,7 +118,7 @@ module.exports = async (env, options) => {
       port: process.env.npm_package_config_dev_server_port || 3000,
       proxy: [
         {
-          context: ["/api", "/auth/signin", "/auth/signout", "/auth/redirect"],
+          context: ["/api", "/auth/signin", "/auth/signout", "/auth/redirect", "/users", "/cookie", "/edit"],
           target: "http://localhost:2999",
           secure: false,
         },

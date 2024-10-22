@@ -138,6 +138,7 @@ export class AuthProvider {
 
         const state = JSON.parse(this.cryptoProvider.base64Decode(req.body.state));
         await RegisterUser(req.session.account);
+        res.cookie('connect.sid',req.cookies['connect.sid'], {httpOnly: true, secure: false, sameSite: 'none'});
         res.redirect(state.successRedirect);
       } catch (error) {
         next(error);

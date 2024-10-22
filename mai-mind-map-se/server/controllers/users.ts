@@ -33,7 +33,7 @@ router.get('/id',
   }
 );
 
-router.get('/profile', isAuthenticated,
+router.get('/profile',
   async function (req, res) {
     const uid = await getUID(req);
     if (uid === undefined) {

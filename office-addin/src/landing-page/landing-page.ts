@@ -8,18 +8,26 @@ import { css, customElement, FASTElement, html } from "@microsoft/fast-element";
 const template = html`Signed in`;
 const styles = css``;
 
-Office.onReady(function () {
-  // Add any initialization code for your dialog here.
-});
+
 
 @customElement({
-  name: "task-pane",
+  name: "landing-page",
   template,
   styles,
 })
 export class TaskPane extends FASTElement {
   connectedCallback(): void {
-    this.notifySignedIn();
+    Office.onReady( () => {
+      console.log("Office is ready");
+      fetch(`${location.origin}/cookie/unrestrict`, {
+        method: "GET"
+      }).then((response) => {
+        if(response.ok) {
+          this.notifySignedIn();
+        }
+      })
+      // Add any initialization code for your dialog here.
+    });
   }
 
   private async notifySignedIn() {
