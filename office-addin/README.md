@@ -3,7 +3,15 @@
 ### Prerequisite
 * Word (browser version)
 
-### Installation
+### Run in local
+```shell
+npm run start:dev # Load Addin in local office from dev env
+# or
+npm run start:prod # Load Addin in local office from prod env
+```
+
+
+### Manual Installation on Web Office
 1. Download https://mai-mind-map.azurewebsites.net/addin/manifest.xml
 2. Open Word -> Add-ins -> Click **+ More Add-ins**
 
