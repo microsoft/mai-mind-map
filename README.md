@@ -49,4 +49,5 @@ pnpm build:server && pnpm start
 Start the server for local debug
 ```bash
 pnpm build:server && pnpm start:2999
+# Reach out jianliwei/Emailxuri for the config.json to start server in local environment
 ```

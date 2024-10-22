@@ -128,8 +128,11 @@ function EmptyContent(props: { login: boolean }) {
 
 function Home() {
   const [{ files, loading, login }, , actions] = useAtom(filesAtom);
-  useEffect(actions.fetchFilesOnce, []);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    actions.fetchFilesOnce();
+  }, []);
 
   let content: React.ReactNode;
   if (loading || login === undefined) {

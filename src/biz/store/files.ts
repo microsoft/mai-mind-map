@@ -54,19 +54,10 @@ export const filesAtom = atom(DefaultState, (get, set) => {
   }
 
   let fetched = false;
-  async function fetchFilesOnce(navigate: NavigateFunction, id?: string) {
+  async function fetchFilesOnce(id?: string) {
     if (fetched) return;
     fetched = true;
     await refresh();
-    if (id) return;
-    const { files } = get();
-    if (files.length > 0) {
-      const docId = await createDocument();
-      refresh();
-      navigate(`/edit/${docId}`);
-    } else {
-      navigate(`/edit/${files[0].id}`);
-    }
   }
 
   return {
