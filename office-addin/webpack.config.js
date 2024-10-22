@@ -5,8 +5,11 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const urlDev = "https://localhost:3000/";
-const urlProd = "https://mai-mind-map.azurewebsites.net/addin/";
+const urlLocal = "https://localhost:3000/";
+const hostDev = "https://dev-mai-mind-map.azurewebsites.net";
+const hostProd = "https://mai-mind-map.azurewebsites.net";
+const urlDev = hostDev + "/addin/";
+const urlProd = hostProd + "/addin/";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -90,7 +93,22 @@ module.exports = async (env, options) => {
               if (dev) {
                 return content;
               } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
+                return content.toString().replace(new RegExp(urlLocal, "g"), urlProd);
+              }
+            },
+          },
+          {
+            from: "manifest*.xml",
+            to: "[name]" + "-dev" + "[ext]",
+            transform(content) {
+              if (dev) {
+                return content;
+              } else {
+                return content
+                  .toString()
+                  .replace('DefaultValue="Mind Map"', 'DefaultValue="Mind Map (Dev)"')
+                  .replace(new RegExp(hostProd, "g"), hostDev)
+                  .replace(new RegExp(urlLocal, "g"), urlDev);
               }
             },
           },
