@@ -24,8 +24,8 @@ Office.initialize = async function () {
 };
 
 export class SignInHelper {
-  private static USER_PROFILE_API = new URL("https://dev-mai-mind-map.azurewebsites.net/users/profile");
-  private static SIGN_OUT_API = new URL("https://dev-mai-mind-map.azurewebsites.net/auth/signout");
+  private static USER_PROFILE_API = new URL(`${location.origin}/users/profile`);
+  private static SIGN_OUT_API = new URL(`${location.origin}/auth/signout`);
 
   private dialog: Office.Dialog;
   private observers = [];
@@ -54,7 +54,7 @@ export class SignInHelper {
 
   async showSignInDialog() {
     Office.context.ui.displayDialogAsync(
-      `https://dev-mai-mind-map.azurewebsites.net/auth/signin`,
+      `${location.origin}/auth/signin?targetUrl=${encodeURIComponent('/addin/landing-page.html')}`,
       { height: 500, width: 500 },
       (asyncResult) => {
         this.dialog = asyncResult.value;

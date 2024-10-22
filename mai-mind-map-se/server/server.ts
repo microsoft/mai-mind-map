@@ -39,7 +39,7 @@ function normalizePort(val: string): number {
 
 export function run() {
   const app: Application = express();
-  const port = normalizePort(process.env.PORT || '3000');
+  const port = normalizePort(process.env.PORT || '2999');
   app.use(cors());
   app.use(session({
     secret: readConfig().EXPRESS_SESSION_SECRET,

@@ -8,7 +8,7 @@
   <Description DefaultValue="An addin for generating mind maps"/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <AppDomains>
-    <AppDomain>https://dev-mai-mind-map.azurewebsites.net</AppDomain>
+    <AppDomain>https://mai-mind-map.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>
