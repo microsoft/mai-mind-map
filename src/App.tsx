@@ -1,6 +1,8 @@
 import './App.css';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAtom } from './base/atom';
+import { filesAtom } from './biz/store';
 import { FloatingTools } from './biz/floating';
 import { Header } from './biz/head';
 import { LayoutStyle } from './biz/layout';
@@ -10,10 +12,7 @@ import { LoadingVeiw } from './components/LoadingView';
 import { MindMapView } from './components/mind-map/MapIndex';
 import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
-import {
-  MindMapState,
-  useMindMapState,
-} from './components/state/mindMapState';
+import { MindMapState, useMindMapState } from './components/state/mindMapState';
 
 const App = () => {
   const { fileId: id } = useParams();
@@ -21,12 +20,25 @@ const App = () => {
   useAutoColoringMindMap(treeState);
   const [view] = useAtom(viewModeAtom);
 
+  // for create new doc start
+  const [, , { createDoc }] = useAtom(filesAtom);
+  const navigate = useNavigate();
+  const reactLocation = useLocation();
+  useEffect(() => {
+    if (reactLocation.pathname === '/edit') {
+      createDoc(navigate);
+    }
+  }, [createDoc, navigate, reactLocation]);
+  // for create new doc end
+
   function renderContent() {
     if (loadState.type === 'loaded') {
-      return <>
-        {view === 'mindmap' ? <MindMapView /> : <OutlineView />}
-        <FloatingTools />
-      </>;
+      return (
+        <>
+          {view === 'mindmap' ? <MindMapView /> : <OutlineView />}
+          <FloatingTools />
+        </>
+      );
     }
     return <LoadingVeiw />;
   }
@@ -41,9 +53,7 @@ const App = () => {
           <div className={LayoutStyle.Head}>
             <Header treeState={treeState} />
           </div>
-          <div className={LayoutStyle.Content}>
-            {renderContent()}
-          </div>
+          <div className={LayoutStyle.Content}>{renderContent()}</div>
         </div>
       </div>
     </MindMapState.Provider>
