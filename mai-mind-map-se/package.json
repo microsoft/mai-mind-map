@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./bin/www",
+    "start:2999": "cross-env PORT=2999 node ./bin/www",
     "build:server": "tsc -p server-tsconfig.json"
   },
   "keywords": [],
@@ -34,6 +35,7 @@
     "@types/isomorphic-fetch": "0.0.39",
     "@types/mysql": "2.15.26",
     "@types/uuid": "10.0.0",
+    "cross-env": "^7.0.3",
     "typescript": "5.5.4"
   }
 }

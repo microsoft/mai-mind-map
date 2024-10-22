@@ -39,6 +39,7 @@ export default defineConfig({
         { from: /^\/edit\/.*/, to: '/index.html' },
       ],
     },
+    // for local server (start local server with listening prot:2999)
     proxy: {
       '/api': {
         target: 'http://localhost:2999',
@@ -50,6 +51,32 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-    }
+    },
+    // for dev server
+    // proxy: {
+    //   '/api': {
+    //     target: 'https://dev-mai-mind-map.azurewebsites.net',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    //   "/auth/signin": {
+    //     target: 'https://dev-mai-mind-map.azurewebsites.net/',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    // },
+    // for prod server
+    // proxy: {
+    //   '/api': {
+    //     target: 'https://mai-mind-map.azurewebsites.net',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    //   "/auth/signin": {
+    //     target: 'https://mai-mind-map.azurewebsites.net/',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    // }
   },
 });

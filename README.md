@@ -45,3 +45,8 @@ Start the server:
 ```bash
 pnpm build:server && pnpm start
 ```
+
+Start the server for local debug
+```bash
+pnpm build:server && pnpm start:2999
+```
