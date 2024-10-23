@@ -29,6 +29,7 @@ export const MindMapState = createContext<MindMapStateType | null>(null);
 
 export interface MindMapStateType {
   mindMapData: RawNode<Payload>;
+  saveDocument: () => void;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
   modifyNodePayload: (nodeId: string, payload: Payload) => void;
@@ -116,6 +117,14 @@ export function useMindMapState(id: string): {
   const obTree = useMemo(() => engine.model.map(cpToTree), [engine.model]);
   const mindMapData = useObservable(obTree);
 
+  const saveDocument = useCallback(() => {
+    const { value: stat } = stateBox;
+    if (stat.type === 'loaded') {
+      const content = engine.model.peek();
+      updateDocument(stat.id, content).then(console.log);
+    }
+  }, [engine]);
+
   const moveNodeTo = useCallback(
     (nodeId: string, targetId: string, index: number) =>
       engine.apply(move(nodeId, targetId, index)),
@@ -166,6 +175,7 @@ export function useMindMapState(id: string): {
     loadState,
     treeState: {
       mindMapData,
+      saveDocument,
       moveNodeTo,
       modifyNode,
       modifyNodePayload,

@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAtom } from './base/atom';
 import { filesAtom } from './biz/store';
@@ -13,6 +13,7 @@ import { MindMapView } from './components/mind-map/MapIndex';
 import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
 import { MindMapState, useMindMapState } from './components/state/mindMapState';
+import { updateDocument } from '@root/model/api';
 
 const App = () => {
   const { fileId: id } = useParams();
@@ -24,12 +25,25 @@ const App = () => {
   const [, , { createDoc }] = useAtom(filesAtom);
   const navigate = useNavigate();
   const reactLocation = useLocation();
+
   useEffect(() => {
     if (reactLocation.pathname === '/edit') {
       createDoc(navigate);
     }
+    document.addEventListener('keydown', addGlobalEvent);
+
+    return () => {
+      document.removeEventListener('keydown', addGlobalEvent);
+    }
   }, [createDoc, navigate, reactLocation]);
   // for create new doc end
+
+  function addGlobalEvent(event: KeyboardEvent) {
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();
+        treeState.saveDocument()
+    }
+  }
 
   function renderContent() {
     if (loadState.type === 'loaded') {
