@@ -1,5 +1,5 @@
 import axios from 'axios';
-import marked from 'marked';
+import * as marked from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { NewDoc } from '../storage';
 import { ROOT_ID, genId, handleError, readConfig } from '../utils';
@@ -86,9 +86,9 @@ export async function Gen(docID: string, body: Buffer): Promise<GenResponse> {
     const result = await axios.request(config);
     const tokens = marked.lexer(result.data.result);
     const cp = tokensToMindMapCp(tokens);
-    if (req.title !== '') {
-      cp[ROOT_ID].stringProps!.content.v = req.title;
-    }
+    // if (req.title !== '') {
+    //   cp[ROOT_ID].stringProps!.content.v = req.title;
+    // }
     return await NewDoc(docID, Buffer.from(JSON.stringify(cp)));
   } catch (err: unknown) {
     return { message: handleError(err) };

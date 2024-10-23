@@ -10,10 +10,10 @@ import { executeQuery } from './pool';
  * @returns A promise that resolves to an object containing the rows of the
  * query result.
  * */
-export function AddDoc(uid: string, docID: string): Promise<{ rows: OkPacket }> {
+export function AddDoc(uid: string, docID: string, title:string): Promise<{ rows: OkPacket }> {
   return new Promise((resolve, reject) => {
     executeQuery(`INSERT INTO docs
-      (uid, doc_id) VALUES ("${uid}", "${docID}");`, (err, result) => {
+      (uid, doc_id, title) VALUES ("${uid}", "${docID}", "${title}");`, (err, result) => {
       if (result) {
         resolve(result);
       } else {

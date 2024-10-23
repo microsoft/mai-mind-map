@@ -1,5 +1,10 @@
 import { atom } from '@root/base/atom';
-import { FileInfo, createDocument, deleteDocument } from '@root/model/api';
+import {
+  FileInfo,
+  createDocument,
+  deleteDocument,
+  updateDocumentName,
+} from '@root/model/api';
 import { NavigateFunction } from 'react-router-dom';
 
 interface State {
@@ -36,10 +41,20 @@ export const filesAtom = atom(DefaultState, (get, set) => {
       });
   }
 
-  // Todo call server api to update
   function update(id: string, data: Partial<FileInfo>) {
     const state = get();
-    const files = state.files.map((f) => (f.id === id ? { ...f, ...data } : f));
+    const files = state.files.map((f) => {
+      if (f.id === id && data.title) {
+        if (data.title !== f.title) {
+          updateDocumentName(id, data.title || '').then(() => {
+            refresh(/*loading=*/ false);
+          });
+        }
+        return { ...f, ...data };
+      } else {
+        return f;
+      }
+    });
     set({ ...state, files });
   }
 

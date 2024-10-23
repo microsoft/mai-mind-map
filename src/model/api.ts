@@ -94,6 +94,19 @@ export const updateDocument = (id: string, doc: MindMapCp) =>
       return data.id;
     });
 
+export const updateDocumentName = (id: string, docName: string) =>
+  fetch(`/api/update/${id}/docName`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ docName }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      if (!data?.id) throw new Error(API_RESPONSE_TYPE_ERROR);
+      return data.id;
+    });
+
 export const deleteDocument = (id: string) =>
   fetch(`/api/delete/${id}`, { method: 'DELETE' })
     .then((res) => res.json())

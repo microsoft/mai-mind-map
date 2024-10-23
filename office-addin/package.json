@@ -20,7 +20,7 @@
     "prettier": "office-addin-lint prettier",
     "signin": "office-addin-dev-settings m365-account login",
     "signout": "office-addin-dev-settings m365-account logout",
-    "start": "office-addin-debugging start manifest.xml",
+    "start": "office-addin-debugging start manifest.xml --no-debug",
     "start:dev": "npm run build && office-addin-debugging start ../mai-mind-map-se/dist/addin/manifest-dev.xml --no-debug",
     "start:prop": "npm run build && office-addin-debugging start ../mai-mind-map-se/dist/addin/manifest.xml --no-debug",
     "start:desktop": "office-addin-debugging start manifest.xml desktop",

@@ -58,7 +58,7 @@ docsRouter.post('/new', async function (req, res) {
       res.status(401).send({ message: PERMISSION_DENIED });
       return;
     }
-    const user = await (AddDoc(uid, docID));
+    const user = await (AddDoc(uid, docID, "New Mind Map"));
     if (user.rows.affectedRows != 1) {
       throw new Error(user.rows.message);
     }
@@ -114,20 +114,45 @@ docsRouter.patch('/update/:id', async function (req, res) {
       res.status(401).send({ id: docID, message: PERMISSION_DENIED });
       return;
     }
-    const title = getDocTitle(req.body);
-    if (title) {
-      const result = await (UpdateDocByUID(uid, docID, title));
-      if (result.rows.affectedRows === 0) {
-        res.send({ id: docID, message: 'Doc not found' });
-        return;
-      }
-    }
+    const result = await UpdateDocByID(docID, req.body);
+    res.send(result);
   } catch (err: unknown) {
     res.status(500).send({ id: docID, message: handleError(err) });
     return;
   }
-  const result = await UpdateDocByID(docID, req.body);
-  res.send(result);
+  
+});
+
+docsRouter.patch('/update/:id/docName', async function (req, res) {
+  /**
+   * Updates a document by its ID with the provided data from the request body.
+   *
+   * @param req - The request object containing the document ID in the
+   * parameters and the update data in the body.
+   * @param req.params.id - The ID of the document to be updated.
+   * @param req.body - The data to update the document with.
+   * @returns A promise that resolves to the result of the update operation.
+   */
+  const docID = req.params.id;
+  try {
+    const uid = await getUID(req);
+    if (uid === undefined) {
+      res.status(401).send({ id: docID, message: PERMISSION_DENIED });
+      return;
+    }
+    const docName = req.body.docName;
+    if (docName) {
+      const result = await (UpdateDocByUID(uid, docID, docName));
+      if (result.rows.affectedRows === 0) {
+        res.send({ id: docID, result: 'failed', message: 'Doc not found' });
+        return;
+      }
+    }
+    res.send({id: docID, result: 'success'});
+  } catch (err: unknown) {
+    res.status(500).send({ id: docID, message: handleError(err) });
+    return;
+  }
 });
 
 docsRouter.delete('/delete/:id', async function (req, res) {
@@ -168,7 +193,7 @@ docsRouter.post('/gen', async function (req, res) {
       res.status(401).send({ message: PERMISSION_DENIED });
       return;
     }
-    const user = await (AddDoc(uid, docID));
+    const user = await (AddDoc(uid, docID, req.body.title ?? ''));
     if (user.rows.affectedRows != 1) {
       throw new Error(user.rows.message);
     }
