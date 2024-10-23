@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAtom } from './base/atom';
 import { filesAtom } from './biz/store';
@@ -13,7 +13,13 @@ import { MindMapView } from './components/mind-map/MapIndex';
 import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
 import { MindMapState, useMindMapState } from './components/state/mindMapState';
-import { updateDocument } from '@root/model/api';
+import {
+  useId,
+  useToastController,
+  Toaster,
+  ToastTitle,
+  Toast
+} from "@fluentui/react-components";
 
 const App = () => {
   const { fileId: id } = useParams();
@@ -22,9 +28,11 @@ const App = () => {
   const [view] = useAtom(viewModeAtom);
 
   // for create new doc start
-  const [, , { createDoc }] = useAtom(filesAtom);
+  const [, , { createDoc, refresh }] = useAtom(filesAtom);
   const navigate = useNavigate();
   const reactLocation = useLocation();
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
 
   useEffect(() => {
     if (reactLocation.pathname === '/edit') {
@@ -41,7 +49,15 @@ const App = () => {
   function addGlobalEvent(event: KeyboardEvent) {
     if (event.ctrlKey && event.key === 's') {
         event.preventDefault();
-        treeState.saveDocument()
+        treeState.saveDocument(() => {
+          refresh();
+          dispatchToast(
+            <Toast>
+              <ToastTitle>save success!</ToastTitle>
+            </Toast>,
+            { position: "top-end", intent: "success" }
+          );
+        });
     }
   }
 
@@ -59,6 +75,7 @@ const App = () => {
 
   return (
     <MindMapState.Provider value={treeState}>
+      <Toaster toasterId={toasterId} />
       <div className={LayoutStyle.Page}>
         <div className={LayoutStyle.Side}>
           <SidePane />

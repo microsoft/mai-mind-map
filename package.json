@@ -14,6 +14,7 @@
     "test": "echo \"No test yet\""
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.55.1",
     "d3-drag": "^2.0.0",
     "d3-ease": "^3.0.1",
     "d3-hierarchy": "^3.1.2",
