@@ -1,6 +1,7 @@
 import { css } from '@base/styled';
-import { FC, Fragment, useEffect, useState } from 'react';
-import { AddChild, Collapse, Color, Delete, Expand } from '../icons/icons';
+import { FC, Fragment, useEffect, useState, useCallback } from 'react';
+import { Spinner } from "@fluentui/react-components";
+import { AddChild, Collapse, Color, Delete, Expand, AIIcon } from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { ColorMode } from './render/hooks/constants';
 import { supportColors } from './render/hooks/useAutoColoringMindMap';
@@ -70,6 +71,8 @@ export const EditingNode: FC<{
 
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
+
+  const [isNodeGenerating, setIsNodeGenerating] = useState<Boolean>(false);
 
   const [pos, setPos] = useState<{
     pos: [number, number];
@@ -155,14 +158,43 @@ export const EditingNode: FC<{
       setShowColorBox(false);
     }
   }, [editingNode]);
-
   // const { node: editingNode } = props;
+
+  const generateNodeWithAI = useCallback((id: string, len: number) => {
+    const amount = Math.floor(Math.random() * 10) + 1;
+    setIsNodeGenerating(true);
+    const actionList = []
+    for(let i = 0; i < amount; ++i) {
+      actionList.push(new Promise((resolve) => {
+        setTimeout(() => {
+          addNode(id, len, [
+            "Empowering your data flow with seamless node-to-node connectivity.",
+            "Unlock the potential of distributed computing with our robust node system.",
+            "Reliable nodes for real-time data synchronization and communication.",
+            "Accelerate your network efficiency with high-performance nodes.",
+            "Connecting the dots of your infrastructure with powerful node technology.",
+            "Enhance scalability and security with decentralized node management.",
+            "Automate your network processes with intelligent node integration.",
+            "From edge to cloud—our nodes deliver seamless performance everywhere.",
+            "Ensure uninterrupted service with self-healing, fault-tolerant nodes.",
+            "Join the future of networking—deploy our nodes for smarter, faster systems."
+          ][i]);
+          resolve(true);
+        }, Math.floor(Math.random() * 4000) + 50);
+      }))
+    }
+    Promise.all(actionList).then(() => {
+      setIsNodeGenerating(false);
+    });
+  }, []);
+
   if (!editingNode) return null;
   const { node, translate } = editingNode;
   const { id, data } = node;
   const [tx, ty] = pos.trans ? pos.trans : translate;
   const x = pos.pos[0] || node.x;
   const y = pos.pos[1] || node.y;
+
   return (
     <div
       style={Object.assign({}, cssVarStyle, {
@@ -219,6 +251,17 @@ export const EditingNode: FC<{
             <Color />
           </button>
         )}
+
+        
+        <button
+          onClick={() => {
+            generateNodeWithAI(id, data.children?.length ?? 0);
+          }}
+          title="generate content via AI"
+        >
+          {!isNodeGenerating ? <AIIcon /> : <Spinner size="extra-tiny" label="generating" />} 
+        </button>
+
         <div
           className={SColorBox}
           style={{ display: showColorBox ? '' : 'none' }}
