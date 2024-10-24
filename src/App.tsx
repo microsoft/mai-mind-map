@@ -35,31 +35,35 @@ const App = () => {
   const { dispatchToast } = useToastController(toasterId);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     if (reactLocation.pathname === '/edit') {
       createDoc(navigate);
     }
-    document.addEventListener('keydown', addGlobalEvent);
+
+    if (/\/edit\/.+/.test(reactLocation.pathname)) {
+      document.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.key === 's') {
+          event.preventDefault();
+          treeState.saveDocument(() => {
+            refresh();
+            dispatchToast(
+              <Toast>
+                <ToastTitle>save success!</ToastTitle>
+              </Toast>,
+              { position: "top-end", intent: "success" }
+            );
+          });
+        }
+      }, { signal });
+    }
 
     return () => {
-      document.removeEventListener('keydown', addGlobalEvent);
+      controller.abort();
     }
   }, [createDoc, navigate, reactLocation]);
   // for create new doc end
-
-  function addGlobalEvent(event: KeyboardEvent) {
-    if (event.ctrlKey && event.key === 's') {
-        event.preventDefault();
-        treeState.saveDocument(() => {
-          refresh();
-          dispatchToast(
-            <Toast>
-              <ToastTitle>save success!</ToastTitle>
-            </Toast>,
-            { position: "top-end", intent: "success" }
-          );
-        });
-    }
-  }
 
   function renderContent() {
     if (loadState.type === 'loaded') {
