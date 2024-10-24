@@ -13,6 +13,13 @@ import { MindMapView } from './components/mind-map/MapIndex';
 import { useAutoColoringMindMap } from './components/mind-map/render/hooks/useAutoColoringMindMap';
 import { OutlineView } from './components/outline';
 import { MindMapState, useMindMapState } from './components/state/mindMapState';
+import {
+  useId,
+  useToastController,
+  Toaster,
+  ToastTitle,
+  Toast
+} from "@fluentui/react-components";
 
 const App = () => {
   const { fileId: id } = useParams();
@@ -21,12 +28,39 @@ const App = () => {
   const [view] = useAtom(viewModeAtom);
 
   // for create new doc start
-  const [, , { createDoc }] = useAtom(filesAtom);
+  const [, , { createDoc, refresh }] = useAtom(filesAtom);
   const navigate = useNavigate();
   const reactLocation = useLocation();
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
+
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     if (reactLocation.pathname === '/edit') {
       createDoc(navigate);
+    }
+
+    if (/\/edit\/.+/.test(reactLocation.pathname)) {
+      document.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.key === 's') {
+          event.preventDefault();
+          treeState.saveDocument(() => {
+            refresh();
+            dispatchToast(
+              <Toast>
+                <ToastTitle>save success!</ToastTitle>
+              </Toast>,
+              { position: "top-end", intent: "success" }
+            );
+          });
+        }
+      }, { signal });
+    }
+
+    return () => {
+      controller.abort();
     }
   }, [createDoc, navigate, reactLocation]);
   // for create new doc end
@@ -45,6 +79,7 @@ const App = () => {
 
   return (
     <MindMapState.Provider value={treeState}>
+      <Toaster toasterId={toasterId} />
       <div className={LayoutStyle.Page}>
         <div className={LayoutStyle.Side}>
           <SidePane />

@@ -9,7 +9,11 @@ import {
   useRef,
   useState,
 } from 'react';
-
+import {
+  useToastController,
+  ToastTitle,
+  Toast,
+} from "@fluentui/react-components";
 import { getExampleSourceData } from '@root/components/mind-map/render/model';
 import { Payload } from '@root/components/mind-map/render/model/interface';
 import { RawNode } from '@root/components/mind-map/render/node/interface';
@@ -29,6 +33,7 @@ export const MindMapState = createContext<MindMapStateType | null>(null);
 
 export interface MindMapStateType {
   mindMapData: RawNode<Payload>;
+  saveDocument: (successCallback: Function) => void;
   moveNodeTo: (nodeId: string, targetId: string, index: number) => void;
   modifyNode: (nodeId: string, content: string) => void;
   modifyNodePayload: (nodeId: string, payload: Payload) => void;
@@ -116,6 +121,16 @@ export function useMindMapState(id: string): {
   const obTree = useMemo(() => engine.model.map(cpToTree), [engine.model]);
   const mindMapData = useObservable(obTree);
 
+  const saveDocument = useCallback((successCallback: Function) => {
+    const { value: stat } = stateBox;
+    if (stat.type === 'loaded') {
+      const content = engine.model.peek();
+      updateDocument(stat.id, content).then(() => {
+        successCallback();
+      });
+    }
+  }, [engine]);
+
   const moveNodeTo = useCallback(
     (nodeId: string, targetId: string, index: number) =>
       engine.apply(move(nodeId, targetId, index)),
@@ -166,6 +181,7 @@ export function useMindMapState(id: string): {
     loadState,
     treeState: {
       mindMapData,
+      saveDocument,
       moveNodeTo,
       modifyNode,
       modifyNodePayload,

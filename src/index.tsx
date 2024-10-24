@@ -5,6 +5,7 @@ import './global.css';
 
 import { WithStore } from '@base/atom';
 import { router } from './router';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
@@ -12,7 +13,11 @@ if (rootEl) {
   root.render(
     <React.StrictMode>
       <WithStore>
-        <RouterProvider router={router}></RouterProvider>
+        <FluentProvider theme={webLightTheme} style={{
+          height: '100%'
+        }}>
+          <RouterProvider router={router}></RouterProvider>
+        </FluentProvider>
       </WithStore>
     </React.StrictMode>,
   );
