@@ -2,9 +2,19 @@
 
 ### Prerequisite
 * Word (browser version)
+* Nodejs >= v20.x.xx
+
+```shell
+npm install -g pnpm
+```
+
 
 ### Run in local
+under `./office-addin`
 ```shell
+
+pnpm install
+
 npm run start:dev # Load Addin in local office from dev env
 # or
 npm run start:prod # Load Addin in local office from prod env

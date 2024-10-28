@@ -1,7 +1,14 @@
 import { css } from '@base/styled';
 import { FC, Fragment, useEffect, useState, useCallback } from 'react';
-import { Spinner } from "@fluentui/react-components";
-import { AddChild, Collapse, Color, Delete, Expand, AIIcon } from '../icons/icons';
+import { Spinner } from '@fluentui/react-components';
+import {
+  AddChild,
+  Collapse,
+  Color,
+  Delete,
+  Expand,
+  AIIcon,
+} from '../icons/icons';
 import { NodeContent, editingNodePreId } from './NodeContent';
 import { ColorMode } from './render/hooks/constants';
 import { supportColors } from './render/hooks/useAutoColoringMindMap';
@@ -10,6 +17,7 @@ import { EditingNodePos } from './render/hooks/useRenderWithD3';
 import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
+import { useGenSubNodesWithAI } from './render/hooks/useGenSubNodesWithAI';
 export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;
   translate: [number, number];
@@ -72,7 +80,7 @@ export const EditingNode: FC<{
   const [editingNode, setEditingNode] =
     useState<EditingNodeType<Payload> | null>(null);
 
-  const [isNodeGenerating, setIsNodeGenerating] = useState<Boolean>(false);
+  const { generateNodeWithAI, nodesGenerating } = useGenSubNodesWithAI();
 
   const [pos, setPos] = useState<{
     pos: [number, number];
@@ -160,34 +168,6 @@ export const EditingNode: FC<{
   }, [editingNode]);
   // const { node: editingNode } = props;
 
-  const generateNodeWithAI = useCallback((id: string, len: number) => {
-    const amount = Math.floor(Math.random() * 10) + 1;
-    setIsNodeGenerating(true);
-    const actionList = []
-    for(let i = 0; i < amount; ++i) {
-      actionList.push(new Promise((resolve) => {
-        setTimeout(() => {
-          addNode(id, len, [
-            "Empowering your data flow with seamless node-to-node connectivity.",
-            "Unlock the potential of distributed computing with our robust node system.",
-            "Reliable nodes for real-time data synchronization and communication.",
-            "Accelerate your network efficiency with high-performance nodes.",
-            "Connecting the dots of your infrastructure with powerful node technology.",
-            "Enhance scalability and security with decentralized node management.",
-            "Automate your network processes with intelligent node integration.",
-            "From edge to cloud—our nodes deliver seamless performance everywhere.",
-            "Ensure uninterrupted service with self-healing, fault-tolerant nodes.",
-            "Join the future of networking—deploy our nodes for smarter, faster systems."
-          ][i]);
-          resolve(true);
-        }, Math.floor(Math.random() * 4000) + 50);
-      }))
-    }
-    Promise.all(actionList).then(() => {
-      setIsNodeGenerating(false);
-    });
-  }, []);
-
   if (!editingNode) return null;
   const { node, translate } = editingNode;
   const { id, data } = node;
@@ -252,14 +232,17 @@ export const EditingNode: FC<{
           </button>
         )}
 
-        
         <button
           onClick={() => {
-            generateNodeWithAI(id, data.children?.length ?? 0);
+            generateNodeWithAI(id, data.payload.content);
           }}
           title="generate content via AI"
         >
-          {!isNodeGenerating ? <AIIcon /> : <Spinner size="extra-tiny" label="generating" />} 
+          {!nodesGenerating.has(id) ? (
+            <AIIcon />
+          ) : (
+            <Spinner size="extra-tiny" label="generating" />
+          )}
         </button>
 
         <div

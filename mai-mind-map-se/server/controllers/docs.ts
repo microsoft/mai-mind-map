@@ -1,6 +1,6 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { Gen } from '../ai';
+import { Gen, genSubNode } from '../ai';
 import {
   AddDoc,
   DeleteDocByUID,
@@ -203,4 +203,23 @@ docsRouter.post('/gen', async function (req, res) {
   }
   const result = await Gen(docID, req.body);
   res.send(result);
+});
+
+
+docsRouter.post('/genSubNodes', async function (req, res) {
+
+  try {
+    const uid = await getUID(req);
+    if (uid === undefined) {
+      res.status(401).send({ message: PERMISSION_DENIED });
+      return;
+    }
+
+  const result = await genSubNode(req.body.mindMapContent, req.body.CurrentSection);
+  res.send(result);
+  } catch (err: unknown) {
+    res.status(500).send({ message: handleError(err) });
+    return;
+  }
+
 });
