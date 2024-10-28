@@ -217,3 +217,27 @@ async function ToMarkdown(body: GenRequest): Promise<GenResponse> {
     return Promise.resolve({ message: handleError(err) });
   }
 }
+
+
+export async function genSubNode(mindMapContent: string, CurrentSection:string) {
+  try {
+    const cp = JSON.parse(mindMapContent) as MindMapCp;
+    let data = JSON.stringify({
+      "Outline": mindMapCpToMarkdown(cp),
+      "CurrentSection": CurrentSection,
+    });
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${conf.SUB_NODES_AI_GENERATION_ENDPOINT}`,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data
+    };
+    const result = await axios.request(config);
+    return { suggestions: result.data.suggestions };
+  } catch (err: unknown) {
+    return { message: handleError(err) };
+  }
+}
