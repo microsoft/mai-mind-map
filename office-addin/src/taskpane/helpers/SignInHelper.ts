@@ -54,7 +54,7 @@ export class SignInHelper {
 
   async showSignInDialog() {
     Office.context.ui.displayDialogAsync(
-      `${location.origin}/auth/signin?targetUrl=${encodeURIComponent('/landing-page.html')}`,
+      `${location.origin}/auth/signin?targetUrl=${encodeURIComponent('/addin/landing-page.html')}`,
       { height: 300, width: 300 },
       (asyncResult) => {
         this.dialog = asyncResult.value;
