@@ -21,6 +21,7 @@ import {
 } from './render';
 import { ColorMode, LinkMode } from './render/hooks/constants';
 import { Payload } from './render/model/interface';
+import { useKeyboardNavigate } from './render/hooks/useKeyboardNavigate';
 export * from './render';
 import './MindMap.css';
 
@@ -77,6 +78,7 @@ export function MindMap(props: MFC<Payload>) {
       getChildren: (d) => d.children || [],
     });
   }, [treeDirection, sizedData, isNodeCollapsed]);
+
   const { svg, pendingRenderNodes } = useRenderWithD3(
     root,
     {
@@ -88,6 +90,8 @@ export function MindMap(props: MFC<Payload>) {
     moveNodeTo,
     setPendingEditNode,
   );
+  
+  useKeyboardNavigate(editingNode, setPendingEditNode);
 
   return (
     <Fragment>
