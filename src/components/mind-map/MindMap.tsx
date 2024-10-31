@@ -21,7 +21,6 @@ import {
 } from './render';
 import { ColorMode, LinkMode } from './render/hooks/constants';
 import { Payload } from './render/model/interface';
-import { useKeyboardNavigate } from './render/hooks/useKeyboardNavigate';
 export * from './render';
 import './MindMap.css';
 
@@ -90,8 +89,6 @@ export function MindMap(props: MFC<Payload>) {
     moveNodeTo,
     setPendingEditNode,
   );
-  
-  useKeyboardNavigate(root, editingNode, setPendingEditNode);
 
   return (
     <Fragment>
@@ -129,6 +126,7 @@ export function MindMap(props: MFC<Payload>) {
         <EditingNode
           scale={scale}
           node={editingNode}
+          root={root}
           colorMode={colorMode}
           modifyNode={modifyNode}
           modifyNodePayload={modifyNodePayload}

@@ -44,6 +44,7 @@ export function useKeyboardNavigate(
       switch(event.key) {
         case 'Tab':
           treeState?.addNode(editingNode.node.id, editingNode.node.children.length ?? 0, 'new node');
+          console.log(editingNode);
           break;
         case 'Delete':
           treeState?.delNode(editingNode.node.id);

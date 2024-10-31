@@ -18,6 +18,7 @@ import { NodeInterface } from './render/layout';
 import { Payload } from './render/model/interface';
 import { SizedRawNode } from './render/node/interface';
 import { useGenSubNodesWithAI } from './render/hooks/useGenSubNodesWithAI';
+import { useKeyboardNavigate } from './render/hooks/useKeyboardNavigate';
 export interface EditingNodeType<D> {
   node: NodeInterface<SizedRawNode<D>>;
   translate: [number, number];
@@ -56,6 +57,7 @@ const SColorBtn = css`
 export const EditingNode: FC<{
   scale: number;
   node: EditingNodeType<Payload> | null;
+  root: NodeInterface<SizedRawNode<Payload>> | null;
   colorMode: ColorMode;
   modifyNode: (nodeId: string, content: string) => void;
   modifyNodePayload: (nodeId: string, payload: Payload) => void;
@@ -67,6 +69,7 @@ export const EditingNode: FC<{
   const {
     scale,
     node: pendingNode,
+    root,
     colorMode,
     modifyNode,
     modifyNodePayload,
@@ -167,6 +170,8 @@ export const EditingNode: FC<{
     }
   }, [editingNode]);
   // const { node: editingNode } = props;
+  
+  useKeyboardNavigate(root, editingNode, setPendingEditNode);
 
   if (!editingNode) return null;
   const { node, translate } = editingNode;
