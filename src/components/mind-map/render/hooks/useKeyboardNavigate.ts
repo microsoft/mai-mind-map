@@ -13,7 +13,7 @@ export function useKeyboardNavigate(
     const handleKeydown = (event: KeyboardEvent) => {
       if (!editingNode) return;
       event.preventDefault();
-      console.log('event', event);
+      console.log(treeState);
 
       switch(event.key) {
         case 'Tab':
@@ -21,13 +21,36 @@ export function useKeyboardNavigate(
           break;
         case 'Delete':
           treeState?.delNode(editingNode.node.id);
-          setPendingEditNode(null);
+          if(editingNode.node.parent) {
+            setPendingEditNode({
+              node: editingNode.node.parent,
+              translate: [editingNode.node.parent.x, editingNode.node.parent.y]
+            });
+          } else {
+            setPendingEditNode(null);
+          }
           break;
         case 'ArrowLeft':
+          break;
         case 'ArrowRight':
+          break;
         case 'ArrowUp':
         case 'ArrowDown':
-            break;
+          let currentIndex = editingNode.node.parent?.children.findIndex(el => el.id === editingNode.node.id);
+          const len = editingNode.node.parent?.children.length || 0;
+          if(currentIndex !== undefined) {
+            if(currentIndex >= 0 && currentIndex <= len) {
+              const node = editingNode.node.parent?.children[event.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1];
+              console.log(node);
+              if(node) {
+                setPendingEditNode({
+                  node,
+                  translate: [node.x, node.y]
+                });
+              }
+            }
+          }
+          break;
         default:
           break;
       }
