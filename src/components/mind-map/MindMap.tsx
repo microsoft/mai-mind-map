@@ -91,7 +91,7 @@ export function MindMap(props: MFC<Payload>) {
     setPendingEditNode,
   );
   
-  useKeyboardNavigate(editingNode, setPendingEditNode);
+  useKeyboardNavigate(root, editingNode, setPendingEditNode);
 
   return (
     <Fragment>
