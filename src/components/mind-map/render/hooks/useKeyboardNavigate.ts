@@ -39,14 +39,14 @@ export function useKeyboardNavigate(
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
       if (!editingNode) return;
-      event.preventDefault();
 
       switch(event.key) {
         case 'Tab':
+          event.preventDefault();
           treeState?.addNode(editingNode.node.id, editingNode.node.children.length ?? 0, 'new node');
-          console.log(editingNode);
           break;
         case 'Delete':
+          event.preventDefault();
           treeState?.delNode(editingNode.node.id);
           if(editingNode.node.parent) {
             setPendingEditNode({
@@ -58,6 +58,7 @@ export function useKeyboardNavigate(
           }
           break;
         case 'ArrowLeft':
+          event.preventDefault();
           if(editingNode.node.id === root!.id) {
             const node = root?.children.find(el => el.x < positionCenter);
             setPendingEditNode({
@@ -69,6 +70,7 @@ export function useKeyboardNavigate(
           }
           break;
         case 'ArrowRight':
+          event.preventDefault();
           if(editingNode.node.id === root!.id) {
             const node = root?.children.find(el => el.x > positionCenter);
             setPendingEditNode({
@@ -81,6 +83,7 @@ export function useKeyboardNavigate(
           break;
         case 'ArrowUp':
         case 'ArrowDown':
+          event.preventDefault();
           let currentIndex = editingNode.node.parent?.children.findIndex(el => el.id === editingNode.node.id);
           const len = editingNode.node.parent?.children.length || 0;
           if(currentIndex !== undefined) {
