@@ -77,6 +77,7 @@ export function MindMap(props: MFC<Payload>) {
       getChildren: (d) => d.children || [],
     });
   }, [treeDirection, sizedData, isNodeCollapsed]);
+
   const { svg, pendingRenderNodes } = useRenderWithD3(
     root,
     {
@@ -125,6 +126,7 @@ export function MindMap(props: MFC<Payload>) {
         <EditingNode
           scale={scale}
           node={editingNode}
+          root={root}
           colorMode={colorMode}
           modifyNode={modifyNode}
           modifyNodePayload={modifyNodePayload}
