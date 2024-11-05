@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useCallback } from 'react';
 import { MindMapState } from '../../../state/mindMapState';
 import { EditingNodeType } from '../../EditingNode';
 import { Payload } from '../model/interface';
@@ -15,16 +15,16 @@ export function useKeyboardNavigate(
   const treeState = useContext(MindMapState);
   const positionCenter = root?.x || 0;
 
-  const navigateToParent = () => {
+  const navigateToParent = useCallback(() => {
     if(editingNode && editingNode.node.parent) {
       setPendingEditNode({
         node: editingNode.node.parent,
         translate: [editingNode.node.parent.x, editingNode.node.parent.y]
       });
     }
-  }
+  }, [editingNode, setPendingEditNode]);
 
-  const navigateToChild = () => {
+  const navigateToChild = useCallback(() => {
     if(editingNode) {
       const node = editingNode.node.children[0];
       if(node) {
@@ -34,7 +34,7 @@ export function useKeyboardNavigate(
         });
       }
     }
-  }
+  }, [editingNode, setPendingEditNode]);
  
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
